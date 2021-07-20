@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Sidenav, HomeContent } from './App';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
+import './App.css';
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <Sidenav />
-    <HomeContent />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
