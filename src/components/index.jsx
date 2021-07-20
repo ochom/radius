@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import React, { useState } from "react"
+import { NavLink } from "react-router-dom"
 import profile from "../static/profile.jpg"
 
 
@@ -13,10 +13,10 @@ function SubMenu(props) {
             <ul>
                 {props.items.map((item, index) =>
                     <li key={index}>
-                        <Link to={item.href}>
+                        <NavLink exact={item.exact} to={item.href} replace={true} activeClassName="selected">
                             <i className={item.icon}></i>
                             <span>{item.title}</span>
-                        </Link>
+                        </NavLink>
                     </li>
                 )}
             </ul>
@@ -25,7 +25,7 @@ function SubMenu(props) {
 }
 
 const menuItems = [
-    { href: "/", icon: "bx bx-grid-alt", title: "Dashboard", tooltip: "Dashboard" },
+    { href: "/", icon: "bx bx-grid-alt", title: "Dashboard", tooltip: "Dashboard", exact:true },
     { href: "/sms", icon: "bx bx-chat", title: "SMS", tooltip: "Messages" },
     { href: "/staff", icon: "bx bx-user", title: "Staff", tooltip: "Staff" },
     { href: "/classes", icon: "bx bxs-school", title: "Classes", tooltip: "Classes" },
@@ -42,45 +42,60 @@ const menuItems = [
 function Sidenav() {
     const [active, setActive] = useState(true)
     return (
-        <div className={`sidebar${active ? ' active' : ''}`}>
-            <div className="logo_content">
-                <div className="logo">
-                    <i className='bx bxl-sketch' ></i>
-                    <div className="logo_name">Radius</div>
-                </div>
-                <i className='bx bx-menu' id="btn" onClick={() => setActive(!active)}></i>
-            </div>
-            <ul className="nav_list">
-                <li>
-                    <i className="bx bx-search" onClick={() => setActive(!active)}></i>
-                    <input type="text" placeholder="Search" />
-                    <span className="tooltip">Search</span>
-                </li>
-                {menuItems.map((item, index) =>
-                    <li key={index}>
-                        <Link to={item.href}>
-                            <i className={item.icon}></i>
-                            <span className="links_name">{item.title}</span>
-                        </Link>
-                        <span className="tooltip">{item.tooltip}</span>
-                    </li>
-                )}
-            </ul>
-            <div className="profile_content">
-                <div className="profile">
-                    <div className="profile_details">
-                        <img src={profile} alt="Profile" />
-                        <div className="name_job">
-                            <div className="name">Richard Ochom</div>
-                            <div className="job">Class Teacher, Form 4</div>
-                        </div>
+            <div className={`sidebar${active ? ' active' : ''}`}>
+                <div className="logo_content">
+                    <div className="logo">
+                        <i className='bx bxl-sketch' ></i>
+                        <div className="logo_name">Radius</div>
                     </div>
-                    <i className='bx bx-log-out' id="log_out" ></i>
+                    <i className='bx bx-menu' id="btn" onClick={() => setActive(!active)}></i>
+                </div>
+                <ul className="nav_list">
+                    <li>
+                        <i className="bx bx-search" onClick={() => setActive(!active)}></i>
+                        <input type="text" placeholder="Search" />
+                        <span className="tooltip">Search</span>
+                    </li>
+                    {menuItems.map((item, index) =>
+                        <li key={index}>
+                            <NavLink exact={item.exact} activeClassName="selected" to={item.href} replace={true}>
+                                <i className={item.icon}></i>
+                                <span className="links_name">{item.title}</span>
+                            </NavLink>
+                            <span className="tooltip">{item.tooltip}</span>
+                        </li>
+                    )}
+                </ul>
+                <div className="profile_content">
+                    <div className="profile">
+                        <div className="profile_details">
+                            <img src={profile} alt="Profile" />
+                            <div className="name_job">
+                                <div className="name">Richard Ochom</div>
+                                <div className="job">Class Teacher, Form 4</div>
+                            </div>
+                        </div>
+                        <i className='bx bx-log-out' id="log_out" ></i>
+                    </div>
                 </div>
             </div>
-        </div>
     );
 }
 
+function DefaultPagelayout({children}){
+    return (
+        <React.Fragment>
+            <Sidenav/>
+            <div className="home_content">
+                <div className="topbar">
+                    <img src="https://media.istockphoto.com/vectors/black-and-white-illustration-of-a-school-logo-vector-id1136343416?k=6&m=1136343416&s=170667a&w=0&h=sztUR6SSjxwCNjRhfJGmdVoIbGUTADrbDde98A_x4qc=" alt="brand" className="school_brand" />
+                    <b className="school_name">Demo Secondary School</b>
+                </div>
+                {children}
+            </div>
+        </React.Fragment>
+    )
+}
 
-export { Sidenav, SubMenu }
+
+export { DefaultPagelayout, SubMenu }

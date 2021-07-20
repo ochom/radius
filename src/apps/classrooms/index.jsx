@@ -1,7 +1,7 @@
 import { SubMenu } from "../../components"
 
 const menuItems = [
-    { title: "All classes", href: "/classes", icon: "bx bxs-right-arrow" },
+    { title: "All classes", href: "/classes", icon: "bx bxs-right-arrow", exact:true },
     { title: "Export/Import", href: "/classes/batch-processing", icon: "bx bxs-right-arrow" },
 ]
 
