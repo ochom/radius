@@ -1,7 +1,7 @@
 import { SubMenu } from "../../components"
 
 const menuItems = [
-    { title: "Dashboard", href: "/library", icon: "bx bxs-right-arrow" },
+    { title: "Dashboard", href: "/library", icon: "bx bxs-right-arrow" , exact:true },
     { title: "Books", href: "/library/books", icon: "bx bxs-right-arrow" },
     { title: "Borrows", href: "/library/borrrows", icon: "bx bxs-right-arrow" },
     { title: "Staff borrows", href: "/library/borrows-staff", icon: "bx bxs-right-arrow" },

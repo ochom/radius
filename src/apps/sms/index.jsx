@@ -1,7 +1,7 @@
 import { SubMenu } from "../../components"
 
 const menuItems = [
-    { title: "Compose", href: "/sms", icon: "bx bxs-right-arrow" },
+    { title: "Compose", href: "/sms", icon: "bx bxs-right-arrow", exact:true },
     { title: "Outbox", href: "/sms/outbox", icon: "bx bxs-right-arrow" },
     { title: "Contact groups", href: "/sms/groups", icon: "bx bxs-right-arrow" },
     { title: "Contacts", href: "/sms/contacts", icon: "bx bxs-right-arrow" },
