@@ -1,0 +1,13 @@
+tbody td,
+tbody button {
+  font-size: 15px !important;
+  font-weight: 300 !important;
+}
+
+tbody td small {
+  font-size: 10px;
+}
+
+.btn {
+  font-size: 12px !important;
+}

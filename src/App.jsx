@@ -6,6 +6,7 @@ import {
 import Academics from "./apps/academics";
 import Activity from "./apps/activity";
 import Classes from "./apps/classrooms";
+import Dashboard from "./apps/dashboard";
 import Library from "./apps/library";
 import Parents from "./apps/parents";
 import Settings from "./apps/settings";
@@ -16,23 +17,24 @@ import { DefaultPagelayout } from "./components";
 
 
 
+
 function App() {
   return (
     <Router>
-        <DefaultPagelayout>
-          <Switch>
-            <Route path="/sms"  component={SMS} />
-            <Route path="/staff" component={Staff}/>
-            <Route path="/classes" component={Classes}/>
-            <Route path="/students" component={Student}/>
-            <Route path="/parents" component={Parents}/>
-            <Route path="/academics" component={Academics}/>
-            <Route path="/library" component={Library}/>
-            <Route path="/activity" component={Activity}/>
-            <Route path="/settings" component={Settings}/>
-            <Route exact path="/" component=""/>
-          </Switch>
-        </DefaultPagelayout>
+      <DefaultPagelayout>
+        <Switch>
+          <Route path="/sms" component={SMS} />
+          <Route path="/staff" component={Staff} />
+          <Route path="/classes" component={Classes} />
+          <Route path="/students" component={Student} />
+          <Route path="/parents" component={Parents} />
+          <Route path="/academics" component={Academics} />
+          <Route path="/library" component={Library} />
+          <Route path="/activity" component={Activity} />
+          <Route path="/settings" component={Settings} />
+          <Route exact path="/" component={Dashboard} />
+        </Switch>
+      </DefaultPagelayout>
     </Router>
   )
 }
