@@ -253,9 +253,6 @@ body {
 
 .sidebar.activated .profile #log_out {
   background: none;
-}
-
-.sidebar.activated .profile #log_out {
   left: 88%;
 }
 
