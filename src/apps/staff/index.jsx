@@ -7,9 +7,6 @@ import StaffRoles from "./staff_roles"
 const menuItems = [
     { title: "Roles", href: "/staff/roles", icon: "bx bxs-right-arrow" },
     { title: "All staff", href: "/staff", icon: "bx bxs-right-arrow", exact: true },
-    { title: "Teaching staff", href: "/staff/teaching", icon: "bx bxs-right-arrow" },
-    { title: "Non-Teaching staff", href: "/staff/non-teaching", icon: "bx bxs-right-arrow" },
-    { title: "Profile photos", href: "/staff/photos", icon: "bx bxs-right-arrow" },
 ]
 
 function Staff() {

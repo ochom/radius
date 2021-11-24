@@ -1,35 +1,67 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 
-export default class AllStaff extends Component {
-    state = {
-        showModal: false,
-        selectedStaff: null,
+const AllStaff = () => {
+    const [showModal, setShowModal] = useState(false)
+    const [staffID, setStaffID] = useState(null)
+    const [staffs, setStaffs] = useState([])
+
+    const toggleModal = () => setShowModal(!showModal)
+
+    const NewStaff = () => {
+        toggleModal()
+        setStaffID(null)
     }
-    myRef = React.createRef()
-    toggleModal = () => { this.setState({ showModal: !this.state.showModal }) }
 
-    onNewStaff = () => {
-        this.toggleModal()
-        this.setState({ selectedRole: null })
-    }
+    useEffect(() => {
+        let data = [
+            { name: "Richard Otieno", address: "44th St, Suna Migori", type: "Teaching", employmentType: "T.S.C", gender: "Male" },
+            { name: "Cynthia Woramas", address: "44th St, Suna Migori", type: "Non-Teaching", employmentType: "B.O.M", gender: "Female" }
+        ]
+        setStaffs(data)
+    }, [])
 
 
-    onSubmitStaff = (e) => {
+    const SubmitStaff = (e) => {
         e.preventDefault()
     }
 
-    render() {
-        const { showModal } = this.state
+    return (
+        <>
+            <div className="mb-3 justify-content-end d-flex">
+                <div className="btn-group" role="group">
+                    <button className="btn btn-light" onClick={NewStaff}><i className="fa fa-plus"></i> Add Staff</button>
+                    <button className="btn btn-success"><i className="fa fa-cloud-upload"></i> Upload</button>
+                    <button className="btn btn-primary"><i className="fa fa-cloud-download"></i> Download</button>
+                </div>
+            </div>
+            <table className="table table-responsive-sm table-hover">
+                <thead className="bg-light">
+                    <tr>
+                        <td>Name</td>
+                        <td>Staff Type</td>
+                        <td>Gender</td>
+                        <td>Action</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {staffs.map((staff, index) =>
+                        <tr key={index}>
+                            <td>{staff.name} <br /> <small>{staff.address}</small></td>
+                            <td>{staff.type}<br /> <small>{staff.employmentType}</small></td>
+                            <td>{staff.gender}</td>
+                            <td>
+                                <button className="btn btn-light"><i className="fa fa-edit"></i> Edit</button>
+                                <button className="btn btn-info ms-2"><i className="fa fa-file"></i> View</button>
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
 
-        const staffs = [
-            { name: "Richard Ochom", address: "44th St, Suna Migori", type: "Teaching", employmentType: "T.S.C", gender: "Male" },
-            { name: "Cynthia Achieng'", address: "44th St, Suna Migori", type: "Non-Teaching", employmentType: "B.O.M", gender: "Female" }
-        ]
-        const modal =
-            <Modal isOpen={showModal} ref={this.myRef}>
-                <ModalHeader toggle={this.toggleModal}>
-                    {this.state.selectedRole ?
+            <Modal isOpen={showModal}>
+                <ModalHeader toggle={toggleModal}>
+                    {staffID ?
                         <span><i className="fa fa-edit"></i> Edit staff details</span> :
                         <span><i className="fa fa-plus-circle"></i> Add a new staff</span>
                     }
@@ -93,49 +125,16 @@ export default class AllStaff extends Component {
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <button type="submit" className="btn btn-sm btn-secondary"
-                        onSubmit={this.onSubmitRole}>
-                        <i className="fa fa-check"></i> Add Staff</button>{' '}
                     <button type="button" className="btn btn-sm btn-light"
-                        onClick={this.toggleModal}>
+                        onClick={toggleModal}>
                         <i className="fa fa-close"></i> Cancel</button>
+                    <button type="submit" className="btn btn-sm btn-secondary"
+                        onSubmit={(e) => SubmitStaff(e)}>
+                        <i className="fa fa-check"></i> Add Staff</button>
                 </ModalFooter>
             </Modal >
-
-        return (
-            <>
-                {modal}
-                <div className="mb-3 justify-content-end d-flex">
-                    <div className="btn-group" role="group">
-                        <button className="btn btn-light" onClick={this.onNewStaff}><i className="fa fa-plus"></i> Add Staff</button>
-                        <button className="btn btn-success"><i className="fa fa-cloud-upload"></i> Upload</button>
-                        <button className="btn btn-primary"><i className="fa fa-cloud-download"></i> Download</button>
-                    </div>
-                </div>
-                <table className="table table-responsive-sm table-hover">
-                    <thead className="bg-light">
-                        <tr>
-                            <td>Name</td>
-                            <td>Staff Type</td>
-                            <td>Gender</td>
-                            <td>Action</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {staffs.map((staff, index) =>
-                            <tr key={index}>
-                                <td>{staff.name} <br /> <small>{staff.address}</small></td>
-                                <td>{staff.type}<br /> <small>{staff.employmentType}</small></td>
-                                <td>{staff.gender}</td>
-                                <td>
-                                    <button className="btn btn-light"><i className="fa fa-edit"></i> Edit</button>
-                                    <button className="btn btn-info ms-2"><i className="fa fa-file"></i> View</button>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </>
-        )
-    }
+        </>
+    )
 }
+
+export default AllStaff;
