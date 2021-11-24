@@ -1,24 +1,48 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
+import DataTable, { DataWithCaption } from '../../components/table'
 
 const AllStaff = () => {
     const [showModal, setShowModal] = useState(false)
     const [staffID, setStaffID] = useState(null)
-    const [staffs, setStaffs] = useState([])
+    const [columns, setColumns] = useState([])
+    const [rows, setRows] = useState([])
 
     const toggleModal = () => setShowModal(!showModal)
 
-    const NewStaff = () => {
+    const onNewStaff = () => {
         toggleModal()
         setStaffID(null)
     }
 
     useEffect(() => {
+
         let data = [
-            { name: "Richard Otieno", address: "44th St, Suna Migori", type: "Teaching", employmentType: "T.S.C", gender: "Male" },
-            { name: "Cynthia Woramas", address: "44th St, Suna Migori", type: "Non-Teaching", employmentType: "B.O.M", gender: "Female" }
+            { name: "Richard Ochom", address: "44-40402 Migori, Kenya", type: "Teaching Staff", employment: "T.S.C", sex: "Male" },
+            { name: "Aketch Wiko", address: "Kilundezy, Nairobi", type: "Support Staff", employment: "B.O.M", sex: "Female" }
         ]
-        setStaffs(data)
+
+        let rowData = data.map((d, i) => {
+            return {
+                name: <DataWithCaption data={d.name} caption={d.address} />,
+                group: <DataWithCaption data={d.type} caption={d.employment} />, gender: d.sex,
+                action: <>
+                    <button className='btn btn-sm btn-primary'><i className='fa fa-edit'></i> Edit</button>
+                    <button className='btn btn-sm btn-danger ms-2'><i className='fa fa-trash'></i> Delete</button>
+                </>
+            }
+        })
+
+        let cols = [
+            { name: "Name", selector: row => row.name, },
+            { name: "Group", selector: row => row.group },
+            { name: "Gender", selector: row => row.gender, sortable: true, },
+            { name: "Action", selector: row => row.action }
+        ]
+
+        setColumns(cols)
+        setRows(rowData)
+
     }, [])
 
 
@@ -29,37 +53,19 @@ const AllStaff = () => {
     return (
         <>
             <div className="mb-3 justify-content-end d-flex">
-                <div className="btn-group" role="group">
-                    <button className="btn btn-light" onClick={NewStaff}><i className="fa fa-plus"></i> Add Staff</button>
-                    <button className="btn btn-success"><i className="fa fa-cloud-upload"></i> Upload</button>
-                    <button className="btn btn-primary"><i className="fa fa-cloud-download"></i> Download</button>
+                <div>
+                    <button className="btn btn-primary" onClick={onNewStaff}><i className="fa fa-plus"></i> Add New Staff</button>
+                    <button className="btn btn-success ms-3"><i className="fa fa-cloud-upload"></i> Upload</button>
+                    <button className="btn btn-secondary ms-3"><i className="fa fa-cloud-download"></i> Download</button>
                 </div>
             </div>
-            <table className="table table-responsive-sm table-hover">
-                <thead className="bg-light">
-                    <tr>
-                        <td>Name</td>
-                        <td>Staff Type</td>
-                        <td>Gender</td>
-                        <td>Action</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {staffs.map((staff, index) =>
-                        <tr key={index}>
-                            <td>{staff.name} <br /> <small>{staff.address}</small></td>
-                            <td>{staff.type}<br /> <small>{staff.employmentType}</small></td>
-                            <td>{staff.gender}</td>
-                            <td>
-                                <button className="btn btn-light"><i className="fa fa-edit"></i> Edit</button>
-                                <button className="btn btn-info ms-2"><i className="fa fa-file"></i> View</button>
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            <DataTable
+                columns={columns}
+                data={rows}
+                selectableRows
+            />
 
-            <Modal isOpen={showModal}>
+            <Modal isOpen={showModal} size='md'>
                 <ModalHeader toggle={toggleModal}>
                     {staffID ?
                         <span><i className="fa fa-edit"></i> Edit staff details</span> :
@@ -125,12 +131,12 @@ const AllStaff = () => {
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <button type="button" className="btn btn-sm btn-light"
-                        onClick={toggleModal}>
-                        <i className="fa fa-close"></i> Cancel</button>
-                    <button type="submit" className="btn btn-sm btn-secondary"
+                    <button type="submit" className="btn btn-sm btn-primary"
                         onSubmit={(e) => SubmitStaff(e)}>
                         <i className="fa fa-check"></i> Add Staff</button>
+                    <button type="button" className="btn btn-sm btn-secondary"
+                        onClick={toggleModal}>
+                        <i className="fa fa-close"></i> Cancel</button>
                 </ModalFooter>
             </Modal >
         </>
