@@ -365,3 +365,16 @@ body {
   margin-left: 200px;
   width: calc(100% - 200px);
 }
+
+/* modal close button */
+.close{
+  border: none;
+  background-color: transparent;
+  font-size: large;
+}
+
+/* buttons */
+.btn-primary{
+  background-color: #4e0c8b !important;
+  border-color: #4e0c8b !important;
+}

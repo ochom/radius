@@ -55,12 +55,12 @@ export default class StaffRoles extends Component {
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <button type="submit" className="btn btn-sm btn-secondary"
-                        onSubmit={this.onSubmitRole}>
-                        <i className="fa fa-check"></i> Add Role</button>{' '}
                     <button type="button" className="btn btn-sm btn-light"
                         onClick={this.toggleModal}>
                         <i className="fa fa-close"></i> Cancel</button>
+                    <button type="submit" className="btn btn-sm btn-primary"
+                        onSubmit={this.onSubmitRole}>
+                        <i className="fa fa-check"></i> Add Role</button>
                 </ModalFooter>
             </Modal >
 
@@ -69,7 +69,7 @@ export default class StaffRoles extends Component {
                 {modal}
                 <div className="mb-3 justify-content-end d-flex">
                     <div className="btn-group" role="group">
-                        <button className="btn btn-secondary" onClick={this.onNewRole}><i className="fa fa-plus"></i> Add Role</button>
+                        <button className="btn btn-primary" onClick={this.onNewRole}><i className="fa fa-plus"></i> Add Role</button>
                     </div>
                 </div>
                 <table className="table table-responsive-sm table-hover">
