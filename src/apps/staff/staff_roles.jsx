@@ -1,29 +1,33 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
+import DataTable from '../../components/table'
 
-export default class StaffRoles extends Component {
-    state = {
-        showModal: false,
-        selectedRole: null,
-    }
-    myRef = React.createRef()
+const StaffRoles = () => {
+    const [modal, setModal] = useState(false)
+    const [roleID, setRoleID] = useState(null)
+    const [columns, setColumns] = useState([])
+    const [rows, setRows] = useState([])
 
-    toggleModal = () => { this.setState({ showModal: !this.state.showModal }) }
+    const toggleModal = () => setModal(!modal)
 
-    onNewRole = () => {
-        this.toggleModal()
-        this.setState({ selectedRole: null })
-    }
-
-
-    onSubmitRole = (e) => {
-        e.preventDefault()
+    const onNewRole = () => {
+        toggleModal()
+        setRoleID(null)
     }
 
+    const onSubmitRole = (e) => {
+        e.preventDefault();
+    }
 
-    render() {
-        const { showModal } = this.state
-        const roles = [
+
+    useEffect(() => {
+        let data = [
+            { title: "Principal", description: "Head of the school" },
+            { title: "D. Principal", description: "Assistant Head of the school" },
+            { title: "HOD Boarding", description: "Head of Department, boarding" },
+            { title: "HOD Academics", description: "Head of Department, academics" },
+            { title: "HOD Games", description: "Head of Department, games" },
+            { title: "HOS English/Literature", description: "Head of Subject/Studies, English and Literature" },
             { title: "Principal", description: "Head of the school" },
             { title: "D. Principal", description: "Assistant Head of the school" },
             { title: "HOD Boarding", description: "Head of Department, boarding" },
@@ -32,10 +36,46 @@ export default class StaffRoles extends Component {
             { title: "HOS English/Literature", description: "Head of Subject/Studies, English and Literature" },
         ]
 
-        const modal =
-            <Modal isOpen={showModal} ref={this.myRef}>
-                <ModalHeader toggle={this.toggleModal}>
-                    {this.state.selectedRole ?
+        let rowData = data.map((d, i) => {
+            return {
+                name: <td>{d.title}</td>,
+                description: <td>{d.description}</td>,
+                action: <>
+                    <button className='btn btn-sm btn-primary'><i className='fa fa-edit'></i> Edit</button>
+                    <button className='btn btn-sm btn-danger ms-2'><i className='fa fa-trash'></i> Delete</button>
+                </>
+            }
+        })
+
+        let cols = [
+            { name: "Name", selector: row => row.name, sortable: true },
+            { name: "Description", selector: row => row.description },
+            { name: "Action", selector: row => row.action }
+        ]
+
+        setColumns(cols)
+        setRows(rowData)
+    }, [])
+
+    return (
+        <>
+            <div className="mb-3 justify-content-end d-flex">
+                <div className="" role="group">
+                    <button className="btn btn-primary" onClick={onNewRole}><i className="fa fa-plus"></i> Add New Role</button>
+                    <button className="btn btn-success ms-3"><i className="fa fa-cloud-upload"></i> Upload</button>
+                    <button className="btn btn-secondary  ms-3"><i className="fa fa-cloud-download"></i> Download</button>
+                </div>
+            </div>
+
+            <DataTable
+                columns={columns}
+                data={rows}
+                selectableRows
+            />
+
+            <Modal isOpen={modal}>
+                <ModalHeader toggle={toggleModal}>
+                    {roleID !== null ?
                         <span><i className="fa fa-edit"></i> Edit role</span> :
                         <span><i className="fa fa-plus-circle"></i> Create a new role</span>
                     }
@@ -55,44 +95,17 @@ export default class StaffRoles extends Component {
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <button type="button" className="btn btn-sm btn-light"
-                        onClick={this.toggleModal}>
-                        <i className="fa fa-close"></i> Cancel</button>
                     <button type="submit" className="btn btn-sm btn-primary"
-                        onSubmit={this.onSubmitRole}>
+                        onSubmit={onSubmitRole}>
                         <i className="fa fa-check"></i> Add Role</button>
+                    <button type="button" className="btn btn-sm btn-secondary"
+                        onClick={toggleModal}>
+                        <i className="fa fa-close"></i> Cancel</button>
                 </ModalFooter>
             </Modal >
-
-        return (
-            <>
-                {modal}
-                <div className="mb-3 justify-content-end d-flex">
-                    <div className="btn-group" role="group">
-                        <button className="btn btn-primary" onClick={this.onNewRole}><i className="fa fa-plus"></i> Add Role</button>
-                    </div>
-                </div>
-                <table className="table table-responsive-sm table-hover">
-                    <thead className="bg-light">
-                        <tr>
-                            <td>Name</td>
-                            <td>Description</td>
-                            <td>Action</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {roles.map((role, index) =>
-                            <tr key={index}>
-                                <td>{role.title}</td>
-                                <td>{role.description}</td>
-                                <td>
-                                    <button className="btn btn-light"><i className="fa fa-edit"></i> Edit</button>
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </>
-        )
-    }
+        </>
+    )
 }
+
+export default StaffRoles;
+
