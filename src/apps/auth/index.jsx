@@ -19,10 +19,10 @@ const Auth = () => {
 
     return (
         <div className="container">
-            <div className="d-flex align-items-center">
+            <div className="login-container">
                 <div className="row col-12 bg-white mx-0 px-0">
                     <div className="col-6 mx-0 p-0">
-                        <div className="card h-100 bg-primary"></div>
+                        <div className="card h-100 bg-primary rounded-0"></div>
                     </div>
                     {login ?
                     <div className="col-5 mx-auto">
@@ -48,7 +48,7 @@ const Auth = () => {
                                     </div>
                                 </div>
 
-                                <div className="row mt-3">
+                                    <div className="row mt-3 mb-4">
                                     <div className="d-grid">
                                         <button type="submit" className="btn btn-lg btn-primary">Login</button>
                                     </div>
@@ -114,7 +114,7 @@ const Auth = () => {
                                     <div className="d-grid gap-2 d-md-flex justify-content-md-between">
                                         <div>
                                             <input type="checkbox" className="me-3" />
-                                            <a href="https://lysofts.co.ke/radius/terms-and-conditions">I agree to Lysofts terms and conditions</a>
+                                                <a href="https://lysofts.co.ke/radius/terms-and-conditions" target="_blank" rel="noreferrer">I agree to Lysofts terms and conditions</a>
                                         </div>
                                         <button type="button" className="btn text-success" onClick={() => setLogin(!login)}>Already have account?</button>
                                     </div>
