@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import Academics from "./apps/academics";
 import Activity from "./apps/activity";
+import Auth from "./apps/auth";
 import Classes from "./apps/classrooms";
 import Dashboard from "./apps/dashboard";
 import Library from "./apps/library";
@@ -13,7 +14,7 @@ import Settings from "./apps/settings";
 import SMS from "./apps/sms";
 import Staff from "./apps/staff";
 import Student from "./apps/students";
-import { DefaultPagelayout } from "./components";
+import { DefaultPageLayout } from "./components";
 
 
 
@@ -21,8 +22,9 @@ import { DefaultPagelayout } from "./components";
 function App() {
   return (
     <Router>
-      <DefaultPagelayout>
-        <Switch>
+      <Switch>
+        <Route path="/register" component={Auth} />
+        <DefaultPageLayout>
           <Route path="/sms" component={SMS} />
           <Route path="/staff" component={Staff} />
           <Route path="/classes" component={Classes} />
@@ -33,8 +35,8 @@ function App() {
           <Route path="/activity" component={Activity} />
           <Route path="/settings" component={Settings} />
           <Route exact path="/" component={Dashboard} />
-        </Switch>
-      </DefaultPagelayout>
+        </DefaultPageLayout>
+      </Switch>
     </Router>
   )
 }

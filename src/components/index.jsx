@@ -1,5 +1,6 @@
 import React, { useState } from "react"
-import { NavLink } from "react-router-dom"
+import { useHistory } from "react-router-dom"
+import { NavLink, Redirect } from "react-router-dom"
 import profile from "../static/profile.jpg"
 
 
@@ -61,6 +62,15 @@ const menuItems = [
 
 function Sidenav() {
     const [active, setActive] = useState(true)
+
+    let history = useHistory()
+
+    const logout = () => {
+        localStorage.removeItem("token")
+        console.log("logging out");
+        history.push("/register")
+    }
+
     return (
         <div className={`sidebar${active ? ' activated' : ''}`}>
             <div className="logo_content">
@@ -71,11 +81,6 @@ function Sidenav() {
                 <i className='bx bx-menu' id="btn" onClick={() => setActive(!active)}></i>
             </div>
             <ul className="nav_list">
-                {/* <li>
-                    <i className="bx bx-search" onClick={() => setActive(!active)}></i>
-                    <input type="text" placeholder="Search" />
-                    <span className="tooltip">Search</span>
-                </li> */}
                 {menuItems.map((item, index) =>
                     <li key={index}>
                         <NavLink exact={item.exact} activeClassName="selected" to={item.href} replace={true}>
@@ -95,14 +100,18 @@ function Sidenav() {
                             <div className="job">Class Teacher, Form 4</div>
                         </div>
                     </div>
-                    <i className='bx bx-log-out' id="log_out" ></i>
+                    <i className='bx bx-log-out' id="log_out" onClick={logout} ></i>
                 </div>
             </div>
         </div>
     );
 }
 
-function DefaultPagelayout({ children }) {
+function DefaultPageLayout({ children }) {
+    let token = localStorage.getItem('token')
+    if (!token) {
+        return <Redirect to="/register" />
+    }
     return (
         <React.Fragment>
             <Sidenav />
@@ -115,4 +124,4 @@ function DefaultPagelayout({ children }) {
 }
 
 
-export { DefaultPagelayout, SubMenu, PageBody }
+export { DefaultPageLayout, SubMenu, PageBody }
