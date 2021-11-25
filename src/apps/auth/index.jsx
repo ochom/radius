@@ -19,12 +19,12 @@ const Auth = () => {
 
     return (
         <div className="container">
-            <div className="row col-12 bg-white mt-5">
-                <div className="col-6 mx-0 p-0">
-                    <div className="card h-100 bg-primary"></div>
-                </div>
-                {login ?
-
+            <div className="d-flex align-items-center">
+                <div className="row col-12 bg-white mx-0 px-0">
+                    <div className="col-6 mx-0 p-0">
+                        <div className="card h-100 bg-primary"></div>
+                    </div>
+                    {login ?
                     <div className="col-5 mx-auto">
                         <div className="card card-body p-5 border-0">
                             <h3 className="text-center my-4">Login</h3>
@@ -129,8 +129,9 @@ const Auth = () => {
                             </form>
                         </div>
                     </div>
-                }
-            </div >
+                    }
+                </div >
+            </div>
         </div>
     )
 }
