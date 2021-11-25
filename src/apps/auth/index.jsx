@@ -22,7 +22,7 @@ const Auth = () => {
             <div className="login-container">
                 <div className="row col-12 bg-white mx-0 px-0">
                     <div className="col-6 mx-0 p-0">
-                        <div className="card h-100 bg-primary"></div>
+                        <div className="card h-100 bg-primary rounded-0"></div>
                     </div>
                     {login ?
                     <div className="col-5 mx-auto">
@@ -48,7 +48,7 @@ const Auth = () => {
                                     </div>
                                 </div>
 
-                                <div className="row mt-3">
+                                    <div className="row mt-3 mb-4">
                                     <div className="d-grid">
                                         <button type="submit" className="btn btn-lg btn-primary">Login</button>
                                     </div>

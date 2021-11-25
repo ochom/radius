@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { useHistory } from "react-router-dom"
 import { NavLink, Redirect } from "react-router-dom"
 import profile from "../static/profile.jpg"
+import "./index.css"
 
 
 function SubMenu(props) {
