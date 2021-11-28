@@ -22,6 +22,4 @@ function DataTableBase(props) {
     );
 }
 
-export { DataWithCaption }
-
-export default DataTableBase;
+export { DataWithCaption, DataTableBase as DataTable };

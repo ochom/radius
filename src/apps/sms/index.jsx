@@ -9,15 +9,13 @@ const menuItems = [
     { title: "SMS Preferences", href: "/sms/preferences", icon: "bx bxs-right-arrow" },
 ]
 
-function SMS() {
-    return (
-        <>
-            <SubMenu titleName="SMS" titleIcon="bx bx-chat" items={menuItems} />
-            <PageBody>
-                Hello world
-            </PageBody>
-        </>
-    )
-}
+const SMS = () => {
+  return (
+    <>
+      <SubMenu titleName="SMS" titleIcon="bx bx-chat" items={menuItems} />
+      <PageBody>Hello world</PageBody>
+    </>
+  );
+};
 
-export default SMS
+export default SMS;

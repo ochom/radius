@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
-import DataTable from '../../components/table'
+import { DataTable } from "../../components/table";
 
 const StaffRoles = () => {
     const [modal, setModal] = useState(false)
