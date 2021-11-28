@@ -1,8 +1,5 @@
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+
 import Academics from "./apps/academics";
 import Activity from "./apps/activity";
 import Auth from "./apps/auth";
@@ -15,9 +12,6 @@ import SMS from "./apps/sms";
 import Staff from "./apps/staff";
 import Student from "./apps/students";
 import { DefaultPageLayout } from "./components";
-
-
-
 
 function App() {
   return (
@@ -38,7 +32,7 @@ function App() {
         </DefaultPageLayout>
       </Switch>
     </Router>
-  )
+  );
 }
 
 export default App;
