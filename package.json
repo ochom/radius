@@ -31,7 +31,7 @@
   },
   "scripts": {
     "start-dev": "react-scripts start",
-    "start": "yarn run build && (cd server && yarn install -y && yarn start)",
+    "start": "rm -rf build && yarn run build && (cd server && yarn install -y && yarn start)",
     "build": "react-scripts build",
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject"
