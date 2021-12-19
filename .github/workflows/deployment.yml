@@ -5,8 +5,7 @@ name: Heroku Deploy
 
 on:
   push:
-    branches: [ main ]
-
+    branches: [main]
 
 jobs:
   test:
@@ -29,7 +28,7 @@ jobs:
   deploy:
     needs: [test]
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12
