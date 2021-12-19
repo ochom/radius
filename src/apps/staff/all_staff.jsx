@@ -1,5 +1,7 @@
+import Axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
+import { API_ROOT } from '../../common/config';
 import { DataTable, DataWithCaption } from "../../components/table";
 
 const AllStaff = () => {
@@ -16,6 +18,7 @@ const AllStaff = () => {
   };
 
   useEffect(() => {
+    Axios.get(`${API_ROOT}/staffs`)
     let data = [
       {
         name: "Richard Ochom",
