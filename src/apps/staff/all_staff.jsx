@@ -1,7 +1,6 @@
-import Axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
-import { API_ROOT } from '../../common/config';
+import { useEffect, useState } from "react";
+import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { GetStaffs } from "../../API/staffs";
 import { DataTable, DataWithCaption } from "../../components/table";
 
 const AllStaff = () => {
@@ -18,51 +17,52 @@ const AllStaff = () => {
   };
 
   useEffect(() => {
-    Axios.get(`${API_ROOT}/staffs`)
-    let data = [
-      {
-        name: "Richard Ochom",
-        address: "44-40402 Migori, Kenya",
-        type: "Teaching Staff",
-        employment: "T.S.C",
-        sex: "Male",
-      },
-      {
-        name: "Aketch Wiko",
-        address: "Kilundezy, Nairobi",
-        type: "Support Staff",
-        employment: "B.O.M",
-        sex: "Female",
-      },
-    ];
+    GetStaffs().then((resData) => {
+      let data = [
+        {
+          name: "Richard Ochom",
+          address: "44-40402 Migori, Kenya",
+          type: "Teaching Staff",
+          employment: "T.S.C",
+          sex: "Male",
+        },
+        {
+          name: "Aketch Wiko",
+          address: "Kilundezy, Nairobi",
+          type: "Support Staff",
+          employment: "B.O.M",
+          sex: "Female",
+        },
+      ];
 
-    let rowData = data.map((d, i) => {
-      return {
-        name: <DataWithCaption data={d.name} caption={d.address} />,
-        group: <DataWithCaption data={d.type} caption={d.employment} />,
-        gender: d.sex,
-        action: (
-          <>
-            <button className="btn btn-sm btn-primary">
-              <i className="fa fa-edit"></i> Edit
-            </button>
-            <button className="btn btn-sm btn-danger ms-2">
-              <i className="fa fa-trash"></i> Delete
-            </button>
-          </>
-        ),
-      };
+      let rowData = data.map((d, i) => {
+        return {
+          name: <DataWithCaption data={d.name} caption={d.address} />,
+          group: <DataWithCaption data={d.type} caption={d.employment} />,
+          gender: d.sex,
+          action: (
+            <>
+              <button className="btn btn-sm btn-primary">
+                <i className="fa fa-edit"></i> Edit
+              </button>
+              <button className="btn btn-sm btn-danger ms-2">
+                <i className="fa fa-trash"></i> Delete
+              </button>
+            </>
+          ),
+        };
+      });
+
+      let cols = [
+        { name: "Name", selector: (row) => row.name },
+        { name: "Group", selector: (row) => row.group },
+        { name: "Gender", selector: (row) => row.gender, sortable: true },
+        { name: "Action", selector: (row) => row.action },
+      ];
+
+      setColumns(cols);
+      setRows(rowData);
     });
-
-    let cols = [
-      { name: "Name", selector: (row) => row.name },
-      { name: "Group", selector: (row) => row.group },
-      { name: "Gender", selector: (row) => row.gender, sortable: true },
-      { name: "Action", selector: (row) => row.action },
-    ];
-
-    setColumns(cols);
-    setRows(rowData);
   }, []);
 
   const SubmitStaff = (e) => {
