@@ -117,7 +117,8 @@ const menuItems = [
   },
 ];
 
-function Sidenav() {
+function Sidenav(props: any) {
+  const { email } = props;
   const [active, setActive] = useState(true);
 
   let history = useHistory();
@@ -163,7 +164,7 @@ function Sidenav() {
             <img src={profile} alt="Profile" />
             <div className="name_job">
               <div className="name">Richard Ochom</div>
-              <div className="job">Class Teacher, Form 4</div>
+              <div className="job">{email}</div>
             </div>
           </div>
           <i className="bx bx-log-out" id="log_out" onClick={logout}></i>
@@ -191,7 +192,7 @@ function DefaultPageLayout({ children }: any) {
 
   return (
     <React.Fragment>
-      <Sidenav />
+      <Sidenav email={user.auth.email} />
       <div className="home_content">
         <TopBar />
         {children}
