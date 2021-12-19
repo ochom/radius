@@ -29,9 +29,12 @@
     "typescript": "^4.5.2",
     "web-vitals": "^1.1.2"
   },
+  "engines": {
+    "node": "14.x",
+    "yarn": "1.x"
+  },
   "scripts": {
-    "start-dev": "react-scripts start",
-    "start": "rm -rf build && yarn run build && (cd server && yarn install -y && yarn start)",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject"
