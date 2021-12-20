@@ -29,7 +29,8 @@ function SubMenu(props) {
   );
 }
 
-function TopBar() {
+function TopBar(props) {
+  const { school } = props;
   return (
     <div className="topbar">
       <img
@@ -37,7 +38,7 @@ function TopBar() {
         alt="brand"
         className="school_brand"
       />
-      <b className="school_name">Demo Secondary School</b>
+      <b className="school_name">{school?.name}</b>
     </div>
   );
 }
@@ -123,8 +124,7 @@ function Sidenav(props) {
   let history = useHistory();
 
   const logout = () => {
-    localStorage.removeItem("token");
-    console.log("logging out");
+    localStorage.removeItem("authUser");
     history.push("/register");
   };
 
@@ -219,7 +219,7 @@ function DefaultPageLayout({ children }) {
         name={`${user?.auth.firstName} ${user?.auth.lastName}`}
       />
       <div className="home_content">
-        <TopBar />
+        <TopBar school={user?.school} />
         {children}
       </div>
     </React.Fragment>

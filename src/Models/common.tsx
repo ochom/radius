@@ -16,7 +16,7 @@ export interface Auth {
 }
 
 export interface Response {
-  status: number;
+  status?: number;
   message: string;
-  data: any;
+  data?: any;
 }

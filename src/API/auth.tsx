@@ -14,9 +14,25 @@ export const Login = (data: any) => {
     })
     .catch((err) => {
       let response: Response = {
-        status: 400,
-        data: null,
-        message: err.response.data,
+        message: err.response ? err.response.data : err,
+      };
+      return response;
+    });
+};
+
+export const Register = (data: any) => {
+  return Axios.post(`${API_ROOT}register`, data)
+    .then((res) => {
+      let response: Response = {
+        status: res.status,
+        data: res.data,
+        message: "Registration successful",
+      };
+      return response;
+    })
+    .catch((err) => {
+      let response: Response = {
+        message: err.response ? err.response.data : err,
       };
       return response;
     });
