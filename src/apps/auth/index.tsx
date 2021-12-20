@@ -10,22 +10,29 @@ import "./auth.css";
 
 const Auth = () => {
   const [login, setLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = (e: any) => {
+    setLoading(true);
     e.preventDefault();
-    Login({ email, password }).then((res: Response) => {
-      if (res.status === 200) {
-        localStorage.setItem("authUser", JSON.stringify(res.data));
-        AlertSuccess(res.message);
-        setIsLoggedIn(true);
-      } else {
-        AlertFailed(res.message);
-      }
-    });
+    Login({ email, password })
+      .then((res: Response) => {
+        if (res.status === 200) {
+          localStorage.setItem("authUser", JSON.stringify(res.data));
+          AlertSuccess(res.message);
+          setIsLoggedIn(true);
+          setLoading(false);
+        } else {
+          AlertFailed(res.message);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   if (isLoggedIn) {
@@ -69,6 +76,7 @@ const Auth = () => {
                       <input
                         type="email"
                         name="email"
+                        required
                         onChange={(e) => setEmail(e.target.value)}
                         className="form-control mt-2"
                       />
@@ -100,8 +108,23 @@ const Auth = () => {
 
                   <div className="row mt-3 mb-4">
                     <div className="d-grid">
-                      <button type="submit" className="btn btn-lg btn-primary">
-                        Login
+                      <button
+                        type="submit"
+                        className="btn btn-lg btn-primary"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>{" "}
+                            Processing...
+                          </>
+                        ) : (
+                          "Login"
+                        )}
                       </button>
                     </div>
                   </div>
@@ -114,7 +137,8 @@ const Auth = () => {
                 <h3 className="text-center my-4">
                   Create a new School Profile
                 </h3>
-                <form>
+                <form autoComplete="off">
+                  <input autoComplete="false" name="hidden" type="hidden" />
                   <div className="row">
                     <div className="form-group col-6">
                       <label>First name</label>
@@ -187,24 +211,15 @@ const Auth = () => {
                   </div>
 
                   <div className="row mt-3">
-                    <div className="d-grid gap-2 d-md-flex justify-content-md-between">
-                      <div>
-                        <input type="checkbox" className="me-3" />
-                        <a
-                          href="https://lysofts.co.ke/radius/terms-and-conditions"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          I agree to Lysofts terms and conditions
-                        </a>
-                      </div>
-                      <button
-                        type="button"
-                        className="btn text-success"
-                        onClick={() => setLogin(!login)}
+                    <div>
+                      <input type="checkbox" className="me-3" />
+                      <a
+                        href="https://lysofts.co.ke/radius/terms-and-conditions"
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        Already have account?
-                      </button>
+                        I agree to Lysofts terms and conditions
+                      </a>
                     </div>
                   </div>
 
@@ -214,6 +229,15 @@ const Auth = () => {
                         Create school profile
                       </button>
                     </div>
+                  </div>
+                  <div className="row my-3">
+                    <button
+                      type="button"
+                      className="btn text-success"
+                      onClick={() => setLogin(!login)}
+                    >
+                      Already have account?
+                    </button>
                   </div>
                 </form>
               </div>

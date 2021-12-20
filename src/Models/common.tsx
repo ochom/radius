@@ -8,6 +8,8 @@ export interface Address {
 
 export interface Auth {
   uid: string;
+  firstName: string;
+  lastName: string;
   email: string;
   token: string;
   refreshToken: string;

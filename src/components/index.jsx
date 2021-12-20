@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { NavLink, Redirect } from "react-router-dom";
 import profile from "../static/profile.jpg";
-import { LoginResponse } from "../Models/auth";
 
-function SubMenu(props: any) {
+function SubMenu(props) {
   return (
     <div className="sub_menu">
       <div className="title_content">
@@ -12,7 +11,7 @@ function SubMenu(props: any) {
         <span>{props.titleName}</span>
       </div>
       <ul>
-        {props.items.map((item: any, index: any) => (
+        {props.items.map((item, index) => (
           <li key={index}>
             <NavLink
               exact={item.exact}
@@ -43,7 +42,7 @@ function TopBar() {
   );
 }
 
-function PageBody({ children }: any) {
+function PageBody({ children }) {
   return (
     <div className="page_body">
       <div className="container-fluid mt-2 px-5 py-2">{children}</div>
@@ -117,8 +116,8 @@ const menuItems = [
   },
 ];
 
-function Sidenav(props: any) {
-  const { email } = props;
+function Sidenav(props) {
+  const { email, name } = props;
   const [active, setActive] = useState(true);
 
   let history = useHistory();
@@ -158,41 +157,67 @@ function Sidenav(props: any) {
           </li>
         ))}
       </ul>
-      <div className="profile_content">
+      <div className="profile_content" onClick={logout}>
         <div className="profile">
           <div className="profile_details">
             <img src={profile} alt="Profile" />
             <div className="name_job">
-              <div className="name">Richard Ochom</div>
+              <div className="name">{name}</div>
               <div className="job">{email}</div>
             </div>
           </div>
-          <i className="bx bx-log-out" id="log_out" onClick={logout}></i>
         </div>
       </div>
     </div>
   );
 }
 
-function DefaultPageLayout({ children }: any) {
-  let userData = localStorage.getItem("authUser");
-  if (!userData) {
-    return <Redirect to="/register" />;
-  }
+function DefaultPageLayout({ children }) {
+  const [user, setUser] = useState();
+  const [loaded, setLoaded] = useState(false);
 
-  let user: LoginResponse = JSON.parse(userData);
-  if (!user) {
-    return <Redirect to="/register" />;
-  }
+  useEffect(() => {
+    let userData = async () => {
+      return new Promise((resolve, reject) => {
+        let user = null;
+        var data = localStorage.getItem("authUser");
+        if (data) {
+          user = JSON.parse(data);
+          resolve(user);
+        } else {
+          reject(user);
+        }
+      });
+    };
 
-  var token = user.auth.token;
-  if (!token) {
-    return <Redirect to="/register" />;
+    userData()
+      .then((user) => {
+        setUser(user);
+        setLoaded(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoaded(true);
+      });
+  }, []);
+
+  if (loaded) {
+    if (!user) {
+      return <Redirect to="/register" />;
+    }
+
+    var token = user.auth.token;
+    if (!token) {
+      return <Redirect to="/register" />;
+    }
   }
 
   return (
     <React.Fragment>
-      <Sidenav email={user.auth.email} />
+      <Sidenav
+        email={user?.auth.email}
+        name={`${user?.auth.firstName} ${user?.auth.lastName}`}
+      />
       <div className="home_content">
         <TopBar />
         {children}

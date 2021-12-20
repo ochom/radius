@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { GetStaffs } from "../../API/staffs";
-import { DataTable, DataWithCaption } from "../../components/table";
+import { DataTable } from "../../components/table";
 
 const AllStaff = () => {
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [staffID, setStaffID] = useState(null);
   const [columns, setColumns] = useState([]);
@@ -17,28 +18,11 @@ const AllStaff = () => {
   };
 
   useEffect(() => {
-    GetStaffs().then((resData) => {
-      let data = [
-        {
-          name: "Richard Ochom",
-          address: "44-40402 Migori, Kenya",
-          type: "Teaching Staff",
-          employment: "T.S.C",
-          sex: "Male",
-        },
-        {
-          name: "Aketch Wiko",
-          address: "Kilundezy, Nairobi",
-          type: "Support Staff",
-          employment: "B.O.M",
-          sex: "Female",
-        },
-      ];
-
+    GetStaffs().then((data) => {
       let rowData = data.map((d, i) => {
         return {
-          name: <DataWithCaption data={d.name} caption={d.address} />,
-          group: <DataWithCaption data={d.type} caption={d.employment} />,
+          name: d.name,
+          employer: d.employment,
           gender: d.sex,
           action: (
             <>
@@ -55,13 +39,14 @@ const AllStaff = () => {
 
       let cols = [
         { name: "Name", selector: (row) => row.name },
-        { name: "Group", selector: (row) => row.group },
+        { name: "Employer", selector: (row) => row.employer },
         { name: "Gender", selector: (row) => row.gender, sortable: true },
         { name: "Action", selector: (row) => row.action },
       ];
 
       setColumns(cols);
       setRows(rowData);
+      setLoading(false);
     });
   }, []);
 
@@ -84,8 +69,11 @@ const AllStaff = () => {
           </button>
         </div>
       </div>
-      <DataTable columns={columns} data={rows} selectableRows />
-
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <DataTable columns={columns} data={rows} selectableRows />
+      )}
       <Modal isOpen={showModal} size="md">
         <ModalHeader toggle={toggleModal}>
           {staffID ? (

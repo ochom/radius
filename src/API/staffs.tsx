@@ -1,5 +1,6 @@
 import Axios from "axios";
-import { API_ROOT, AuthHeaders } from "./config";
+import { AuthHeaders } from "./config";
+import { URLS } from "./urls";
 
 export const CreateStaff = () => {};
 
@@ -7,14 +8,13 @@ export const GetStaffs = () => {
   let headers = AuthHeaders();
   return Axios({
     method: "GET",
-    url: `${API_ROOT}staffs`,
+    url: URLS.GET_ALL_STAFFS,
     headers: headers,
   })
     .then((res) => {
       return res.data;
     })
     .catch((err) => {
-      console.log(err);
       return [];
     });
 };
