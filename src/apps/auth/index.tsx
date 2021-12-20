@@ -15,16 +15,13 @@ const Auth = () => {
   const [login, setLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [schoolName, setSchoolName] = useState("");
   const [schoolAlias, setSchoolAlias] = useState("");
-
   const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   const handleLogin = (e: any) => {
@@ -36,7 +33,6 @@ const Auth = () => {
           localStorage.setItem("authUser", JSON.stringify(res.data));
           AlertSuccess(res.message);
           setIsLoggedIn(true);
-          setLoading(false);
         } else {
           AlertFailed(res.message);
         }
@@ -69,7 +65,6 @@ const Auth = () => {
           localStorage.setItem("authUser", JSON.stringify(res.data));
           AlertSuccess(res.message);
           setIsLoggedIn(true);
-          setLoading(false);
         } else {
           AlertFailed(res.message);
         }
@@ -87,7 +82,7 @@ const Auth = () => {
     <div className="container">
       <div className="login-container">
         {login ? (
-          <div className="col-md-5 col-lg-4 mx-auto">
+          <div className="login-card mx-auto">
             <div className="card card-body p-5 border-0">
               <h3 className="text-center my-4">User Login</h3>
               <form onSubmit={handleLogin}>
@@ -158,7 +153,7 @@ const Auth = () => {
             </div>
           </div>
         ) : (
-          <div className="col-md-5 mx-auto">
+          <div className="registration-card mx-auto">
             <div className="card card-body p-5 border-0">
               <h3 className="text-center my-4">Create a new School Profile</h3>
               <form onSubmit={handleRegister}>
@@ -167,8 +162,8 @@ const Auth = () => {
                     <label>First name</label>
                     <input
                       type="text"
-                      name="firstName"
                       value={firstName}
+                      required
                       onChange={(e) => setFirstName(e.target.value)}
                       className="form-control"
                     />
@@ -177,8 +172,8 @@ const Auth = () => {
                     <label>Last name</label>
                     <input
                       type="text"
-                      name="lastName"
                       value={lastName}
+                      required
                       onChange={(e) => setLastName(e.target.value)}
                       className="form-control"
                     />
@@ -189,8 +184,8 @@ const Auth = () => {
                     <label>Mobile</label>
                     <input
                       type="text"
-                      name="phoneNumber"
                       value={phoneNumber}
+                      required
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       className="form-control"
                     />
@@ -201,8 +196,8 @@ const Auth = () => {
                     <label>Email</label>
                     <input
                       type="email"
-                      name="email"
                       value={email}
+                      required
                       onChange={(e) => setEmail(e.target.value)}
                       className="form-control"
                     />
@@ -213,20 +208,24 @@ const Auth = () => {
                     <label>Create Password</label>
                     <input
                       type="password"
-                      name="password"
                       value={password}
+                      required
                       onChange={(e) => setPassword(e.target.value)}
                       className="form-control"
                     />
                   </div>
                 </div>
 
-                <div className="row mt-5">
+                <div className="row col-8 mx-auto mt-4">
+                  <hr />
+                </div>
+                <div className="row mt-3">
                   <div className="form-group">
                     <label>School name</label>
                     <input
                       type="text"
                       value={schoolName}
+                      required
                       onChange={(e) => setSchoolName(e.target.value)}
                       className="form-control"
                     />
@@ -235,10 +234,13 @@ const Auth = () => {
 
                 <div className="row mt-3">
                   <div className="form-group">
-                    <label>Alias</label>
+                    <label>
+                      Alias (<small>Abbreviations</small>)
+                    </label>
                     <input
                       type="text"
                       value={schoolAlias}
+                      required
                       onChange={(e) => setSchoolAlias(e.target.value)}
                       className="form-control"
                     />

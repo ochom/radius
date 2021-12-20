@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { NavLink, Redirect } from "react-router-dom";
 import profile from "../static/profile.jpg";
@@ -104,9 +104,9 @@ const menuItems = [
     tooltip: "Activity",
   },
   {
-    href: "/accomodation",
+    href: "/accommodation",
     icon: "bx bxs-hotel",
-    title: "Accomodation",
+    title: "Accommodation",
     tooltip: "Boarding",
   },
   {
@@ -173,43 +173,19 @@ function Sidenav(props) {
 }
 
 function DefaultPageLayout({ children }) {
-  const [user, setUser] = useState();
-  const [loaded, setLoaded] = useState(false);
+  var user = null;
+  var data = localStorage.getItem("authUser");
+  if (data) {
+    user = JSON.parse(data);
+  }
 
-  useEffect(() => {
-    let userData = async () => {
-      return new Promise((resolve, reject) => {
-        let user = null;
-        var data = localStorage.getItem("authUser");
-        if (data) {
-          user = JSON.parse(data);
-          resolve(user);
-        } else {
-          reject(user);
-        }
-      });
-    };
+  if (!user) {
+    return <Redirect to="/register" />;
+  }
 
-    userData()
-      .then((user) => {
-        setUser(user);
-        setLoaded(true);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoaded(true);
-      });
-  }, []);
-
-  if (loaded) {
-    if (!user) {
-      return <Redirect to="/register" />;
-    }
-
-    var token = user.auth.token;
-    if (!token) {
-      return <Redirect to="/register" />;
-    }
+  var token = user.auth.token;
+  if (!token) {
+    return <Redirect to="/register" />;
   }
 
   return (
