@@ -7,7 +7,7 @@ export enum StaffType {
 
 export interface StaffRole {
   id?: string;
-  schoolID: string;
+  schoolID?: string;
   name: string;
   description: string;
 }

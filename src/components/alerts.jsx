@@ -1,6 +1,6 @@
 import Swal from "sweetalert2";
 
-export const AlertSuccess = (message: string) => {
+export const AlertSuccess = (message) => {
   Swal.fire({
     position: "center",
     icon: "success",
@@ -10,7 +10,7 @@ export const AlertSuccess = (message: string) => {
   });
 };
 
-export const AlertFailed = (message: any) => {
+export const AlertFailed = (message) => {
   Swal.fire({
     icon: "error",
     title: message,
@@ -19,7 +19,7 @@ export const AlertFailed = (message: any) => {
   });
 };
 
-export const AlertWarning = (message: any) => {
+export const AlertWarning = (message) => {
   Swal.fire({
     icon: "warning",
     title: message,
@@ -27,3 +27,15 @@ export const AlertWarning = (message: any) => {
     confirmButtonText: "Ok",
   });
 };
+
+export const ConfirmAlert = () => {
+  return Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  })
+}

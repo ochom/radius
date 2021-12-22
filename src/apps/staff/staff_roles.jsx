@@ -1,91 +1,96 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { CreateRole, DeleteRole, GetRoles } from "../../API/staffs";
-import { AlertFailed, AlertSuccess } from "../../components/alerts";
+import { CreateRole, DeleteRole, GetRoles, UpdateRole } from "../../API/staffs";
+import {
+  AlertFailed,
+  AlertSuccess,
+  ConfirmAlert,
+} from "../../components/alerts";
 import { DataTable } from "../../components/table";
-import { Response } from "../../Models/common";
 
 const StaffRoles = () => {
   const [modal, setModal] = useState(false);
-  const [roleID, setRoleID] = useState(null);
-  const [columns, setColumns] = useState([]);
-  const [rows, setRows] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(null);
+
+  const [data, setData] = useState([]);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const toggleModal = () => setModal(!modal);
+  const toggleModal = () => {
+    if (modal) {
+      setModal(false)
+    } else {
+      setModal(true)
+    }
+  }
 
   const onNewRole = () => {
     toggleModal();
-    setRoleID(null)
-    setName("")
-    setDescription("")
+    setSelectedRole(null);
+    setName("");
+    setDescription("");
   };
 
-  const SubmitRole = (e: any) => {
+  const SubmitRole = (e) => {
     e.preventDefault();
-    let data = { name, description }
-    CreateRole(data).then((res: Response) => {
-      if (res.status === 200) {
-        AlertSuccess(res.message);
-        toggleModal()
-        getRoles()
-      } else {
-        AlertFailed(res.message);
-      }
-    })
+    let data = selectedRole
+      ? { ...selectedRole, name: name, description: description }
+      : { name, description };
+
+    if (selectedRole) {
+      UpdateRole(selectedRole.id, data).then((res) => {
+        if (res.status === 200) {
+          AlertSuccess(res.message);
+          toggleModal();
+          getRoles();
+        } else {
+          AlertFailed(res.message);
+        }
+      });
+    } else {
+      CreateRole(data).then((res) => {
+        if (res.status === 200) {
+          AlertSuccess(res.message);
+          toggleModal();
+          getRoles();
+        } else {
+          AlertFailed(res.message);
+        }
+      });
+    }
   };
 
-  const editRole = (role: any) => {
-    setRoleID(role.id)
-    setName(role.name)
-    setDescription(role.description)
-    toggleModal()
-  }
+  const editRole = (role) => {
+    setSelectedRole(role);
+    setName(role.name);
+    setDescription(role.description);
+    toggleModal();
+  };
 
-  const deleteRole = (roleID: any) => {
-    DeleteRole(roleID).then((res: Response) => {
-      if (res.status === 200) {
-        AlertSuccess(res.message);
-      } else {
-        AlertFailed(res.message);
+  const deleteRole = (roleID) => {
+    ConfirmAlert().then((res) => {
+      if (res.isConfirmed) {
+        DeleteRole(roleID)
+          .then((res) => {
+            if (res.status === 200) {
+              AlertSuccess(res.message);
+            } else {
+              AlertFailed(res.message);
+            }
+          })
+          .finally(() => {
+            getRoles();
+          });
       }
-    }).finally(() => {
-      getRoles();
-    })
-  }
+    });
+  };
 
   const getRoles = () => {
     GetRoles().then((data) => {
-      let rowData = data.map((d) => {
-        return {
-          name: d.name,
-          description: d.description,
-          action: (
-            <>
-              <button className="btn btn-sm btn-outline-success" onClick={() => editRole(d)}>
-                <i className="fa fa-edit"></i> Edit
-              </button>
-              <button className="btn btn-sm btn-danger ms-2" onClick={() => deleteRole(d.id)}>
-                <i className="fa fa-trash" ></i> Delete
-              </button>
-            </>
-          ),
-        };
-      });
-
-      let cols: any = [
-        { name: "Name", selector: (row) => row.name, sortable: true },
-        { name: "Description", selector: (row) => row.description },
-        { name: "Action", selector: (row) => row.action },
-      ];
-
-      setColumns(cols);
-      setRows(rowData);
+      setData(data)
     });
-  }
-
+  };
 
   useEffect(() => {
     getRoles();
@@ -94,25 +99,45 @@ const StaffRoles = () => {
   return (
     <>
       <div className="mb-3 justify-content-end d-flex">
-        <div className="" role="group">
-          <button className="btn btn-primary" onClick={onNewRole}>
-            <i className="fa fa-plus"></i> Add New Role
-          </button>
-          <button className="btn btn-success ms-3">
-            <i className="fa fa-cloud-upload"></i> Upload
-          </button>
-          <button className="btn btn-secondary  ms-3">
-            <i className="fa fa-cloud-download"></i> Download
-          </button>
-        </div>
+        <button className="btn btn-primary" onClick={onNewRole}>
+          <i className="fa fa-plus"></i> Add New Role
+        </button>
       </div>
 
-      <DataTable columns={columns} data={rows} selectableRows />
+      <DataTable
+        columns={[
+          { name: "Name", selector: (row) => row.name, sortable: true },
+          { name: "Description", selector: (row) => row.description },
+          { name: "Action", selector: (row) => row.action },
+        ]}
+        data={
+          data.map((role) => {
+            return {
+              name: role.name,
+              description: role.description,
+              action: (
+                <>
+                  <button
+                    className="btn btn-sm btn-outline-success"
+                    onClick={() => editRole(role)}
+                  >
+                    <i className="fa fa-edit"></i> Edit
+                  </button>
+                  <button
+                    className="btn btn-sm btn-danger ms-2"
+                    onClick={() => deleteRole(role.id)}
+                  >
+                    <i className="fa fa-trash"></i> Delete
+                  </button>
+                </>
+              ),
+            };
+          })} selectableRows />
 
       <Modal isOpen={modal}>
         <form onSubmit={SubmitRole} method="post">
           <ModalHeader toggle={toggleModal}>
-            {roleID !== null ? (
+            {selectedRole ? (
               <span>
                 <i className="fa fa-edit"></i> Edit role
               </span>
@@ -141,8 +166,7 @@ const StaffRoles = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="form-control"
-                >
-                </textarea>
+                ></textarea>
               </div>
             </div>
           </ModalBody>

@@ -1,3 +1,4 @@
+import React from "react";
 import { Route } from "react-router-dom"
 import { PageBody, SubMenu } from "../../components"
 import AllStaff from "./all_staff"

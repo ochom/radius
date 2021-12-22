@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { GetStaffs } from "../../API/staffs";
 import { DataTable } from "../../components/table";
@@ -19,7 +19,7 @@ const AllStaff = () => {
 
   useEffect(() => {
     GetStaffs().then((data) => {
-      let rowData = data.map((d, i) => {
+      let rowData = data.map((d) => {
         return {
           name: d.name,
           employer: d.employment,
