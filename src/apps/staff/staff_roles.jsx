@@ -6,12 +6,12 @@ import {
   AlertSuccess,
   ConfirmAlert,
 } from "../../components/alerts";
-import { CustomLoader } from "../../components/monitors";
 import { DataTable } from "../../components/table";
 
 const StaffRoles = () => {
   const [modal, setModal] = useState(false);
-  const [pending, setPending] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
 
   const [data, setData] = useState([]);
@@ -34,8 +34,9 @@ const StaffRoles = () => {
     setDescription("");
   };
 
-  const SubmitRole = (e) => {
+  const submitForm = (e) => {
     e.preventDefault();
+    setSaving(true)
     let data = selectedRole
       ? { ...selectedRole, name: name, description: description }
       : { name, description };
@@ -49,6 +50,8 @@ const StaffRoles = () => {
         } else {
           AlertFailed(res.message);
         }
+      }).finally(() => {
+        setSaving(false)
       });
     } else {
       new service().createRole(data).then((res) => {
@@ -59,7 +62,9 @@ const StaffRoles = () => {
         } else {
           AlertFailed(res.message);
         }
-      });
+      }).finally(() => {
+        setSaving(false)
+      });;
     }
   };
 
@@ -89,9 +94,10 @@ const StaffRoles = () => {
   };
 
   const getRoles = () => {
+    setLoading(true)
     new service().getRoles().then((data) => {
       setData(data)
-      setPending(false)
+      setLoading(false)
     });
   };
 
@@ -109,8 +115,7 @@ const StaffRoles = () => {
       </div>
 
       <DataTable
-        progressComponent={<CustomLoader />}
-        progressPending={pending}
+        progressPending={loading}
         defaultSortFieldId={1}
         columns={[
           { name: "Name", selector: (row) => row.name, sortable: true },
@@ -142,7 +147,7 @@ const StaffRoles = () => {
           })} selectableRows />
 
       <Modal isOpen={modal}>
-        <form onSubmit={SubmitRole} method="post">
+        <form onSubmit={submitForm} method="post">
           <ModalHeader toggle={toggleModal}>
             {selectedRole ? (
               <span>
@@ -178,20 +183,29 @@ const StaffRoles = () => {
             </div>
           </ModalBody>
           <ModalFooter>
-            <button
-              type="submit"
-              className="btn btn-sm btn-primary"
-              onSubmit={SubmitRole}
-            >
-              <i className="fa fa-check"></i> Save
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-secondary"
-              onClick={toggleModal}
-            >
-              <i className="fa fa-close"></i> Cancel
-            </button>
+            <div className="col-12 d-flex justify-content-start ps-4">
+              {saving ?
+                <button className="btn btn-primary" disabled
+                >
+                  <i className="fa fa-spin"></i> Saving...
+                </button> :
+                <>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                  >
+                    <i className="fa fa-check"></i> Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary ms-3"
+                    onClick={toggleModal}
+                  >
+                    <i className="fa fa-close"></i> Cancel
+                  </button>
+                </>
+              }
+            </div>
           </ModalFooter>
         </form>
       </Modal>
