@@ -77,11 +77,11 @@ body {
       pointer-events: none;
       transition: all 0.5s ease;
       i {
-        font-size: 28px;
+        font-size: 2rem;
         margin-right: 5px;
       }
       .logo_name {
-        font-size: 20px;
+        font-size: 1.5rem;
         margin-right: 400;
         color: lime;
       }
@@ -93,7 +93,7 @@ body {
     color: #fff;
     left: 50%;
     top: 6px;
-    font-size: 20px;
+    font-size: 1.5rem;
     height: 50px;
     width: 50px;
     text-align: center;
@@ -103,7 +103,7 @@ body {
   }
 
   ul {
-    margin-top: 20px;
+    margin-top: 1.5rem;
     padding: 0px;
     li {
       position: relative;
@@ -123,7 +123,7 @@ body {
         width: 122px;
         text-align: center;
         background: #fff;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 5px 1.5rem rgba(0, 0, 0, 0.2);
         line-height: 35px;
         transition: 0s;
         opacity: 0;
@@ -192,8 +192,8 @@ body {
         pointer-events: none;
         white-space: nowrap;
         img {
-          height: 40px;
-          width: 40px;
+          height: 2.5rem;
+          width: 2.5rem;
           object-fit: cover;
           border-radius: 12px;
         }
@@ -201,11 +201,11 @@ body {
           margin-left: 10px;
         }
         .name {
-          font-size: 15px;
+          font-size: 1rem;
           font-weight: 400;
         }
         .job {
-          font-size: 12px;
+          font-size: 0.8rem;
         }
       }
     }
@@ -235,9 +235,9 @@ body {
     }
 
     .school_name {
-      font-size: 25px;
+      font-size: 1.5rem;
       font-weight: 500;
-      color: #1d1b31;
+      color: #424141;
       margin: 12px;
     }
   }
@@ -261,7 +261,7 @@ body {
     background: $primary-color;
     font-weight: 500;
     i {
-      font-size: 20px;
+      font-size: 1.5rem;
       margin-right: 10px;
     }
   }
@@ -270,18 +270,18 @@ body {
     padding: 0 15px;
     list-style: none;
     li {
-      font-size: 12px;
+      font-size: 0.8rem;
       font-weight: 400;
-      border-radius: 12px;
+      border-radius: 0.8rem;
       a {
         width: 100%;
-        line-height: 40px;
+        line-height: 2rem;
         padding: 5px 10px;
         display: flex;
         align-items: center;
         text-decoration: none;
         transition: all 0.4s ease;
-        border-radius: 12px;
+        border-radius: 0.8rem;
         white-space: nowrap;
         color: $primary-color;
         i {
@@ -317,7 +317,8 @@ body {
 .close {
   border: none;
   background-color: transparent;
-  font-size: large;
+  font-size: 2rem;
+  color: #3d3a3a;
 }
 
 /* buttons */

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { CreateRole, DeleteRole, GetRoles, UpdateRole } from "../../API/staffs";
+import { RolesService as service } from "../../API/staffs";
 import {
   AlertFailed,
   AlertSuccess,
   ConfirmAlert,
 } from "../../components/alerts";
+import { CustomLoader } from "../../components/monitors";
 import { DataTable } from "../../components/table";
 
 const StaffRoles = () => {
   const [modal, setModal] = useState(false);
+  const [pending, setPending] = useState(true)
   const [selectedRole, setSelectedRole] = useState(null);
 
   const [data, setData] = useState([]);
@@ -39,7 +41,7 @@ const StaffRoles = () => {
       : { name, description };
 
     if (selectedRole) {
-      UpdateRole(selectedRole.id, data).then((res) => {
+      new service().updateRole(selectedRole.id, data).then((res) => {
         if (res.status === 200) {
           AlertSuccess(res.message);
           toggleModal();
@@ -49,7 +51,7 @@ const StaffRoles = () => {
         }
       });
     } else {
-      CreateRole(data).then((res) => {
+      new service().createRole(data).then((res) => {
         if (res.status === 200) {
           AlertSuccess(res.message);
           toggleModal();
@@ -71,7 +73,7 @@ const StaffRoles = () => {
   const deleteRole = (roleID) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        DeleteRole(roleID)
+        new service().deleteRole(roleID)
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess(res.message);
@@ -87,13 +89,15 @@ const StaffRoles = () => {
   };
 
   const getRoles = () => {
-    GetRoles().then((data) => {
+    new service().getRoles().then((data) => {
       setData(data)
+      setPending(false)
     });
   };
 
   useEffect(() => {
-    getRoles();
+    const timeout = setTimeout(getRoles(), 5000);
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
@@ -105,6 +109,9 @@ const StaffRoles = () => {
       </div>
 
       <DataTable
+        progressComponent={<CustomLoader />}
+        progressPending={pending}
+        defaultSortFieldId={1}
         columns={[
           { name: "Name", selector: (row) => row.name, sortable: true },
           { name: "Description", selector: (row) => row.description },

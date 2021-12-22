@@ -1,10 +1,9 @@
-import React from "react";
 import DataTable from "react-data-table-component";
 import Checkbox from "@material-ui/core/Checkbox";
 
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 
-const sortIcon = <ArrowDownward />;
+const sortIcon = <ArrowDownward style={{ color: "grey", marginLeft: "5px" }} />;
 const selectProps = { indeterminate: (isIndeterminate) => isIndeterminate };
 
 function DataTableBase(props) {
@@ -14,7 +13,7 @@ function DataTableBase(props) {
       selectableRowsComponent={Checkbox}
       selectableRowsComponentProps={selectProps}
       sortIcon={sortIcon}
-      dense
+      pointerOnHover
       {...props}
     />
   );
