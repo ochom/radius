@@ -1,7 +1,7 @@
 import DataTable from "react-data-table-component";
-import Checkbox from "@material-ui/core/Checkbox";
+import { Checkbox } from "@mui/material";
 
-import ArrowDownward from "@material-ui/icons/ArrowDownward";
+import { ArrowDownward } from "@mui/icons-material";
 import { CustomLoader } from "./monitors";
 
 const sortIcon = <ArrowDownward style={{ color: "grey", marginLeft: "5px" }} />;

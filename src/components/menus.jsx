@@ -1,7 +1,6 @@
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useState } from 'react';
-import { ListItemIcon, ListItemText } from '@material-ui/core';
 
 export function DropdownMenu(props) {
   const { options, row } = props
@@ -33,16 +32,13 @@ export function DropdownMenu(props) {
       }}
     >
       {(options || []).map(option =>
-        <MenuItem onClick={(e) => { handleClose(); option.action(row) }}>
+        <MenuItem key={option.title} onClick={(e) => { handleClose(); option.action(row) }}>
           <ListItemIcon>
             {option.icon}
           </ListItemIcon>
           <ListItemText>{option.title}</ListItemText>
         </MenuItem>
       )}
-    </Menu>
-    <Menu>
-      {(options || []).map(option => <MenuItem>{option.title}</MenuItem>)}
     </Menu>
   </div >
 
