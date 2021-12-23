@@ -1,3 +1,4 @@
+import { Delete, Edit } from "@mui/icons-material";
 import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { RolesService as service } from "../../API/staffs";
@@ -6,6 +7,7 @@ import {
   AlertSuccess,
   ConfirmAlert,
 } from "../../components/alerts";
+import { DropdownMenu } from "../../components/menus";
 import { DataTable } from "../../components/table";
 
 const StaffRoles = () => {
@@ -75,10 +77,10 @@ const StaffRoles = () => {
     toggleModal();
   };
 
-  const deleteRole = (roleID) => {
+  const deleteRole = (role) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new service().deleteRole(roleID)
+        new service().deleteRole(role.id)
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess(res.message);
@@ -106,6 +108,24 @@ const StaffRoles = () => {
     return () => clearTimeout(timeout);
   }, []);
 
+
+
+  let dropMenuOptions = [{ "title": "View", action: editRole, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteRole, icon: <Delete fontSize="small" color="red" /> }]
+
+  const cols = [
+    { name: "Name", selector: (row) => row.name, sortable: true },
+    { name: "Description", selector: (row) => row.description },
+    {
+      selector: row => row.action,
+      style: {
+        color: "grey"
+      },
+      allowOverflow: true,
+      button: true,
+      width: '56px',
+    },
+  ]
+
   return (
     <>
       <div className="mb-3 justify-content-end d-flex">
@@ -117,34 +137,15 @@ const StaffRoles = () => {
       <DataTable
         progressPending={loading}
         defaultSortFieldId={1}
-        columns={[
-          { name: "Name", selector: (row) => row.name, sortable: true },
-          { name: "Description", selector: (row) => row.description },
-          { name: "Action", selector: (row) => row.action },
-        ]}
+        columns={cols}
         data={
           data.map((role) => {
             return {
               name: role.name,
               description: role.description,
-              action: (
-                <>
-                  <button
-                    className="btn btn-sm btn-outline-success"
-                    onClick={() => editRole(role)}
-                  >
-                    <i className="fa fa-edit"></i> Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger ms-2"
-                    onClick={() => deleteRole(role.id)}
-                  >
-                    <i className="fa fa-trash"></i> Delete
-                  </button>
-                </>
-              ),
+              action: <DropdownMenu options={dropMenuOptions} row={role} />
             };
-          })} selectableRows />
+          })} />
 
       <Modal isOpen={modal}>
         <form onSubmit={submitForm} method="post">
@@ -187,7 +188,11 @@ const StaffRoles = () => {
               {saving ?
                 <button className="btn btn-primary" disabled
                 >
-                  <i className="fa fa-spin"></i> Saving...
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span> Saving ...
                 </button> :
                 <>
                   <button

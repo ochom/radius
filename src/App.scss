@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
-$primary-color: #4e0c8b;
+$primary-color: #4e0c8bce;
 
 * {
   margin: 0;
@@ -325,4 +325,11 @@ body {
 .btn-primary {
   background-color: $primary-color !important;
   border-color: $primary-color !important;
+}
+
+.user-thumbnail {
+  width: 1.5rem;
+  height: auto;
+  border-radius: 0.2rem;
+  margin-left: 10px;
 }
