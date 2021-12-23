@@ -8,14 +8,11 @@ import {
   AlertSuccess,
   ConfirmAlert,
 } from "../../components/alerts";
+import profile from "../../static/profile.jpg";
+import { DropdownMenu } from "../../components/menus";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { OpenInBrowser } from "@mui/icons-material";
 
-const cols = [
-  { name: "#", selector: (row) => row.serialNumber },
-  { name: "Name", selector: (row) => row.name },
-  { name: "Employer", selector: (row) => row.employer },
-  { name: "Gender", selector: (row) => row.gender, sortable: true },
-  { name: "Action", selector: (row) => row.action },
-];
 
 const AllStaff = () => {
   const [loading, setLoading] = useState(true);
@@ -61,7 +58,7 @@ const AllStaff = () => {
     getStaffs();
   }, []);
 
-  const submitForm = (e) => {
+  const submitForm = e => {
     e.preventDefault();
     setSaving(true)
     let payload = { firstName, lastName, dateOfBirth, gender, idNumber, email, phoneNumber, serialNumber, employer, employmentNumber, staffType, createAccount, roles }
@@ -79,10 +76,10 @@ const AllStaff = () => {
   };
 
 
-  const deleteStaff = (ID) => {
+  const deleteStaff = (staff) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new StaffService().deleteStaff(ID)
+        new StaffService().deleteStaff(staff.id)
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess(res.message);
@@ -98,6 +95,25 @@ const AllStaff = () => {
   };
 
 
+  let dropMenuOptions = [{ "title": "View", action: deleteStaff, icon: <OpenInBrowser fontSize="small" /> }, { "title": "Delete", action: deleteStaff, icon: <DeleteIcon fontSize="small" color="red" /> }]
+
+  const cols = [
+    { name: "", selector: row => row.photo, width: '100px' },
+    { name: "#", selector: row => row.serialNumber, sortable: true, width: '100px' },
+    { name: "Name", selector: row => row.name, sortable: true },
+    { name: "Employer", selector: row => row.employer, sortable: true },
+    { name: "Gender", selector: row => row.gender, sortable: true, width: '150px' },
+    {
+      selector: row => row.action,
+      style: {
+        color: "grey"
+      },
+      allowOverflow: true,
+      button: true,
+      width: '56px',
+    },
+  ];
+
   return (
     <>
       <div className="mb-3 justify-content-end d-flex">
@@ -107,22 +123,16 @@ const AllStaff = () => {
       </div>
 
       <DataTable
-        defaultSortFieldId={1}
+        defaultSortFieldId={2}
         progressPending={loading}
         columns={cols} data={data.map((d) => {
           return {
+            photo: <img src={profile} alt="P" className="user-thumbnail" />,
             serialNumber: d.serialNumber,
             name: `${d.firstName} ${d.lastName}`,
             employer: d.employer,
             gender: d.gender,
-            action: (
-              <>
-                <button className="btn btn-sm btn-danger ms-2"
-                  onClick={() => deleteStaff(d.id)}>
-                  <i className="fa fa-trash"></i> Delete
-                </button>
-              </>
-            ),
+            action: <DropdownMenu options={dropMenuOptions} row={d} />
           };
         })} />
 
@@ -139,21 +149,21 @@ const AllStaff = () => {
                 <input type="text" className="form-control"
                   required
                   value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)} />
+                  onChange={e => setFirstName(e.target.value)} />
               </div>
               <div className="col-6 mt-3">
                 <label>Last name *</label>
                 <input type="text" className="form-control"
                   required
                   value={lastName}
-                  onChange={(e) => setLastName(e.target.value)} />
+                  onChange={e => setLastName(e.target.value)} />
               </div>
               <div className="col-6 mt-3">
                 <label>Gender *</label>
                 <select className="form-control"
                   required
                   value={gender}
-                  onChange={(e) => setGender(e.target.value)} >
+                  onChange={e => setGender(e.target.value)} >
                   <option value="">Select</option>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
@@ -164,30 +174,33 @@ const AllStaff = () => {
                 <input type="date" className="form-control"
                   required
                   defaultValue={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(new Date(Date.parse(e.target.value)))} />
+                  onChange={e => setDateOfBirth(new Date(Date.parse(e.target.value)))} />
               </div>
               <div className="col-12 mt-3">
                 <label>Email *</label>
                 <input type="email" className="form-control"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)} />
+                  onChange={e => setEmail(e.target.value)} />
               </div>
-              <div className="col-6 mt-3">
-                <label>ID Number *</label>
-                <input type="text" className="form-control"
-                  required
-                  value={idNumber}
-                  onChange={(e) => setIDNumber(e.target.value)} />
+              <div className="col-12 mt-3">
+                <Checkbox checked={createAccount} onChange={() => setCreateAccount(!createAccount)} /> Create user account?
               </div>
               <div className="col-6 mt-3">
                 <label>Phone number *</label>
                 <input type="text" className="form-control"
                   required
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)} />
+                  onChange={e => setPhoneNumber(e.target.value)} />
               </div>
-              <div className="col-3 mt-3">
+              <div className="col-6 mt-3">
+                <label>ID Number *</label>
+                <input type="text" className="form-control"
+                  required
+                  value={idNumber}
+                  onChange={e => setIDNumber(e.target.value)} />
+              </div>
+              <div className="col-4 mt-3">
                 <label>Staff Serial Number *</label>
                 <input
                   type="text"
@@ -195,34 +208,25 @@ const AllStaff = () => {
                   required
                   placeholder="e.g 001"
                   value={serialNumber}
-                  onChange={(e) => setSerialNumber(e.target.value)} />
+                  onChange={e => setSerialNumber(e.target.value)} />
               </div>
               <div className="col-4 mt-3">
-                <label>Employment Number</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="e.g T.S.C Number"
-                  value={employmentNumber}
-                  onChange={(e) => setEmploymentNumber(e.target.value)} />
-              </div>
-              <div className="col-5 mt-3">
-                <label>Primary role</label>
-                <select className="form-control"
-                  onChange={(e) => setRoles([e.target.value,])} >
-                  <option value="">Select</option>
-                  {staffRoles.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
-                </select>
-              </div>
-              <div className="col-6 mt-3">
                 <label>Staff type</label>
                 <select className="form-control"
                   value={staffType}
                   required
-                  onChange={(e) => setStaffType(e.target.value)} >
+                  onChange={e => setStaffType(e.target.value)} >
                   <option value="">Select</option>
                   <option value="Teaching">Teaching</option>
                   <option value="Support Staff">Support staff</option>
+                </select>
+              </div>
+              <div className="col-4 mt-3">
+                <label>Primary role</label>
+                <select className="form-control"
+                  onChange={e => setRoles([e.target.value,])} >
+                  <option value="">Select</option>
+                  {staffRoles.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
                 </select>
               </div>
               <div className="col-6 mt-3">
@@ -230,14 +234,20 @@ const AllStaff = () => {
                 <select className="form-control"
                   required
                   value={employer}
-                  onChange={(e) => setEmployer(e.target.value)} >
+                  onChange={e => setEmployer(e.target.value)} >
                   <option value="">Select</option>
                   <option value="Teachers Service Commission">Teachers Service Commission (T.S.C)</option>
                   <option value="Board of Management">Board of Management (B.O.M)</option>
                 </select>
               </div>
-              <div className="col-12 mt-3">
-                <Checkbox checked={createAccount} onChange={() => setCreateAccount(!createAccount)} /> Create user account?
+              <div className="col-6 mt-3">
+                <label>Employment Number</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="e.g T.S.C Number"
+                  value={employmentNumber}
+                  onChange={e => setEmploymentNumber(e.target.value)} />
               </div>
             </div>
           </ModalBody>
@@ -246,7 +256,11 @@ const AllStaff = () => {
               {saving ?
                 <button className="btn btn-primary" disabled
                 >
-                  <i className="fa fa-spin"></i> Saving...
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span> Saving ...
                 </button> :
                 <>
                   <button
@@ -266,7 +280,6 @@ const AllStaff = () => {
               }
             </div>
           </ModalFooter>
-
         </form>
       </Modal>
     </>
