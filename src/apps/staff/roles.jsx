@@ -1,4 +1,5 @@
 import { Delete, Edit } from "@mui/icons-material";
+import { TextField } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { RolesService as service } from "../../API/staffs";
@@ -161,25 +162,28 @@ const StaffRoles = () => {
             )}
           </ModalHeader>
           <ModalBody>
-            <div className="row">
-              <div className="col-12 my-1">
-                <label>Role name</label>
-                <input
-                  type="text"
+            <div className="row px-3">
+              <div className="mt-3">
+                <TextField
                   value={name}
+                  label="Role name"
                   required
+                  size="small"
+                  fullWidth
                   onChange={(e) => setName(e.target.value)}
-                  className="form-control"
                 />
               </div>
-              <div className="col-12 my-1">
-                <label>Role Description</label>
-                <textarea
-                  required
+              <div className="mt-4">
+                <TextField
                   value={description}
+                  label="Role Description"
+                  required
+                  size="small"
+                  fullWidth
+                  multiline
+                  rows={4}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="form-control"
-                ></textarea>
+                />
               </div>
             </div>
           </ModalBody>
