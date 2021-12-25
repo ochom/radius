@@ -20,7 +20,7 @@ function Staff() {
           path="/staff"
           render={({ match: { url } }) => (
             <>
-              <Route path={`${url}`} component={AllStaff} exact />
+              <Route path={url} component={AllStaff} exact />
               <Route path={`${url}/new`} component={NewStaff} />
               <Route path={`${url}/roles`} component={StaffRoles} />
             </>

@@ -1,4 +1,5 @@
-import { Delete, Edit } from "@mui/icons-material";
+import { Delete, Edit, Save } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -168,7 +169,7 @@ const StaffRoles = () => {
                   value={name}
                   label="Role name"
                   required
-                  size="small"
+                  color="secondary"
                   fullWidth
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -178,7 +179,7 @@ const StaffRoles = () => {
                   value={description}
                   label="Role Description"
                   required
-                  size="small"
+                  color="secondary"
                   fullWidth
                   multiline
                   rows={4}
@@ -189,31 +190,14 @@ const StaffRoles = () => {
           </ModalBody>
           <ModalFooter>
             <div className="col-12 d-flex justify-content-start ps-4">
-              {saving ?
-                <button className="btn btn-primary" disabled
-                >
-                  <span
-                    className="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"
-                  ></span> Saving ...
-                </button> :
-                <>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                  >
-                    <i className="fa fa-check"></i> Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary ms-3"
-                    onClick={toggleModal}
-                  >
-                    <i className="fa fa-close"></i> Cancel
-                  </button>
-                </>
-              }
+              <LoadingButton
+                type='submit'
+                variant='contained'
+                color='secondary'
+                size='large'
+                loading={saving}
+                loadingPosition="start"
+                startIcon={<Save />}>Save</LoadingButton>
             </div>
           </ModalFooter>
         </form>
