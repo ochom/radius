@@ -7,6 +7,8 @@ import { CustomLoader } from "./monitors";
 const sortIcon = <ArrowDownward style={{ color: "grey", marginLeft: "5px" }} />;
 const selectProps = { indeterminate: (isIndeterminate) => isIndeterminate };
 
+
+
 const customStyles = {
   headRow: {
     style: {
@@ -33,6 +35,7 @@ const customStyles = {
     },
   },
 };
+
 
 function DataTableBase(props) {
   return (

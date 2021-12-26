@@ -19,7 +19,7 @@ export class SessionService {
       });
   };
 
-  createSession = (data: any) => {
+  createSession = async (data: any) => {
     let headers = AuthHeaders();
     return Axios({
       method: "POST",
@@ -42,7 +42,7 @@ export class SessionService {
       });
   };
 
-  updateSession = (ID: string, data: any) => {
+  updateSession = async (ID: string, data: any) => {
     let headers = AuthHeaders();
     return Axios({
       method: "PUT",
@@ -65,7 +65,7 @@ export class SessionService {
       });
   };
 
-  deleteSession = (ID: string) => {
+  deleteSession = async (ID: string) => {
     let headers = AuthHeaders();
     return Axios({
       method: "DELETE",
@@ -89,7 +89,7 @@ export class SessionService {
 }
 
 export class ClassroomsService {
-  getClassrooms = () => {
+  getClassrooms = async () => {
     let headers = AuthHeaders();
     return Axios({
       method: "GET",
@@ -104,7 +104,7 @@ export class ClassroomsService {
       });
   };
 
-  createClassroom = (data: any) => {
+  createClassroom = async (data: any) => {
     let headers = AuthHeaders();
     return Axios({
       method: "POST",
@@ -127,7 +127,7 @@ export class ClassroomsService {
       });
   };
 
-  updateClassroom = (ID: string, data: any) => {
+  updateClassroom = async (ID: string, data: any) => {
     let headers = AuthHeaders();
     return Axios({
       method: "PUT",
@@ -150,7 +150,7 @@ export class ClassroomsService {
       });
   };
 
-  deleteClassroom = (ID: string) => {
+  deleteClassroom = async (ID: string) => {
     let headers = AuthHeaders();
     return Axios({
       method: "DELETE",
