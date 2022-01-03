@@ -3,8 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Delete, Edit, Save } from "@mui/icons-material";
 import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { ClassroomsService as service } from "../../API/classes";
-import { StaffService } from "../../API/staffs";
+import { SessionService as service } from "../../API/classes";
 import {
   AlertFailed,
   AlertSuccess,
@@ -12,31 +11,29 @@ import {
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
 import { DataTable } from "../../components/table";
-import { LoadingButton } from "@mui/lab";
+import { LoadingButton, LocalizationProvider, MobileDatePicker } from "@mui/lab";
+import DateAdapter from '@mui/lab/AdapterMoment';
+import moment from "moment";
 
 
 const initialFormData = {
   curriculum: "",
   academicYear: 202,
-  level: "",
-  stream: "",
-  classTeacher: "",
+  option: "Term",
+  title: "",
+  startDate: new Date(),
+  endDate: new Date(),
 }
 
-const levels = {
-  "8-4-4": [...[1, 2, 3, 4, 5, 6, 7, 8].map(i => `Class ${i}`), ...[1, 2, 3, 4].map(i => `Form ${i}`), ...[1, 2, 3, 4].map(i => `Year ${i}`)],
-  "2-6-6-3": [...[1, 2].map(i => `PP ${i}`), ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => `Grade ${i}`), ...[1, 2, 3].map(i => `Year ${i}`)],
-}
 
-export default function Classrooms() {
+
+export default function Sessions() {
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false);
-  const [selectedClassroom, setSelectedClassroom] = useState(null);
-
+  const [selectedSession, setSelectedSession] = useState(null);
 
   const [data, setData] = useState([]);
-  const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => {
@@ -47,25 +44,25 @@ export default function Classrooms() {
     }
   }
 
-  const onNewClass = () => {
+  const onNewSession = () => {
     toggleModal();
-    setSelectedClassroom(null);
+    setSelectedSession(null);
     setFormData(initialFormData)
   };
 
   const submitForm = (e) => {
     e.preventDefault();
     setSaving(true)
-    let data = selectedClassroom
-      ? { ...selectedClassroom, ...formData }
+    let data = selectedSession
+      ? { ...selectedSession, ...formData }
       : formData;
 
-    if (selectedClassroom) {
-      new service().updateClassroom(selectedClassroom.id, data).then((res) => {
+    if (selectedSession) {
+      new service().updateSession(selectedSession.id, data).then((res) => {
         if (res.status === 200) {
           AlertSuccess(res.message);
           toggleModal();
-          getClassrooms();
+          getSessions();
         } else {
           AlertFailed(res.message);
         }
@@ -73,11 +70,11 @@ export default function Classrooms() {
         setSaving(false)
       });
     } else {
-      new service().createClassroom(data).then((res) => {
+      new service().createSession(data).then((res) => {
         if (res.status === 200) {
           AlertSuccess(res.message);
           toggleModal();
-          getClassrooms();
+          getSessions();
         } else {
           AlertFailed(res.message);
         }
@@ -87,22 +84,23 @@ export default function Classrooms() {
     }
   };
 
-  const editClassroom = (classroom) => {
-    setSelectedClassroom(classroom);
+  const editSession = (session) => {
+    setSelectedSession(session);
     setFormData({
-      curriculum: classroom.curriculum,
-      academicYear: classroom.academicYear,
-      level: classroom.level,
-      stream: classroom.stream,
-      classTeacher: classroom.classTeacher,
+      curriculum: session.curriculum,
+      academicYear: session.academicYear,
+      option: session.title.split(" ")[0],
+      title: session.title,
+      startDate: session.startDate,
+      endDate: session.endDate,
     })
     toggleModal();
   };
 
-  const deleteClassroom = (classroom) => {
+  const deleteSession = (session) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new service().deleteClassroom(classroom.id)
+        new service().deleteSession(session.id)
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess(res.message);
@@ -111,37 +109,34 @@ export default function Classrooms() {
             }
           })
           .finally(() => {
-            getClassrooms();
+            getSessions();
           });
       }
     });
   };
 
-  const getClassrooms = () => {
+  const getSessions = () => {
     setLoading(true)
-    new service().getClassrooms().then((data) => {
+    new service().getSessions().then((data) => {
       setData(data)
       setLoading(false)
     });
   };
 
   useEffect(() => {
-    getClassrooms()
-    new StaffService().getStaffs().then(res => {
-      setTeachers(res)
-    })
+    getSessions()
   }, []);
 
 
 
-  let dropMenuOptions = [{ "title": "View", action: editClassroom, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteClassroom, icon: <Delete fontSize="small" color="red" /> }]
+  let dropMenuOptions = [{ "title": "View", action: editSession, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteSession, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
-    { name: "Academic Year", selector: (row) => row.academicYear, sortable: true },
-    { name: "Curriculum", selector: (row) => row.curriculum, sortable: true },
-    { name: "Level", selector: (row) => row.level, sortable: true },
-    { name: "Stream", selector: (row) => row.stream, sortable: true },
-    { name: "Class Teacher", selector: (row) => row.classTeacher },
+    { name: "Academic Year", selector: (row) => row.academicYear, sortable: true, },
+    { name: "Curriculum", selector: (row) => row.curriculum, sortable: true, },
+    { name: "Session", selector: (row) => row.title, sortable: true },
+    { name: "Start Date", selector: (row) => row.startDate, sortable: true },
+    { name: "End Date", selector: (row) => row.endDate, sortable: true },
     {
       selector: row => row.action,
       style: {
@@ -156,25 +151,25 @@ export default function Classrooms() {
   return (
     <>
       <div className="mb-3 justify-content-end d-flex">
-        <button className="btn btn-primary" onClick={onNewClass}>
-          <i className="fa fa-plus"></i> Add New Class
+        <button className="btn btn-primary" onClick={onNewSession}>
+          <i className="fa fa-plus"></i> Add New Session
         </button>
       </div>
 
       <DataTable
-        title="Classes list"
+        title="Sessions list"
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
         data={
-          data.map((classroom) => {
+          data.map((session) => {
             return {
-              academicYear: classroom.academicYear,
-              curriculum: classroom.curriculum,
-              level: classroom.level,
-              stream: classroom.stream,
-              classTeacher: classroom.classTeacher,
-              action: <DropdownMenu options={dropMenuOptions} row={classroom} />
+              academicYear: session.academicYear,
+              curriculum: session.curriculum,
+              title: session.title,
+              startDate: moment(session.startDate).format('MMMM d, YYYY'),
+              endDate: moment(session.endDate).format('MMMM d, YYYY'),
+              action: <DropdownMenu options={dropMenuOptions} row={session} />
             };
           })} />
 
@@ -182,7 +177,7 @@ export default function Classrooms() {
         <form onSubmit={submitForm} method="post">
           <ModalHeader toggle={toggleModal}>
             <span>
-              <i className={`fa fa-${selectedClassroom ? "edit" : "plus-circle"}`}></i> {selectedClassroom ? "Edit class details" : "Create a new class"}
+              <i className={`fa fa-${selectedSession ? "edit" : "plus-circle"}`}></i> {selectedSession ? "Edit session details" : "Create a new session"}
             </span>
           </ModalHeader>
           <ModalBody>
@@ -217,47 +212,59 @@ export default function Classrooms() {
               </div>
               <div className="mt-4">
                 <FormControl fullWidth>
-                  <InputLabel id="curriculum-label">Level</InputLabel>
+                  <InputLabel id="options-label">Session Title</InputLabel>
                   <Select
-                    labelId="level-label"
-                    id="level"
-                    label="Level"
+                    labelId="options-label"
+                    id="options"
+                    label="Session Title"
                     color="secondary"
                     required
                     fullWidth
-                    value={formData.level}
-                    onChange={e => setFormData({ ...formData, level: e.target.value })}
+                    value={formData.option}
+                    onChange={e => setFormData({ ...formData, option: e.target.value })}
                   >
-                    {(levels[formData.curriculum] || []).map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
+                    {["Term", "Semester"].map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
                   </Select>
                 </FormControl>
-              </div>
-              <div className="mt-4">
-                <TextField
-                  label="Stream"
-                  color="secondary"
-                  placeholder="(optional)"
-                  fullWidth
-                  value={formData.stream}
-                  onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
-                />
               </div>
               <div className="mt-4">
                 <FormControl fullWidth>
-                  <InputLabel id="teacher-label">Class Teacher</InputLabel>
+                  <InputLabel id="session-label">Session Number</InputLabel>
                   <Select
-                    labelId="teacher-label"
-                    id="teacher"
-                    label="Class Teacher"
+                    labelId="session-label"
+                    id="session"
+                    label="Session Number"
                     color="secondary"
                     required
                     fullWidth
-                    value={formData.classTeacher}
-                    onChange={e => setFormData({ ...formData, classTeacher: e.target.value })}
+                    value={formData.title}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
                   >
-                    {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.firstName + " " + l.lastName}</MenuItem>)}
+                    {[1, 2, 3].map(l => <MenuItem key={l} value={formData.option + " " + l}>{formData.option + " " + l}</MenuItem>)}
                   </Select>
                 </FormControl>
+              </div>
+              <div className="mt-4">
+                <LocalizationProvider dateAdapter={DateAdapter}>
+                  <MobileDatePicker
+                    label="Start Date"
+                    inputFormat="DD/MM/yyyy"
+                    value={formData.startDate}
+                    onChange={val => setFormData({ ...formData, startDate: val })}
+                    renderInput={(params) => <TextField fullWidth {...params} />}
+                  />
+                </LocalizationProvider>
+              </div>
+              <div className="mt-4">
+                <LocalizationProvider dateAdapter={DateAdapter}>
+                  <MobileDatePicker
+                    label="End Date"
+                    inputFormat="DD/MM/yyyy"
+                    value={formData.endDate}
+                    onChange={val => setFormData({ ...formData, endDate: val })}
+                    renderInput={(params) => <TextField fullWidth {...params} />}
+                  />
+                </LocalizationProvider>
               </div>
             </div>
           </ModalBody>

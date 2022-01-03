@@ -1,6 +1,7 @@
 import { Route } from "react-router-dom"
 import { PageBody, SubMenu } from "../../components"
 import Classrooms from "./classes"
+import Sessions from "./sessions"
 
 const menuItems = [
   { title: "Classes", href: "/classes", icon: "bx bxs-right-arrow", exact: true },
@@ -18,8 +19,8 @@ function Classes() {
           render={({ match: { url } }) => (
             <>
               <Route path={url} component={Classrooms} exact />
-              {/* <Route path={`${url}/sessions`} component={NewStaff} />
-              <Route path={`${url}/register`} component={StaffRoles} /> */}
+              <Route path={`${url}/sessions`} component={Sessions} />
+              {/* <Route path={`${url}/register`} component={StaffRoles} /> */}
             </>
           )}
         />
