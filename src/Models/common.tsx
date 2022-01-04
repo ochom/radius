@@ -15,6 +15,15 @@ export interface Auth {
   refreshToken: string;
 }
 
+export interface GraphError {
+  message: string;
+}
+
+export interface GraphResponse {
+  errors?: GraphError[] | null;
+  payload?: any;
+}
+
 export interface Response {
   status?: number;
   message: string;
