@@ -197,8 +197,8 @@ export default function Sessions() {
               curriculum: session.curriculum,
               system: session.system,
               name: session.name,
-              startDate: moment(session.startDate).format('MMMM d, YYYY'),
-              endDate: moment(session.endDate).format('MMMM d, YYYY'),
+              startDate: moment(session.startDate).format('Do MMMM, YYYY'),
+              endDate: moment(session.endDate).format('Do MMMM, YYYY'),
               action: <DropdownMenu options={dropMenuOptions} row={session} />
             };
           })} />
