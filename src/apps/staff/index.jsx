@@ -11,22 +11,26 @@ const menuItems = [
   { title: "Add New Staff", href: "/staff/new", icon: "bx bx-plus-medical" },
 ]
 
+function Pages() {
+  return (
+    <Route
+      path="/staff"
+      render={({ match: { url } }) => (
+        <>
+          <Route path={url} component={AllStaff} exact />
+          <Route path={`${url}/new`} component={NewStaff} />
+          <Route path={`${url}/roles`} component={StaffRoles} />
+        </>
+      )}
+    />
+  )
+}
+
 function Staff() {
   return (
     <div>
       <SubMenu titleName="Staff" titleIcon="bx bx-user" items={menuItems} />
-      <PageBody>
-        <Route
-          path="/staff"
-          render={({ match: { url } }) => (
-            <>
-              <Route path={url} component={AllStaff} exact />
-              <Route path={`${url}/new`} component={NewStaff} />
-              <Route path={`${url}/roles`} component={StaffRoles} />
-            </>
-          )}
-        />
-      </PageBody>
+      <PageBody children={<Pages />} />
     </div>
   )
 }

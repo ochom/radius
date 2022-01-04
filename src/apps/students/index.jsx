@@ -1,4 +1,4 @@
-import { SubMenu } from "../../components"
+import { PageBody, SubMenu } from "../../components"
 
 const menuItems = [
   { title: "All students", href: "/students", icon: "bx bxs-group", exact: true },
@@ -12,6 +12,7 @@ function Student() {
   return (
     <div>
       <SubMenu titleName="Students" titleIcon="bx bx-group" items={menuItems} />
+      <PageBody children={"hello students"} />
     </div>
   )
 }

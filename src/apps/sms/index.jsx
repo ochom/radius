@@ -13,7 +13,7 @@ const SMS = () => {
   return (
     <>
       <SubMenu titleName="SMS" titleIcon="bx bx-chat" items={menuItems} />
-      <PageBody>Hello world</PageBody>
+      <PageBody children={"hello world"} />
     </>
   );
 };

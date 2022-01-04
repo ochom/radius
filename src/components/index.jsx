@@ -3,15 +3,15 @@ import { useHistory } from "react-router-dom";
 import { NavLink, Redirect } from "react-router-dom";
 import profile from "../static/profile.jpg";
 
-function SubMenu(props) {
+function SubMenu({ titleIcon, titleName, items }) {
   return (
     <div className="sub_menu">
       <div className="title_content">
-        <i className={props.titleIcon}></i>
-        <span>{props.titleName}</span>
+        <i className={titleIcon}></i>
+        <span>{titleName}</span>
       </div>
       <ul>
-        {props.items.map((item, index) => (
+        {items.map((item, index) => (
           <li key={index}>
             <NavLink
               exact={item.exact}
@@ -119,7 +119,7 @@ const menuItems = [
 
 function Sidenav(props) {
   const { email, name } = props;
-  const [active, setActive] = useState(true);
+  const [active, setActive] = useState(false);
 
   let history = useHistory();
 
