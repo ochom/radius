@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Delete, Edit, Save } from "@mui/icons-material";
 import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { SessionService as service } from "../../API/classes";
+import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
@@ -19,8 +19,8 @@ import moment from "moment";
 const initialFormData = {
   curriculum: "",
   academicYear: 202,
-  option: "Term",
-  title: "",
+  system: "Term",
+  name: "",
   startDate: new Date(),
   endDate: new Date(),
 }
@@ -53,35 +53,40 @@ export default function Sessions() {
   const submitForm = (e) => {
     e.preventDefault();
     setSaving(true)
-    let data = selectedSession
-      ? { ...selectedSession, ...formData }
-      : formData;
+    let query = selectedSession
+      ? {
+        query: `mutation updateSession($id: String!, $data: NewSession!){
+          session: updateSession(id: $id, input: $data){
+            id
+          }
+        }`,
+        variables: {
+          "id": selectedSession.id,
+          "data": formData
+        }
+      } :
+      {
+        query: `mutation createSession($data: NewSession!){
+          session: createSession(input: $data){
+            id
+          }
+        }`,
+        variables: {
+          "data": formData
+        }
+      }
 
-    if (selectedSession) {
-      new service().updateSession(selectedSession.id, data).then((res) => {
-        if (res.status === 200) {
-          AlertSuccess(res.message);
-          toggleModal();
-          getSessions();
-        } else {
-          AlertFailed(res.message);
-        }
-      }).finally(() => {
-        setSaving(false)
-      });
-    } else {
-      new service().createSession(data).then((res) => {
-        if (res.status === 200) {
-          AlertSuccess(res.message);
-          toggleModal();
-          getSessions();
-        } else {
-          AlertFailed(res.message);
-        }
-      }).finally(() => {
-        setSaving(false)
-      });;
-    }
+    new Service().createOrUpdate(query).then((res) => {
+      if (res.status === 200) {
+        AlertSuccess(`Session saved successfully`);
+        toggleModal();
+        getSessions();
+      } else {
+        AlertFailed(res.message);
+      }
+    }).finally(() => {
+      setSaving(false)
+    });
   };
 
   const editSession = (session) => {
@@ -89,8 +94,8 @@ export default function Sessions() {
     setFormData({
       curriculum: session.curriculum,
       academicYear: session.academicYear,
-      option: session.title.split(" ")[0],
-      title: session.title,
+      system: session.system,
+      name: session.name,
       startDate: session.startDate,
       endDate: session.endDate,
     })
@@ -100,10 +105,20 @@ export default function Sessions() {
   const deleteSession = (session) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new service().deleteSession(session.id)
+        let query = {
+          query: `mutation deleteSession($id: String!){
+            session: deleteSession(id: $id){
+              id
+            }
+          }`,
+          variables: {
+            "id": session.id
+          }
+        }
+        new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(res.message);
+              AlertSuccess(`${session.academicYear} ${session.name} deleted successfully`);
             } else {
               AlertFailed(res.message);
             }
@@ -117,8 +132,22 @@ export default function Sessions() {
 
   const getSessions = () => {
     setLoading(true)
-    new service().getSessions().then((data) => {
-      setData(data)
+    let query = {
+      query: `query classes{
+        sessions:getSessions{
+          id
+          academicYear
+          curriculum
+          system
+          name
+          startDate
+          endDate
+        }
+      }`,
+      variables: {}
+    }
+    new Service().getData(query).then((res) => {
+      setData(res?.sessions || [])
       setLoading(false)
     });
   };
@@ -132,9 +161,10 @@ export default function Sessions() {
   let dropMenuOptions = [{ "title": "View", action: editSession, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteSession, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
-    { name: "Academic Year", selector: (row) => row.academicYear, sortable: true, },
+    { name: "Academic Year", selector: (row) => row.academicYear, sortable: true },
     { name: "Curriculum", selector: (row) => row.curriculum, sortable: true, },
-    { name: "Session", selector: (row) => row.title, sortable: true },
+    { name: "System", selector: (row) => row.system, sortable: true },
+    { name: "Name", selector: (row) => row.name, sortable: true },
     { name: "Start Date", selector: (row) => row.startDate, sortable: true },
     { name: "End Date", selector: (row) => row.endDate, sortable: true },
     {
@@ -159,16 +189,16 @@ export default function Sessions() {
       <DataTable
         title="Sessions list"
         progressPending={loading}
-        defaultSortFieldId={1}
         columns={cols}
         data={
           data.map((session) => {
             return {
               academicYear: session.academicYear,
               curriculum: session.curriculum,
-              title: session.title,
-              startDate: moment(session.startDate).format('MMMM d, YYYY'),
-              endDate: moment(session.endDate).format('MMMM d, YYYY'),
+              system: session.system,
+              name: session.name,
+              startDate: moment(session.startDate).format('Do MMMM, YYYY'),
+              endDate: moment(session.endDate).format('Do MMMM, YYYY'),
               action: <DropdownMenu options={dropMenuOptions} row={session} />
             };
           })} />
@@ -212,16 +242,16 @@ export default function Sessions() {
               </div>
               <div className="mt-4">
                 <FormControl fullWidth>
-                  <InputLabel id="options-label">Session Title</InputLabel>
+                  <InputLabel id="system-label">System</InputLabel>
                   <Select
-                    labelId="options-label"
-                    id="options"
-                    label="Session Title"
+                    labelId="system-label"
+                    id="system"
+                    label="System"
                     color="secondary"
                     required
                     fullWidth
-                    value={formData.option}
-                    onChange={e => setFormData({ ...formData, option: e.target.value })}
+                    value={formData.system}
+                    onChange={e => setFormData({ ...formData, system: e.target.value })}
                   >
                     {["Term", "Semester"].map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
                   </Select>
@@ -229,18 +259,18 @@ export default function Sessions() {
               </div>
               <div className="mt-4">
                 <FormControl fullWidth>
-                  <InputLabel id="session-label">Session Number</InputLabel>
+                  <InputLabel id="session-label">Session Name</InputLabel>
                   <Select
                     labelId="session-label"
                     id="session"
-                    label="Session Number"
+                    label="Session Name"
                     color="secondary"
                     required
                     fullWidth
-                    value={formData.title}
-                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                   >
-                    {[1, 2, 3].map(l => <MenuItem key={l} value={formData.option + " " + l}>{formData.option + " " + l}</MenuItem>)}
+                    {[1, 2, 3].map(l => <MenuItem key={l} value={formData.system + " " + l}>{formData.system + " " + l}</MenuItem>)}
                   </Select>
                 </FormControl>
               </div>

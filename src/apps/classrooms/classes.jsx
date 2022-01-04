@@ -3,8 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Delete, Edit, Save } from "@mui/icons-material";
 import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { ClassroomsService as service } from "../../API/classes";
-import { StaffService } from "../../API/staffs";
+import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
@@ -15,12 +14,13 @@ import { DataTable } from "../../components/table";
 import { LoadingButton } from "@mui/lab";
 
 
+
+
 const initialFormData = {
   curriculum: "",
-  academicYear: 202,
   level: "",
   stream: "",
-  classTeacher: "",
+  classTeacherID: "",
 }
 
 const levels = {
@@ -35,7 +35,7 @@ export default function Classrooms() {
   const [selectedClassroom, setSelectedClassroom] = useState(null);
 
 
-  const [data, setData] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
@@ -61,7 +61,7 @@ export default function Classrooms() {
       : formData;
 
     if (selectedClassroom) {
-      new service().updateClassroom(selectedClassroom.id, data).then((res) => {
+      new Service().updateClassroom(selectedClassroom.id, data).then((res) => {
         if (res.status === 200) {
           AlertSuccess(res.message);
           toggleModal();
@@ -73,7 +73,7 @@ export default function Classrooms() {
         setSaving(false)
       });
     } else {
-      new service().createClassroom(data).then((res) => {
+      new Service().createClassroom(data).then((res) => {
         if (res.status === 200) {
           AlertSuccess(res.message);
           toggleModal();
@@ -91,10 +91,9 @@ export default function Classrooms() {
     setSelectedClassroom(classroom);
     setFormData({
       curriculum: classroom.curriculum,
-      academicYear: classroom.academicYear,
       level: classroom.level,
       stream: classroom.stream,
-      classTeacher: classroom.classTeacher,
+      classTeacherID: classroom.classTeacher.id,
     })
     toggleModal();
   };
@@ -102,7 +101,7 @@ export default function Classrooms() {
   const deleteClassroom = (classroom) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new service().deleteClassroom(classroom.id)
+        new Service().deleteClassroom(classroom.id)
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess(res.message);
@@ -119,17 +118,36 @@ export default function Classrooms() {
 
   const getClassrooms = () => {
     setLoading(true)
-    new service().getClassrooms().then((data) => {
-      setData(data)
+    let classesQuery = {
+      query: `query classes{
+        classes: getClasses{
+          id
+          curriculum
+          level
+          stream
+          classTeacher{
+            id
+            firstName
+            lastName
+          }
+        }
+        teachers: getStaffs{
+          id
+          firstName
+          lastName
+        }
+      }`,
+      variables: {}
+    }
+    new Service().getData(classesQuery).then((res) => {
+      setClasses(res.classes || [])
+      setTeachers(res.teachers || [])
       setLoading(false)
     });
   };
 
   useEffect(() => {
     getClassrooms()
-    new StaffService().getStaffs().then(res => {
-      setTeachers(res)
-    })
   }, []);
 
 
@@ -137,7 +155,6 @@ export default function Classrooms() {
   let dropMenuOptions = [{ "title": "View", action: editClassroom, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteClassroom, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
-    { name: "Academic Year", selector: (row) => row.academicYear, sortable: true },
     { name: "Curriculum", selector: (row) => row.curriculum, sortable: true },
     { name: "Level", selector: (row) => row.level, sortable: true },
     { name: "Stream", selector: (row) => row.stream, sortable: true },
@@ -167,14 +184,13 @@ export default function Classrooms() {
         defaultSortFieldId={1}
         columns={cols}
         data={
-          data.map((classroom) => {
+          classes.map((cl) => {
             return {
-              academicYear: classroom.academicYear,
-              curriculum: classroom.curriculum,
-              level: classroom.level,
-              stream: classroom.stream,
-              classTeacher: classroom.classTeacher,
-              action: <DropdownMenu options={dropMenuOptions} row={classroom} />
+              curriculum: cl.curriculum,
+              level: cl.level,
+              stream: cl.stream,
+              classTeacher: `${cl.classTeacher.firstName} ${cl.classTeacher.lastName}`,
+              action: <DropdownMenu options={dropMenuOptions} row={cl} />
             };
           })} />
 
@@ -187,16 +203,6 @@ export default function Classrooms() {
           </ModalHeader>
           <ModalBody>
             <div className="row px-3">
-              <div className="mt-4">
-                <TextField
-                  type="number"
-                  label="Academic Year"
-                  color="secondary"
-                  fullWidth
-                  value={formData.academicYear}
-                  onChange={(e) => setFormData({ ...formData, academicYear: +e.target.value })}
-                />
-              </div>
               <div className="mt-3">
                 <FormControl fullWidth>
                   <InputLabel id="curriculum-label">Curriculum</InputLabel>
@@ -252,10 +258,10 @@ export default function Classrooms() {
                     color="secondary"
                     required
                     fullWidth
-                    value={formData.classTeacher}
-                    onChange={e => setFormData({ ...formData, classTeacher: e.target.value })}
+                    value={formData.classTeacherID}
+                    onChange={e => setFormData({ ...formData, classTeacherID: e.target.value })}
                   >
-                    {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.firstName + " " + l.lastName}</MenuItem>)}
+                    {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.firstName} {l.lastName}</MenuItem>)}
                   </Select>
                 </FormControl>
               </div>

@@ -1,6 +1,6 @@
 import Axios from "axios";
-import { AuthHeaders } from "./config";
-import { URLS } from "./urls";
+import { AuthHeaders, URLS } from "./config";
+
 import { Response } from "../Models/common";
 import { StaffRole, Staff } from "../Models/profiles";
 

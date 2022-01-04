@@ -1,9 +1,9 @@
 import Axios from "axios";
-import { API_ROOT } from "./config";
 import { Response } from "../Models/common";
+import { URLS } from "./config";
 
 export const Login = (data: any) => {
-  return Axios.post(`${API_ROOT}login`, data)
+  return Axios.post(`${URLS.LOGIN}`, data)
     .then((res) => {
       let response: Response = {
         status: res.status,
@@ -21,7 +21,7 @@ export const Login = (data: any) => {
 };
 
 export const Register = (data: any) => {
-  return Axios.post(`${API_ROOT}register`, data)
+  return Axios.post(`${URLS.REGISTER}`, data)
     .then((res) => {
       let response: Response = {
         status: res.status,
