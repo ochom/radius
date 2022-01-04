@@ -6,9 +6,9 @@ import NewStaff from "./new_staff";
 import StaffRoles from "./roles"
 
 const menuItems = [
-  { title: "Roles", href: "/staff/roles", icon: "bx bxs-group" },
+  { title: "All staff", href: "/staff", icon: "bx bxs-group", exact: true },
+  { title: "Roles", href: "/staff/roles", icon: "bx bx-list-ul" },
   { title: "Add New Staff", href: "/staff/new", icon: "bx bx-plus-medical" },
-  { title: "All staff", href: "/staff", icon: "bx bx-list-ul", exact: true },
 ]
 
 function Staff() {

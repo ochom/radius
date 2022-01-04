@@ -4,9 +4,9 @@ import Classrooms from "./classes"
 import Sessions from "./sessions"
 
 const menuItems = [
-  { title: "Classes", href: "/classes", icon: "bx bxs-right-arrow", exact: true },
-  { title: "Sessions", href: "/classes/sessions", icon: "bx bxs-right-arrow" },
-  { title: "Class Register", href: "/classes/register", icon: "bx bxs-right-arrow" },
+  { title: "Classes", href: "/classes", icon: "bx bxs-school", exact: true },
+  { title: "Sessions", href: "/classes/sessions", icon: "bx bx-time-five" },
+  { title: "Class Register", href: "/classes/register", icon: "bx bx-list-ul" },
 ]
 
 function Classes() {
