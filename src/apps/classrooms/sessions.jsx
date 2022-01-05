@@ -158,12 +158,11 @@ export default function Sessions() {
 
 
 
-  let dropMenuOptions = [{ "title": "View", action: editSession, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteSession, icon: <Delete fontSize="small" color="red" /> }]
+  let dropMenuOptions = [{ "title": "Edit", action: editSession, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteSession, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
     { name: "Academic Year", selector: (row) => row.academicYear, sortable: true },
     { name: "Curriculum", selector: (row) => row.curriculum, sortable: true, },
-    { name: "System", selector: (row) => row.system, sortable: true },
     { name: "Name", selector: (row) => row.name, sortable: true },
     { name: "Start Date", selector: (row) => row.startDate, sortable: true },
     { name: "End Date", selector: (row) => row.endDate, sortable: true },
@@ -195,7 +194,6 @@ export default function Sessions() {
             return {
               academicYear: session.academicYear,
               curriculum: session.curriculum,
-              system: session.system,
               name: session.name,
               startDate: moment(session.startDate).format('Do MMMM, YYYY'),
               endDate: moment(session.endDate).format('Do MMMM, YYYY'),
