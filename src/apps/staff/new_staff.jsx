@@ -4,12 +4,13 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { Button, Checkbox, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
-import { RolesService, StaffService } from "../../API/staffs";
 import {
   AlertFailed,
   AlertSuccess,
 } from "../../components/alerts";
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Service } from '../../API/service';
+import { EmploymentType, Gender, StaffType } from '../../Models/enums';
 
 
 const initialFormData = {
@@ -34,30 +35,52 @@ const NewStaff = () => {
 
   const [formData, setFormData] = useState(initialFormData)
 
-  const [staffRoles, setStaffRoles] = useState([]);
+  const [roles, setRoles] = useState([]);
+
+  const getRoles = () => {
+    let rolesQuery = {
+      query: `query roles{
+        roles: getRoles{
+          id
+          name
+        }
+      }`,
+      variables: {}
+    }
+    new Service().getData(rolesQuery).then((res) => {
+      setRoles(res?.roles.sort((a, b) => a.name > b.name) || [])
+    });
+  };
 
   useEffect(() => {
-    new RolesService().getRoles().then(data => {
-      let roleData = data.sort((a, b) => a.name > b.name)
-      setStaffRoles(roleData)
-    })
+    getRoles()
   }, []);
 
   const submitForm = e => {
     e.preventDefault();
     setSaving(true)
-    let payload = { ...formData, roles: [formData.primaryRole] }
+    let query =
+    {
+      query: `mutation createStaff($data: NewStaff!){
+        session: createStaff(input: $data){
+          id
+        }
+      }`,
+      variables: {
+        "data": formData
+      }
+    }
 
-    new StaffService().createStaff(payload).then(res => {
+    new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(res.message);
+        AlertSuccess(`Staff saved successfully`);
         setSaved(true)
       } else {
         AlertFailed(res.message);
       }
     }).finally(() => {
       setSaving(false)
-    })
+    });
   };
 
   const onNewStaff = () => {
@@ -118,9 +141,7 @@ const NewStaff = () => {
                 value={formData.gender}
                 onChange={e => setFormData({ ...formData, gender: e.target.value })}
               >
-                <MenuItem value="">Select</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-                <MenuItem value="male">Male</MenuItem>
+                {Object.entries(Gender).map(k => <MenuItem value={k[0]} key={k[0]}>{k[1]}</MenuItem>)}
               </Select>
             </FormControl>
           </div>
@@ -188,9 +209,7 @@ const NewStaff = () => {
                 fullWidth
                 onChange={e => setFormData({ ...formData, staffType: e.target.value })}
               >
-                <MenuItem value="">Select</MenuItem>
-                <MenuItem value="Teaching">Teaching</MenuItem>
-                <MenuItem value="Support Staff">Support staff</MenuItem>
+                {Object.entries(StaffType).map(k => <MenuItem value={k[0]} key={k[0]}>{k[1]}</MenuItem>)}
               </Select>
             </FormControl>
           </div>
@@ -207,7 +226,7 @@ const NewStaff = () => {
                 onChange={e => setFormData({ ...formData, primaryRole: e.target.value })}
               >
                 <MenuItem value="">Select</MenuItem>
-                {staffRoles.map(r => <MenuItem key={r.id} value={r.name}>{r.name}</MenuItem>)}
+                {roles.map(r => <MenuItem key={r.id} value={r.name}>{r.name}</MenuItem>)}
               </Select>
             </FormControl>
           </div>
@@ -224,9 +243,7 @@ const NewStaff = () => {
                 fullWidth
                 onChange={e => setFormData({ ...formData, employer: e.target.value })}
               >
-                <MenuItem value="">Select</MenuItem>
-                <MenuItem value="Teachers Service Commission">Teachers Service Commission (T.S.C)</MenuItem>
-                <MenuItem value="Board of Management">Board of Management (B.O.M)</MenuItem>
+                {Object.entries(EmploymentType).map(k => <MenuItem value={k[0]} key={k[0]}>{k[1]}</MenuItem>)}
               </Select>
             </FormControl>
           </div>

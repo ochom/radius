@@ -33,7 +33,7 @@ export class Service {
         var response: Response;
         if (data.errors) {
           response = {
-            message: data.errors[0]?.message,
+            message: data.errors[0].message,
           };
         } else {
           response = {
@@ -45,9 +45,17 @@ export class Service {
         return response;
       })
       .catch((err) => {
-        let response: Response = {
-          message: err.response ? err.response.data : err,
-        };
+        let data: GraphResponse = err.response.data;
+        var response: Response;
+        if (data.errors) {
+          response = {
+            message: data.errors[0].message,
+          };
+        } else {
+          response = {
+            message: err.response ? err.response.data : err,
+          };
+        }
         return response;
       });
   };

@@ -20,7 +20,7 @@ function Classes() {
             <>
               <Route path={url} component={Classrooms} exact />
               <Route path={`${url}/sessions`} component={Sessions} />
-              {/* <Route path={`${url}/register`} component={StaffRoles} /> */}
+              {/* <Route path={`${url}/register`} component={Roles} /> */}
             </>
           )}
         />

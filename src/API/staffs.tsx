@@ -2,7 +2,7 @@ import Axios from "axios";
 import { AuthHeaders, URLS } from "./config";
 
 import { Response } from "../Models/common";
-import { StaffRole, Staff } from "../Models/profiles";
+import { Role, Staff } from "../Models/profiles";
 
 export class RolesService {
   getRoles = () => {
@@ -43,7 +43,7 @@ export class RolesService {
       });
   };
 
-  updateRole = (ID: string, data: StaffRole) => {
+  updateRole = (ID: string, data: Role) => {
     let headers = AuthHeaders();
     return Axios({
       method: "PUT",

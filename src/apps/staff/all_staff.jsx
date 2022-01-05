@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { DataTable } from "../../components/table";
-import { StaffService } from "../../API/staffs";
 import {
   AlertFailed,
   AlertSuccess,
@@ -10,12 +9,13 @@ import profile from "../../static/profile.jpg";
 import { DropdownMenu } from "../../components/menus";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { OpenInBrowser } from "@mui/icons-material";
+import { Service } from "../../API/service";
 
 
 const AllStaff = () => {
   const [loading, setLoading] = useState(true);
 
-  const [data, setData] = useState([]);
+  const [staffs, setStaffs] = useState([]);
 
 
   useEffect(() => {
@@ -23,25 +23,49 @@ const AllStaff = () => {
   }, [])
 
   const getStaffs = () => {
-    new StaffService().getStaffs().then((data) => {
-      setData(data);
-      setLoading(false);
+    let staffsQuery = {
+      query: `query staffs{
+        staffs: getStaffs{
+          id
+          serialNumber
+          firstName
+          lastName
+          employer
+          gender
+        }
+      }`,
+      variables: {}
+    }
+    new Service().getData(staffsQuery).then((res) => {
+      setStaffs(res.staffs || [])
+      setLoading(false)
     });
-  }
+  };
+
 
   const deleteStaff = (staff) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new StaffService().deleteStaff(staff.id)
+        let query = {
+          query: `mutation deleteStaff($id: ID!){
+            session: deleteStaff(id: $id){
+              id
+            }
+          }`,
+          variables: {
+            "id": staff.id
+          }
+        }
+        new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(res.message);
+              AlertSuccess(`Staff deleted successfully`);
             } else {
               AlertFailed(res.message);
             }
           })
           .finally(() => {
-            getStaffs()
+            getStaffs();
           });
       }
     });
@@ -73,7 +97,7 @@ const AllStaff = () => {
         title="Registered Employees & Staff"
         defaultSortFieldId={2}
         progressPending={loading}
-        columns={cols} data={data.map((d) => {
+        columns={cols} data={staffs.map((d) => {
           return {
             photo: <img src={profile} alt="P" className="user-thumbnail" />,
             serialNumber: d.serialNumber,
