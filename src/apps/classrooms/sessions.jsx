@@ -19,7 +19,7 @@ import moment from "moment";
 const initialFormData = {
   curriculum: "",
   academicYear: 202,
-  system: "Term",
+  system: "",
   name: "",
   startDate: new Date(),
   endDate: new Date(),
@@ -268,7 +268,7 @@ export default function Sessions() {
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                   >
-                    {[1, 2, 3].map(l => <MenuItem key={l} value={formData.system + " " + l}>{formData.system + " " + l}</MenuItem>)}
+                    {(formData.system.length > 0 ? [1, 2, 3] : []).map(l => <MenuItem key={l} value={formData.system + " " + l}>{formData.system + " " + l}</MenuItem>)}
                   </Select>
                 </FormControl>
               </div>
