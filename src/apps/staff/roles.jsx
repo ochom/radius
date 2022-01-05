@@ -1,9 +1,9 @@
+import React, { useState, useEffect } from "react";
 import { Delete, Edit, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
-import React, { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { RolesService as service } from "../../API/staffs";
+
 import {
   AlertFailed,
   AlertSuccess,
@@ -11,6 +11,12 @@ import {
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
 import { DataTable } from "../../components/table";
+import { Service } from "../../API/service";
+
+const initForm = {
+  name: "",
+  description: ""
+}
 
 const StaffRoles = () => {
   const [modal, setModal] = useState(false);
@@ -18,10 +24,9 @@ const StaffRoles = () => {
   const [saving, setSaving] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
 
-  const [data, setData] = useState([]);
+  const [roles, setRoles] = useState([]);
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [formData, setFormData] = useState(initForm);
 
   const toggleModal = () => {
     if (modal) {
@@ -34,58 +39,74 @@ const StaffRoles = () => {
   const onNewRole = () => {
     toggleModal();
     setSelectedRole(null);
-    setName("");
-    setDescription("");
+    setFormData(initForm)
   };
 
   const submitForm = (e) => {
     e.preventDefault();
     setSaving(true)
-    let data = selectedRole
-      ? { ...selectedRole, name: name, description: description }
-      : { name, description };
+    let query = selectedRole
+      ? {
+        query: `mutation updateRole($id: ID!, $data: NewRole!){
+        session: updateRole(id: $id, input: $data){
+          id
+        }
+      }`,
+        variables: {
+          "id": selectedRole.id,
+          "data": formData
+        }
+      } :
+      {
+        query: `mutation createRole($data: NewRole!){
+        session: createRole(input: $data){
+          id
+        }
+      }`,
+        variables: {
+          "data": formData
+        }
+      }
 
-    if (selectedRole) {
-      new service().updateRole(selectedRole.id, data).then((res) => {
-        if (res.status === 200) {
-          AlertSuccess(res.message);
-          toggleModal();
-          getRoles();
-        } else {
-          AlertFailed(res.message);
-        }
-      }).finally(() => {
-        setSaving(false)
-      });
-    } else {
-      new service().createRole(data).then((res) => {
-        if (res.status === 200) {
-          AlertSuccess(res.message);
-          toggleModal();
-          getRoles();
-        } else {
-          AlertFailed(res.message);
-        }
-      }).finally(() => {
-        setSaving(false)
-      });;
-    }
+    new Service().createOrUpdate(query).then((res) => {
+      if (res.status === 200) {
+        AlertSuccess(`Role saved successfully`);
+        toggleModal();
+        getRoles();
+      } else {
+        AlertFailed(res.message);
+      }
+    }).finally(() => {
+      setSaving(false)
+    });
   };
 
   const editRole = (role) => {
     setSelectedRole(role);
-    setName(role.name);
-    setDescription(role.description);
+    setFormData({
+      name: role.name,
+      description: role.description
+    })
     toggleModal();
   };
 
   const deleteRole = (role) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new service().deleteRole(role.id)
+        let query = {
+          query: `mutation deleteRole($id: ID!){
+            session: deleteRole(id: $id){
+              id
+            }
+          }`,
+          variables: {
+            "id": role.id
+          }
+        }
+        new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(res.message);
+              AlertSuccess(`${role.name} Role deleted successfully`);
             } else {
               AlertFailed(res.message);
             }
@@ -99,11 +120,22 @@ const StaffRoles = () => {
 
   const getRoles = () => {
     setLoading(true)
-    new service().getRoles().then((data) => {
-      setData(data)
+    let rolesQuery = {
+      query: `query roles{
+        roles: getRoles{
+          id
+          name
+          description
+        }
+      }`,
+      variables: {}
+    }
+    new Service().getData(rolesQuery).then((res) => {
+      setRoles(res.roles || [])
       setLoading(false)
     });
   };
+
 
   useEffect(() => {
     const timeout = setTimeout(getRoles(), 5000);
@@ -112,7 +144,7 @@ const StaffRoles = () => {
 
 
 
-  let dropMenuOptions = [{ "title": "View", action: editRole, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteRole, icon: <Delete fontSize="small" color="red" /> }]
+  let dropMenuOptions = [{ "title": "Edit", action: editRole, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteRole, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
     { name: "Name", selector: (row) => row.name, sortable: true },
@@ -141,7 +173,7 @@ const StaffRoles = () => {
         defaultSortFieldId={1}
         columns={cols}
         data={
-          data.map((role) => {
+          roles.map((role) => {
             return {
               name: role.name,
               description: role.description,
@@ -166,24 +198,24 @@ const StaffRoles = () => {
             <div className="row px-3">
               <div className="mt-3">
                 <TextField
-                  value={name}
+                  value={formData.name}
                   label="Role name"
                   required
                   color="secondary"
                   fullWidth
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
               <div className="mt-4">
                 <TextField
-                  value={description}
+                  value={formData.description}
                   label="Role Description"
                   required
                   color="secondary"
                   fullWidth
                   multiline
                   rows={4}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
               </div>
             </div>

@@ -58,7 +58,7 @@ export default function Classrooms() {
     setSaving(true)
     let query = selectedClassroom
       ? {
-        query: `mutation updateClass($id: String!, $data: NewClass!){
+        query: `mutation updateClass($id: ID!, $data: NewClass!){
         session: updateClass(id: $id, input: $data){
           id
         }
@@ -107,7 +107,7 @@ export default function Classrooms() {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
         let query = {
-          query: `mutation deleteClass($id: String!){
+          query: `mutation deleteClass($id: ID!){
             session: deleteClass(id: $id){
               id
             }

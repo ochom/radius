@@ -55,7 +55,7 @@ export default function Sessions() {
     setSaving(true)
     let query = selectedSession
       ? {
-        query: `mutation updateSession($id: String!, $data: NewSession!){
+        query: `mutation updateSession($id: ID!, $data: NewSession!){
           session: updateSession(id: $id, input: $data){
             id
           }
@@ -106,7 +106,7 @@ export default function Sessions() {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
         let query = {
-          query: `mutation deleteSession($id: String!){
+          query: `mutation deleteSession($id: ID!){
             session: deleteSession(id: $id){
               id
             }
