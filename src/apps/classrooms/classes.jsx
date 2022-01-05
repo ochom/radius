@@ -56,35 +56,40 @@ export default function Classrooms() {
   const submitForm = (e) => {
     e.preventDefault();
     setSaving(true)
-    let data = selectedClassroom
-      ? { ...selectedClassroom, ...formData }
-      : formData;
+    let query = selectedClassroom
+      ? {
+        query: `mutation updateClass($id: String!, $data: NewClass!){
+        session: updateClass(id: $id, input: $data){
+          id
+        }
+      }`,
+        variables: {
+          "id": selectedClassroom.id,
+          "data": formData
+        }
+      } :
+      {
+        query: `mutation createClass($data: NewClass!){
+        session: createClass(input: $data){
+          id
+        }
+      }`,
+        variables: {
+          "data": formData
+        }
+      }
 
-    if (selectedClassroom) {
-      new Service().updateClassroom(selectedClassroom.id, data).then((res) => {
-        if (res.status === 200) {
-          AlertSuccess(res.message);
-          toggleModal();
-          getClassrooms();
-        } else {
-          AlertFailed(res.message);
-        }
-      }).finally(() => {
-        setSaving(false)
-      });
-    } else {
-      new Service().createClassroom(data).then((res) => {
-        if (res.status === 200) {
-          AlertSuccess(res.message);
-          toggleModal();
-          getClassrooms();
-        } else {
-          AlertFailed(res.message);
-        }
-      }).finally(() => {
-        setSaving(false)
-      });;
-    }
+    new Service().createOrUpdate(query).then((res) => {
+      if (res.status === 200) {
+        AlertSuccess(`Classroom saved successfully`);
+        toggleModal();
+        getClassrooms();
+      } else {
+        AlertFailed(res.message);
+      }
+    }).finally(() => {
+      setSaving(false)
+    });
   };
 
   const editClassroom = (classroom) => {
@@ -101,10 +106,20 @@ export default function Classrooms() {
   const deleteClassroom = (classroom) => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
-        new Service().deleteClassroom(classroom.id)
+        let query = {
+          query: `mutation deleteClass($id: String!){
+            session: deleteClass(id: $id){
+              id
+            }
+          }`,
+          variables: {
+            "id": classroom.id
+          }
+        }
+        new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(res.message);
+              AlertSuccess(`${classroom.level} ${classroom.stream} deleted successfully`);
             } else {
               AlertFailed(res.message);
             }
