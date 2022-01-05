@@ -5,7 +5,7 @@ export enum StaffType {
   StaffTypeSupport = "Non Teaching",
 }
 
-export interface StaffRole {
+export interface Role {
   id?: string;
   schoolID?: string;
   name: string;
