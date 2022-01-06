@@ -28,6 +28,7 @@
     "react-data-table-component": "^7.4.5",
     "react-dom": "^17.0.2",
     "react-fancy-loader": "^0.3.17",
+    "react-nice-avatar": "^1.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "reactstrap": "^8.9.0",

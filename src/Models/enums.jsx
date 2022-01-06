@@ -9,7 +9,5 @@ export const EmploymentType = {
 
 export const Gender = {
   GenderMale: "male",
-  GenderFemale: "female",
-  GenderOther: "other",
-  GenderUnknown: "unknown"
+  GenderFemale: "female"
 }
