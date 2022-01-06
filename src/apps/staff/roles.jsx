@@ -131,7 +131,7 @@ const StaffRoles = () => {
       variables: {}
     }
     new Service().getData(rolesQuery).then((res) => {
-      setRoles(res.roles || [])
+      setRoles(res?.roles || [])
       setLoading(false)
     });
   };
@@ -169,6 +169,7 @@ const StaffRoles = () => {
       </div>
 
       <DataTable
+        title="Staff Roles & Positions"
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}

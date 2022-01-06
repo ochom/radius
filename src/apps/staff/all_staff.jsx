@@ -5,11 +5,11 @@ import {
   AlertSuccess,
   ConfirmAlert,
 } from "../../components/alerts";
-import profile from "../../static/profile.jpg";
 import { DropdownMenu } from "../../components/menus";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
+import { UserAvatar } from "../../components/avatars";
 
 
 const AllStaff = () => {
@@ -37,7 +37,7 @@ const AllStaff = () => {
       variables: {}
     }
     new Service().getData(staffsQuery).then((res) => {
-      setStaffs(res.staffs || [])
+      setStaffs(res?.staffs || [])
       setLoading(false)
     });
   };
@@ -99,7 +99,7 @@ const AllStaff = () => {
         progressPending={loading}
         columns={cols} data={staffs.map((d) => {
           return {
-            photo: <img src={profile} alt="P" className="user-thumbnail" />,
+            photo: <UserAvatar sex={d.gender} />,
             serialNumber: d.serialNumber,
             name: `${d.firstName} ${d.lastName}`,
             employer: d.employer,

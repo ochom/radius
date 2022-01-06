@@ -5,17 +5,17 @@ import {
   AlertSuccess,
   ConfirmAlert,
 } from "../../components/alerts";
-import profile from "../../static/profile.jpg";
 import { DropdownMenu } from "../../components/menus";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
-
+import { UserAvatar } from "../../components/avatars";
 
 const AllStudent = () => {
   const [loading, setLoading] = useState(true);
 
   const [students, setStudents] = useState([]);
+
 
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const AllStudent = () => {
       variables: {}
     }
     new Service().getData(query).then((res) => {
-      setStudents(res.students || [])
+      setStudents(res?.students || [])
       setLoading(false)
     });
   };
@@ -78,7 +78,7 @@ const AllStudent = () => {
 
   const cols = [
     { name: "", selector: row => row.photo, width: '70px' },
-    { name: "#", selector: row => row.serialNumber, sortable: true, width: '80px' },
+    { name: "#", selector: row => row.serialNumber, sortable: true, width: '100px', },
     { name: "Name", selector: row => row.name, sortable: true },
     { name: "Level", selector: row => row.level, sortable: true },
     { name: "Stream", selector: row => row.stream, sortable: true },
@@ -98,12 +98,11 @@ const AllStudent = () => {
     <>
       <DataTable
         title="All students"
-        defaultSortFieldId={2}
         progressPending={loading}
         columns={cols}
         data={students.map((d) => {
           return {
-            photo: <img src={profile} alt="P" className="user-thumbnail" />,
+            photo: <UserAvatar sex={d.gender} />,
             serialNumber: d.admissionNumber,
             name: d.fullName,
             level: d.class.level,
