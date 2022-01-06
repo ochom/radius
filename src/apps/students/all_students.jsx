@@ -39,7 +39,7 @@ const AllStudent = () => {
       variables: {}
     }
     new Service().getData(query).then((res) => {
-      setStudents(res.students || [])
+      setStudents(res?.students || [])
       setLoading(false)
     });
   };

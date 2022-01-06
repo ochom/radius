@@ -42,7 +42,6 @@ function DataTableBase(props) {
     <DataTable
       progressComponent={<CustomLoader />}
       pagination
-      subHeader
       customStyles={customStyles}
       selectableRowsComponent={Checkbox}
       selectableRowsComponentProps={selectProps}

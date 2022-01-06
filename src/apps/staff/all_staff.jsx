@@ -37,7 +37,7 @@ const AllStaff = () => {
       variables: {}
     }
     new Service().getData(staffsQuery).then((res) => {
-      setStaffs(res.staffs || [])
+      setStaffs(res?.staffs || [])
       setLoading(false)
     });
   };

@@ -155,8 +155,8 @@ export default function Classrooms() {
       variables: {}
     }
     new Service().getData(classesQuery).then((res) => {
-      setClasses(res.classes || [])
-      setTeachers(res.teachers || [])
+      setClasses(res?.classes || [])
+      setTeachers(res?.teachers || [])
       setLoading(false)
     });
   };
