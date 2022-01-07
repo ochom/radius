@@ -50,7 +50,7 @@ const StudentDetails = (props) => {
 
   if (!student) {
     return <Paper sx={{ px: 5, py: 2 }} className="col-6 mx-auto">
-      <Alert variant="warning">Student not found</Alert>
+      <div className="py-5 d-flex justify-content-center"><Alert severity="warning">Student not found</Alert></div>
     </Paper>
   }
 
@@ -89,18 +89,18 @@ const StudentDetails = (props) => {
       <Divider />
       <Box sx={{ width: '100%' }}>
         <Tabs
-          sx={{ borderBottom: '1px solid #e8e8e8' }}
+          sx={{ borderBottom: '1px solid #e8e8e8', }}
           value={tabIndex}
           onChange={selectTab}
           textColor="secondary"
           indicatorColor="secondary">
-          <Tab icon={<Info />} iconPosition="start" label="About"  {...panelProps(0)} />
-          <Tab icon={<Group />} iconPosition="start" label="Parents"  {...panelProps(1)} />
-          <Tab icon={<School />} iconPosition="start" label="Courses"  {...panelProps(2)} />
-          <Tab icon={<Assessment />} iconPosition="start" label="Exams"  {...panelProps(3)} />
-          <Tab icon={<Receipt />} iconPosition="start" label="Invoices"  {...panelProps(4)} />
-          <Tab icon={<EmojiEvents />} iconPosition="start" label="Awards"  {...panelProps(5)} />
-          <Tab icon={<Gavel />} iconPosition="start" label="Discipline"  {...panelProps(6)} />
+          <Tab icon={<Info sx={{ fontSize: 20 }} />} iconPosition="start" label="About"  {...panelProps(0)} />
+          <Tab icon={<Group sx={{ fontSize: 20 }} />} iconPosition="start" label="Parents"  {...panelProps(1)} />
+          <Tab icon={<School sx={{ fontSize: 20 }} />} iconPosition="start" label="Courses"  {...panelProps(2)} />
+          <Tab icon={<Assessment sx={{ fontSize: 20 }} />} iconPosition="start" label="Exams"  {...panelProps(3)} />
+          <Tab icon={<Receipt sx={{ fontSize: 20 }} />} iconPosition="start" label="Invoices"  {...panelProps(4)} />
+          <Tab icon={<EmojiEvents sx={{ fontSize: 20 }} />} iconPosition="start" label="Awards"  {...panelProps(5)} />
+          <Tab icon={<Gavel sx={{ fontSize: 20 }} />} iconPosition="start" label="Discipline"  {...panelProps(6)} />
         </Tabs>
         <TabPanel value={tabIndex} index={0}>
           <div>

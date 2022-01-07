@@ -29,5 +29,6 @@ export function panelProps(index) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
+    sx: { fontSize: "0.8rem", pb: 0, pt: 0 }
   };
 }
