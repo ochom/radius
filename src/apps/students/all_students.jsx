@@ -10,11 +10,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
 import { UserAvatar } from "../../components/avatars";
+import { useHistory } from "react-router-dom";
 
 const AllStudent = () => {
   const [loading, setLoading] = useState(true);
 
   const [students, setStudents] = useState([]);
+
+  let history = useHistory();
 
 
 
@@ -73,8 +76,12 @@ const AllStudent = () => {
     });
   };
 
+  const viewStudent = (student) => {
+    history.push(`/students/profile/${student.id}`);
+  }
 
-  let dropMenuOptions = [{ "title": "View", action: deleteStudent, icon: <OpenInBrowser fontSize="small" /> }, { "title": "Delete", action: deleteStudent, icon: <DeleteIcon fontSize="small" color="red" /> }]
+
+  let dropMenuOptions = [{ "title": "View", action: viewStudent, icon: <OpenInBrowser fontSize="small" /> }, { "title": "Delete", action: deleteStudent, icon: <DeleteIcon fontSize="small" color="red" /> }]
 
   const cols = [
     { name: "", selector: row => row.photo, width: '70px' },

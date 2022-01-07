@@ -2,7 +2,7 @@ import { Group, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import { Button, Checkbox, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from "@mui/material";
+import { Alert, Button, Checkbox, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
   AlertFailed,
@@ -92,8 +92,8 @@ const NewStaff = () => {
     return (
       <Paper sx={{ px: 5, py: 2 }}>
         <div className="py-5">
-          <div className="d-flex justify-content-center">
-            <span className="alert alert-success border-0 ">Staff created successfully</span>
+          <div className="d-flex justify-content-center my-5">
+            <Alert severity='success'>Student created successfully</Alert>
           </div>
           <div className="d-flex justify-content-center">
             <Button variant='contained' color='secondary' size='large' onClick={onNewStaff}>Add New Staff</Button>
