@@ -15,6 +15,7 @@ body {
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
+  overflow-y: auto;
 }
 
 .sidebar {
@@ -32,13 +33,17 @@ body {
 
     .logo_content {
       .logo {
-        opacity: 1;
+        i {
+          transition: all 0.5s ease;
+          transform: translateX(0);
+        }
+        .logo_name {
+          opacity: 1;
+          transition: all 0.5s ease;
+        }
       }
     }
 
-    #btn {
-      left: 90%;
-    }
     ul {
       li {
         &:hover {
@@ -53,53 +58,30 @@ body {
       opacity: 1;
       pointer-events: auto;
     }
-
-    .profile_content {
-      .profile {
-        background: #1d1b31;
-        .profile_details {
-          opacity: 1;
-          pointer-events: auto;
-        }
-      }
-    }
   }
 
   .logo_content {
     .logo {
-      color: #fff;
+      color: lime;
       display: flex;
-      height: 50px;
+      height: 3rem;
       width: 100%;
       align-items: center;
       margin-left: 22px;
-      opacity: 0;
       pointer-events: none;
-      transition: all 0.5s ease;
       i {
+        transition: all 0.5s ease;
+        transform: translateX(-50%);
         font-size: 2rem;
         margin-right: 5px;
       }
       .logo_name {
+        opacity: 0;
         font-size: 1.5rem;
         margin-right: 400;
-        color: lime;
+        transition: all 0.5s ease;
       }
     }
-  }
-
-  #btn {
-    position: absolute;
-    color: #fff;
-    left: 50%;
-    top: 6px;
-    font-size: 1.5rem;
-    height: 50px;
-    width: 50px;
-    text-align: center;
-    line-height: 50px;
-    transform: translateX(-50%);
-    cursor: pointer;
   }
 
   ul {
@@ -107,11 +89,11 @@ body {
     padding: 0px;
     li {
       position: relative;
-      height: 50px;
+      height: 3.5rem;
       width: 100%;
       margin: 0;
       list-style: none;
-      line-height: 50px;
+      line-height: 3rem;
 
       .tooltip {
         position: absolute;
@@ -157,10 +139,10 @@ body {
       }
 
       i {
-        height: 50px;
-        min-width: 50px;
+        height: 3rem;
+        min-width: 3rem;
         border-radius: 12px;
-        line-height: 50px;
+        line-height: 3rem;
         text-align: center;
       }
     }
@@ -170,45 +152,6 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: all 0.5s ease;
-  }
-
-  .profile_content {
-    position: absolute;
-    color: #fff;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    cursor: pointer;
-    .profile {
-      position: relative;
-      padding: 10px 6px;
-      height: 60px;
-      transition: all 0.4s ease;
-      background: none;
-      .profile_details {
-        display: flex;
-        align-items: center;
-        opacity: 0;
-        pointer-events: none;
-        white-space: nowrap;
-        img {
-          height: 2.5rem;
-          width: 2.5rem;
-          object-fit: cover;
-          border-radius: 12px;
-        }
-        .name_job {
-          margin-left: 10px;
-        }
-        .name {
-          font-size: 1rem;
-          font-weight: 400;
-        }
-        .job {
-          font-size: 0.8rem;
-        }
-      }
-    }
   }
 }
 
@@ -225,21 +168,6 @@ body {
     display: flex;
     align-items: center;
     border-bottom: 1px solid #11101d2c;
-
-    .school_brand {
-      width: 35px;
-      height: 35px;
-      margin-left: 12px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-
-    .school_name {
-      font-size: 1.5rem;
-      font-weight: 500;
-      color: #424141;
-      margin: 12px;
-    }
   }
 }
 

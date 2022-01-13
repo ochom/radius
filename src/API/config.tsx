@@ -1,4 +1,4 @@
-import { LoginResponse } from "../Models/auth";
+import { Auth } from "../Models/common";
 
 export const API_ROOT = process.env.REACT_APP_API_ROUTE;
 
@@ -7,10 +7,10 @@ let VERSION_ROOT = API_ROOT + "/api/v1/";
 export const AuthHeaders = () => {
   let authUser = localStorage.getItem("authUser");
   if (authUser) {
-    let user: LoginResponse = JSON.parse(authUser);
-    if (user) {
+    let auth: Auth = JSON.parse(authUser);
+    if (auth) {
       return {
-        Authorization: `Bearer ${user.auth.token}`,
+        Authorization: `Bearer ${auth.token}`,
       };
     }
   }
