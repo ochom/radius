@@ -4,6 +4,7 @@ import { Service } from '../../API/service';
 import { CustomLoader } from "../../components/monitors"
 import { Adjust, Apartment, Assessment, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
 import { panelProps, TabPanel } from "../../components/tabs";
+import { Link } from "react-router-dom";
 
 const StudentDetails = (props) => {
   const [student, setStudent] = useState(false);
@@ -85,6 +86,9 @@ const StudentDetails = (props) => {
             <Rating precision={0.5} name="read-only" value={1} readOnly size="large" icon={<EmojiEvents />} emptyIcon={<EmojiEventsOutlined />} />
           </Stack>
         </Stack>
+        <Box sx={{ display: 'flex' }}>
+          <Link to={`/students/profile/${student.id}/edit`}>Edit</Link>
+        </Box>
       </Box>
       <Divider />
       <Box sx={{ width: '100%' }}>

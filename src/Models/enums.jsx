@@ -1,13 +1,6 @@
-export const StaffType = {
-  StaffTypeTeacher: "Teaching",
-  StaffTypeSupport: "Support staff"
-}
-export const EmploymentType = {
-  BOGEmployment: "Board of Management",
-  TSCEmployment: "Teachers Service Commission"
-}
+export const StaffType = ["Teaching", "Support staff"]
 
-export const Gender = {
-  GenderMale: "male",
-  GenderFemale: "female"
-}
+export const EmploymentType = ["Board of Management", "Teachers Service Commission"]
+
+
+export const Gender = ["male", "female"]

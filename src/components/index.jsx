@@ -74,7 +74,7 @@ function TopBar(props) {
           </Typography>
 
           <div>
-            <tooltip title="Open settings">
+            <tooltip title="Open settings" is="native-html">
               <IconButton onClick={handleOpen}>
                 <Avatar alt={user.firstName} src={profile} />
               </IconButton>

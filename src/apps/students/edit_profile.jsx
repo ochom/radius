@@ -1,4 +1,4 @@
-import { Group, Save } from '@mui/icons-material';
+import { Edit, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
@@ -11,6 +11,8 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Service } from '../../API/service';
 import { Gender } from '../../Models/enums';
+import { Link } from 'react-router-dom';
+import { CustomLoader } from '../../components/monitors';
 
 
 const initialFormData = {
@@ -24,33 +26,49 @@ const initialFormData = {
   homeAddress: "",
 }
 
-const NewStudent = () => {
+const EditStudent = (props) => {
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [studentID, setStudentID] = useState("")
 
   const [formData, setFormData] = useState(initialFormData)
 
   const [classrooms, setClassrooms] = useState([]);
 
-  const getClassrooms = () => {
+
+  useEffect(() => {
+    setStudentID(props.match.params.uid)
     let query = {
-      query: `query classrooms{
+      query: `query loadData($id: ID!){
         classrooms: getClasses{
           id
           level
           stream
         }
+        student: getStudent(id: $id){
+          fullName,
+          admissionNumber,
+          dateOfAdmission,
+          nationalID,
+          gender,
+          dateOfBirth,
+          homeAddress,
+          class{
+            id
+          }
+        }
       }`,
-      variables: {}
+      variables: {
+        id: studentID
+      }
     }
     new Service().getData(query).then((res) => {
       setClassrooms(res?.classrooms.sort((a, b) => a.level > b.level) || [])
+      setFormData({ ...res?.student, classID: res?.student.class.id })
+      setLoading(false)
     });
-  };
-
-  useEffect(() => {
-    getClassrooms()
-  }, []);
+  }, [props, studentID]);
 
   const submitForm = e => {
     e.preventDefault();
@@ -84,15 +102,22 @@ const NewStudent = () => {
     setFormData(initialFormData)
   }
 
+  if (loading) {
+    return (
+      <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
+        <CustomLoader />
+      </Paper>)
+  }
+
   if (saved) {
     return (
-      <Paper sx={{ px: 5, py: 2 }}>
+      <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
         <div className="py-5">
           <div className="d-flex justify-content-center my-5">
-            <Alert severity='success'>Student created successfully</Alert>
+            <Alert severity='success'>Student details updated successfully</Alert>
           </div>
           <div className="d-flex justify-content-center">
-            <Button variant='contained' color='secondary' size='large' onClick={onNewStudent}>Add New Student</Button>
+            <Link to={`/students/profile/${studentID}`} variant='contained' color='secondary' size='large' onClick={onNewStudent}>View Profile</Link>
           </div>
         </div>
       </Paper>
@@ -103,11 +128,11 @@ const NewStudent = () => {
     <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
       <div className="d-flex my-3">
         <Button variant="outlined" color='secondary'>
-          <Group />
+          <Edit />
         </Button>
         <div className="ms-4">
-          <h3 className='p-0 m-0'>New Student</h3>
-          <p className='text-secondary m-0'>create new student profile.</p>
+          <h3 className='p-0 m-0'>Edit Student</h3>
+          <p className='text-secondary m-0'>edit student profile profile.</p>
         </div>
       </div>
       <form onSubmit={submitForm} method="post">
@@ -217,4 +242,4 @@ const NewStudent = () => {
   );
 };
 
-export default NewStudent;
+export default EditStudent;
