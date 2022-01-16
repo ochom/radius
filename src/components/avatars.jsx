@@ -1,7 +1,5 @@
 import Avatar, { genConfig } from 'react-nice-avatar'
 import { Avatar as CustomAvatar } from '@mui/material'
-import { API_ROOT } from '../API/config'
-
 
 export const UserAvatar = (props) => {
   const { sex, src, alt } = props
@@ -12,7 +10,7 @@ export const UserAvatar = (props) => {
   })
 
   if (src) {
-    return <CustomAvatar className="user-thumbnail" src={`${API_ROOT}/${src}`} alt={alt} />
+    return <CustomAvatar className="user-thumbnail" src={src} alt={alt} />
   }
 
   return <Avatar {...avatarConfig} className="user-thumbnail" sex={sex === "male" ? "man" : "woman"} hairStyle={sex === "male" ? "thick" : "womanLong"} />

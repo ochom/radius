@@ -7,7 +7,6 @@ import { panelProps, TabPanel } from "../../components/tabs";
 import { Link } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { UploadService } from "../../API/uploads";
-import { API_ROOT } from "../../API/config";
 
 const photo = {
   url: "",
@@ -56,7 +55,7 @@ const StudentDetails = (props) => {
     }
     new Service().getData(query).then((res) => {
       setStudent(res?.student || null)
-      setPassport({ ...photo, url: `${API_ROOT}/${res?.student.passport}` })
+      setPassport({ ...photo, url: res?.student.passport })
       setLoading(false)
     });
   }, [props]);
