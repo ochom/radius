@@ -53,7 +53,7 @@ const AllStaff = () => {
             }
           }`,
           variables: {
-            "id": staff.id
+            id: staff.id
           }
         }
         new Service().delete(query)

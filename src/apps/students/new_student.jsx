@@ -63,7 +63,7 @@ const NewStudent = () => {
         }
       }`,
       variables: {
-        "data": formData
+        data: formData
       }
     }
 

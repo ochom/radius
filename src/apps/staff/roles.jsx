@@ -53,8 +53,8 @@ const StaffRoles = () => {
         }
       }`,
         variables: {
-          "id": selectedRole.id,
-          "data": formData
+          id: selectedRole.id,
+          data: formData
         }
       } :
       {
@@ -64,7 +64,7 @@ const StaffRoles = () => {
         }
       }`,
         variables: {
-          "data": formData
+          data: formData
         }
       }
 
@@ -100,7 +100,7 @@ const StaffRoles = () => {
             }
           }`,
           variables: {
-            "id": role.id
+            id: role.id
           }
         }
         new Service().delete(query)

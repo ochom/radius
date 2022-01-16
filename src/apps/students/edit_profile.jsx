@@ -1,4 +1,4 @@
-import { Edit, Save } from '@mui/icons-material';
+import { Cancel, Edit, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
@@ -65,7 +65,16 @@ const EditStudent = (props) => {
     }
     new Service().getData(query).then((res) => {
       setClassrooms(res?.classrooms.sort((a, b) => a.level > b.level) || [])
-      setFormData({ ...res?.student, classID: res?.student.class.id })
+      setFormData({
+        fullName: res?.student.fullName,
+        classID: res?.student.class.id,
+        admissionNumber: res?.student.admissionNumber,
+        dateOfAdmission: res?.student.dateOfAdmission,
+        nationalID: res?.student.nationalID,
+        gender: res?.student.gender,
+        dateOfBirth: res?.student.dateOfBirth,
+        homeAddress: res?.student.homeAddress,
+      })
       setLoading(false)
     });
   }, [props, studentID]);
@@ -75,19 +84,20 @@ const EditStudent = (props) => {
     setSaving(true)
     let query =
     {
-      query: `mutation createStudent($data: NewStudent!){
-        session: createStudent(input: $data){
+      query: `mutation updateStudent($id:ID!, $data: NewStudent!){
+        student: updateStudent(id: $id, input: $data){
           id
         }
       }`,
       variables: {
-        "data": formData
+        id: studentID,
+        data: formData
       }
     }
 
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Student saved successfully`);
+        AlertSuccess(`Student details updated`);
         setSaved(true)
       } else {
         AlertFailed(res.message);
@@ -97,10 +107,6 @@ const EditStudent = (props) => {
     });
   };
 
-  const onNewStudent = () => {
-    setSaved(false)
-    setFormData(initialFormData)
-  }
 
   if (loading) {
     return (
@@ -117,7 +123,7 @@ const EditStudent = (props) => {
             <Alert severity='success'>Student details updated successfully</Alert>
           </div>
           <div className="d-flex justify-content-center">
-            <Link to={`/students/profile/${studentID}`} variant='contained' color='secondary' size='large' onClick={onNewStudent}>View Profile</Link>
+            <Link to={`/students/profile/${studentID}`} className="btn btn-success">Go to Student Profile</Link>
           </div>
         </div>
       </Paper>
@@ -236,6 +242,10 @@ const EditStudent = (props) => {
             loading={saving}
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
+
+          <Link to={`/students/profile/${studentID}`} className="btn btn-outline-primary ms-3">
+            <Cancel /> Cancel
+          </Link>
         </div>
       </form>
     </Paper>

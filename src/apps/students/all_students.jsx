@@ -33,6 +33,7 @@ const AllStudent = () => {
           fullName
           admissionNumber
           gender
+          passport
           class{
             level
             stream
@@ -58,7 +59,7 @@ const AllStudent = () => {
             }
           }`,
           variables: {
-            "id": student.id
+            id: student.id
           }
         }
         new Service().delete(query)
@@ -109,7 +110,7 @@ const AllStudent = () => {
         columns={cols}
         data={students.map((d) => {
           return {
-            photo: <UserAvatar sex={d.gender} />,
+            photo: <UserAvatar sex={d.gender} src={d.passport} alt={d.fullName} />,
             serialNumber: d.admissionNumber,
             name: d.fullName,
             level: d.class.level,

@@ -27,15 +27,5 @@ export const URLS = {
   LOGIN: `${VERSION_ROOT}login`,
   REGISTER: `${VERSION_ROOT}register`,
 
-  ALL_ROLES: `${VERSION_ROOT}staff-roles`,
-  ONE_ROLE: `${VERSION_ROOT}staff-roles/`,
-
-  ALL_STAFFS: `${VERSION_ROOT}staffs`,
-  ONE_STAFF: `${VERSION_ROOT}staffs/`,
-
-  ALL_CLASSROOMS: `${VERSION_ROOT}classes`,
-  ONE_CLASSROOM: `${VERSION_ROOT}classes/`,
-
-  ALL_SESSIONS: `${VERSION_ROOT}sessions`,
-  ONE_SESSION: `${VERSION_ROOT}sessions/`,
+  STUDENT_PASSPORT: `${VERSION_ROOT}upload/student-passport`,
 };

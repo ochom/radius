@@ -67,7 +67,7 @@ const NewStaff = () => {
         }
       }`,
       variables: {
-        "data": formData
+        data: formData
       }
     }
 
