@@ -4,7 +4,7 @@ import { Service } from '../../API/service';
 import { CustomLoader } from "../../components/monitors"
 import { AddPhotoAlternate, Adjust, Apartment, Assessment, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
 import { panelProps, TabPanel } from "../../components/tabs";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { UploadService } from "../../API/uploads";
 
@@ -15,6 +15,7 @@ const photo = {
 }
 
 const StudentDetails = (props) => {
+  const { uid } = useParams()
   const [student, setStudent] = useState(false);
   const [passport, setPassport] = useState(photo)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -50,7 +51,7 @@ const StudentDetails = (props) => {
         }
       `,
       variables: {
-        id: props.match.params.uid
+        id: uid
       }
     }
     new Service().getData(query).then((res) => {
@@ -58,13 +59,14 @@ const StudentDetails = (props) => {
       setPassport({ ...photo, url: res?.student.passport })
       setLoading(false)
     });
-  }, [props]);
+  }, [uid]);
 
   const handleImage = (e) => {
     var el = window._protected_reference = document.createElement("INPUT");
     el.type = "file";
     el.accept = "image/*";
     el.addEventListener("change", (e2) => {
+      window._protected_reference = null
       if (el.files.length) {
         setPassport({ url: URL.createObjectURL(el.files[0]), isNew: true, image: el.files[0] })
       }

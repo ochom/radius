@@ -14,7 +14,7 @@ export const Login = (data: any) => {
     })
     .catch((err) => {
       let response: Response = {
-        message: err.response ? err.response.data : err,
+        message: err.response?.data || err,
       };
       return response;
     });
@@ -32,7 +32,7 @@ export const Register = (data: any) => {
     })
     .catch((err) => {
       let response: Response = {
-        message: err.response ? err.response.data : err,
+        message: err.response?.data || err,
       };
       return response;
     });

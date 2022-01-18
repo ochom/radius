@@ -53,7 +53,7 @@ export class Service {
           };
         } else {
           response = {
-            message: err.response ? err.response.data : err,
+            message: err.response?.data || err,
           };
         }
         return response;
@@ -89,7 +89,7 @@ export class Service {
       })
       .catch((err) => {
         let response: Response = {
-          message: err.response ? err.response.data : err,
+          message: err.response?.data || err,
         };
         return response;
       });
@@ -122,7 +122,7 @@ export class Service {
       })
       .catch((err) => {
         let response: Response = {
-          message: err.response ? err.response.data : err,
+          message: err.response?.data || err,
         };
         return response;
       });

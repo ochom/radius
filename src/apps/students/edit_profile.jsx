@@ -11,7 +11,7 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Service } from '../../API/service';
 import { Gender } from '../../Models/enums';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { CustomLoader } from '../../components/monitors';
 
 
@@ -27,10 +27,10 @@ const initialFormData = {
 }
 
 const EditStudent = (props) => {
+  const { uid } = useParams()
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [studentID, setStudentID] = useState("")
 
   const [formData, setFormData] = useState(initialFormData)
 
@@ -38,7 +38,6 @@ const EditStudent = (props) => {
 
 
   useEffect(() => {
-    setStudentID(props.match.params.uid)
     let query = {
       query: `query loadData($id: ID!){
         classrooms: getClasses{
@@ -60,7 +59,7 @@ const EditStudent = (props) => {
         }
       }`,
       variables: {
-        id: studentID
+        id: uid
       }
     }
     new Service().getData(query).then((res) => {
@@ -77,7 +76,7 @@ const EditStudent = (props) => {
       })
       setLoading(false)
     });
-  }, [props, studentID]);
+  }, [uid]);
 
   const submitForm = e => {
     e.preventDefault();
@@ -90,7 +89,7 @@ const EditStudent = (props) => {
         }
       }`,
       variables: {
-        id: studentID,
+        id: uid,
         data: formData
       }
     }
@@ -123,7 +122,7 @@ const EditStudent = (props) => {
             <Alert severity='success'>Student details updated successfully</Alert>
           </div>
           <div className="d-flex justify-content-center">
-            <Link to={`/students/profile/${studentID}`} className="btn btn-success">Go to Student Profile</Link>
+            <Link to={`/students/profile/${uid}`} className="btn btn-success">Go to Student Profile</Link>
           </div>
         </div>
       </Paper>
@@ -243,7 +242,7 @@ const EditStudent = (props) => {
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
 
-          <Link to={`/students/profile/${studentID}`} className="btn btn-outline-primary ms-3">
+          <Link to={`/students/profile/${uid}`} className="btn btn-outline-primary ms-3">
             <Cancel /> Cancel
           </Link>
         </div>
