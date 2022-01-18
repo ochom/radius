@@ -67,7 +67,7 @@ const NewStaff = () => {
         }
       }`,
       variables: {
-        "data": formData
+        data: formData
       }
     }
 
@@ -141,7 +141,7 @@ const NewStaff = () => {
                 value={formData.gender}
                 onChange={e => setFormData({ ...formData, gender: e.target.value })}
               >
-                {Object.entries(Gender).map(k => <MenuItem value={k[0]} key={k[0]}>{k[1]}</MenuItem>)}
+                {Gender.map(k => <MenuItem value={k} key={k}>{k}</MenuItem>)}
               </Select>
             </FormControl>
           </div>
@@ -209,7 +209,7 @@ const NewStaff = () => {
                 fullWidth
                 onChange={e => setFormData({ ...formData, staffType: e.target.value })}
               >
-                {Object.entries(StaffType).map(k => <MenuItem value={k[0]} key={k[0]}>{k[1]}</MenuItem>)}
+                {StaffType.map(k => <MenuItem value={k} key={k}>{k}</MenuItem>)}
               </Select>
             </FormControl>
           </div>
@@ -243,7 +243,7 @@ const NewStaff = () => {
                 fullWidth
                 onChange={e => setFormData({ ...formData, employer: e.target.value })}
               >
-                {Object.entries(EmploymentType).map(k => <MenuItem value={k[0]} key={k[0]}>{k[1]}</MenuItem>)}
+                {EmploymentType.map(k => <MenuItem value={k} key={k}>{k}</MenuItem>)}
               </Select>
             </FormControl>
           </div>

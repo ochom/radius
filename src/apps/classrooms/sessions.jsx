@@ -61,8 +61,8 @@ export default function Sessions() {
           }
         }`,
         variables: {
-          "id": selectedSession.id,
-          "data": formData
+          id: selectedSession.id,
+          data: formData
         }
       } :
       {
@@ -72,7 +72,7 @@ export default function Sessions() {
           }
         }`,
         variables: {
-          "data": formData
+          data: formData
         }
       }
 
@@ -112,7 +112,7 @@ export default function Sessions() {
             }
           }`,
           variables: {
-            "id": session.id
+            id: session.id
           }
         }
         new Service().delete(query)

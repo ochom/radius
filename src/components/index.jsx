@@ -1,3 +1,6 @@
+import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
+import { Menu as MenuIcon } from '@mui/icons-material'
+import { Box } from "@mui/system";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { NavLink, Redirect } from "react-router-dom";
@@ -30,16 +33,78 @@ function SubMenu({ titleIcon, titleName, items }) {
 }
 
 function TopBar(props) {
-  const { school } = props;
+  const { user, toggleSideNav } = props;
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  let history = useHistory();
+
+  const handleOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("authUser");
+    history.push("/register");
+  };
+
+
+  const settings = [{ title: 'Profile', action: handleClose }, { title: 'Account', action: handleClose }, { title: 'Logout', action: logout }];
+
   return (
-    <div className="topbar">
-      <img
-        src="https://media.istockphoto.com/vectors/black-and-white-illustration-of-a-school-logo-vector-id1136343416?k=6&m=1136343416&s=170667a&w=0&h=sztUR6SSjxwCNjRhfJGmdVoIbGUTADrbDde98A_x4qc="
-        alt="brand"
-        className="school_brand"
-      />
-      <b className="school_name">{school?.name}</b>
-    </div>
+    <Box className="topbar">
+      <AppBar position="static" color="secondary">
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={toggleSideNav}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            {user.school.name}
+          </Typography>
+
+          <div>
+            <tooltip title="Open settings" is="native-html">
+              <IconButton onClick={handleOpen}>
+                <Avatar alt={user.firstName} src={profile} />
+              </IconButton>
+            </tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting.title} onClick={setting.action}>
+                  <Typography textAlign="center">{setting.title}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 }
 
@@ -118,15 +183,8 @@ const menuItems = [
 ];
 
 function Sidenav(props) {
-  const { email, name } = props;
-  const [active, setActive] = useState(false);
+  const { active } = props;
 
-  let history = useHistory();
-
-  const logout = () => {
-    localStorage.removeItem("authUser");
-    history.push("/register");
-  };
 
   return (
     <div className={`sidebar${active ? " activated" : ""}`}>
@@ -135,11 +193,6 @@ function Sidenav(props) {
           <i className="bx bxl-sketch"></i>
           <div className="logo_name">Radius</div>
         </div>
-        <i
-          className="bx bx-menu"
-          id="btn"
-          onClick={() => setActive(!active)}
-        ></i>
       </div>
       <ul className="nav_list">
         {menuItems.map((item, index) => (
@@ -157,17 +210,6 @@ function Sidenav(props) {
           </li>
         ))}
       </ul>
-      <div className="profile_content" onClick={logout}>
-        <div className="profile">
-          <div className="profile_details">
-            <img src={profile} alt="Profile" />
-            <div className="name_job">
-              <div className="name">{name}</div>
-              <div className="job">{email}</div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -175,15 +217,20 @@ function Sidenav(props) {
 function DefaultPageLayout({ children }) {
   var user = null;
   var data = localStorage.getItem("authUser");
+  const [active, setActive] = useState(true)
   if (data) {
     user = JSON.parse(data);
+  }
+
+  const toggleSideNav = () => {
+    setActive(!active)
   }
 
   if (!user) {
     return <Redirect to="/register" />;
   }
 
-  var token = user.auth.token;
+  var token = user.token;
   if (!token) {
     return <Redirect to="/register" />;
   }
@@ -191,11 +238,12 @@ function DefaultPageLayout({ children }) {
   return (
     <React.Fragment>
       <Sidenav
-        email={user?.auth.email}
-        name={`${user?.auth.firstName} ${user?.auth.lastName}`}
+        email={user.email}
+        name={`${user.firstName} ${user.lastName}`}
+        active={active}
       />
       <div className="home_content">
-        <TopBar school={user?.school} />
+        <TopBar user={user} toggleSideNav={toggleSideNav} />
         {children}
       </div>
     </React.Fragment>

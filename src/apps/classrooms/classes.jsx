@@ -64,8 +64,8 @@ export default function Classrooms() {
         }
       }`,
         variables: {
-          "id": selectedClassroom.id,
-          "data": formData
+          id: selectedClassroom.id,
+          data: formData
         }
       } :
       {
@@ -75,7 +75,7 @@ export default function Classrooms() {
         }
       }`,
         variables: {
-          "data": formData
+          data: formData
         }
       }
 
@@ -113,7 +113,7 @@ export default function Classrooms() {
             }
           }`,
           variables: {
-            "id": classroom.id
+            id: classroom.id
           }
         }
         new Service().delete(query)

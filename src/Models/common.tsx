@@ -13,6 +13,7 @@ export interface Auth {
   email: string;
   token: string;
   refreshToken: string;
+  school: any;
 }
 
 export interface GraphError {
