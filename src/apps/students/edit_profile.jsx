@@ -1,4 +1,4 @@
-import { Cancel, Edit, Save } from '@mui/icons-material';
+import { Edit, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
@@ -11,7 +11,7 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Service } from '../../API/service';
 import { Gender } from '../../Models/enums';
-import { Link, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { CustomLoader } from '../../components/monitors';
 
 
@@ -28,6 +28,8 @@ const initialFormData = {
 
 const EditStudent = (props) => {
   const { uid } = useParams()
+  const history = useHistory()
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -106,6 +108,10 @@ const EditStudent = (props) => {
     });
   };
 
+  const openProfile = () => {
+    history.push(`/students/profile/${uid}`)
+  }
+
 
   if (loading) {
     return (
@@ -122,7 +128,7 @@ const EditStudent = (props) => {
             <Alert severity='success'>Student details updated successfully</Alert>
           </div>
           <div className="d-flex justify-content-center">
-            <Link to={`/students/profile/${uid}`} className="btn btn-success">Go to Student Profile</Link>
+            <Button variant='contained' color='secondary' onClick={openProfile}>Go to Student Profile</Button>
           </div>
         </div>
       </Paper>
@@ -242,9 +248,12 @@ const EditStudent = (props) => {
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
 
-          <Link to={`/students/profile/${uid}`} className="btn btn-outline-primary ms-3">
-            <Cancel /> Cancel
-          </Link>
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            sx={{ ml: 4 }}
+            onClick={openProfile}>Cancel</Button>
         </div>
       </form>
     </Paper>

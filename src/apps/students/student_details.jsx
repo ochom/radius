@@ -1,10 +1,10 @@
-import { Alert, Avatar, Box, Card, CircularProgress, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Service } from '../../API/service';
 import { CustomLoader } from "../../components/monitors"
-import { AddPhotoAlternate, Adjust, Apartment, Assessment, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
+import { AddPhotoAlternate, Adjust, Apartment, Assessment, Edit, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
 import { panelProps, TabPanel } from "../../components/tabs";
-import { Link, useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { UploadService } from "../../API/uploads";
 
@@ -16,12 +16,15 @@ const photo = {
 
 const StudentDetails = (props) => {
   const { uid } = useParams()
+  const history = useHistory()
+
   const [student, setStudent] = useState(false);
   const [passport, setPassport] = useState(photo)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [tabIndex, setTabIndex] = useState(0)
+
 
   const selectTab = (event, newValue) => {
     setTabIndex(newValue);
@@ -113,8 +116,8 @@ const StudentDetails = (props) => {
       <Box sx={{ p: 3, display: 'flex' }} >
         <Stack>
           <div style={{ position: "relative" }}>
-            <Avatar variant="rounded" src={passport.url} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
-              <AddPhotoAlternate sx={{ fontSize: 50 }} />
+            <Avatar variant="rounded" src={passport.url} alt={student.fullName} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
+              <AddPhotoAlternate sx={{ fontSize: "8rem" }} />
             </Avatar>
             {saving &&
               <Avatar variant="rounded" sx={{ position: "absolute", width: "10rem", height: "10rem", top: 0, left: 0, bgcolor: "#555555e2" }} >
@@ -130,35 +133,42 @@ const StudentDetails = (props) => {
               loading={saving}
               onClick={submitPassport}>Upload</LoadingButton>}
         </Stack>
-        <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
-          <Typography fontWeight={700}>{student.fullName}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {student.class.level} {student.class.stream}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.gender}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.age} yrs old
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <Adjust sx={{ fontSize: "1.2rem" }} color={student.active ? "success" : "disabled"} />  {student.active ? "Active" : "Not active"}
-          </Typography>
-        </Stack>
+        <Box >
+          <Box sx={{ display: 'flex' }}>
+            <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
+              <Typography fontWeight={700}>{student.fullName}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {student.class.level} {student.class.stream}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.gender}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.age} yrs old
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <Adjust sx={{ fontSize: "1.2rem" }} color={student.active ? "success" : "disabled"} />  {student.active ? "Active" : "Not active"}
+              </Typography>
+            </Stack>
 
-        <Stack spacing={3} sx={{ ml: { md: 5, lg: 20 } }}>
-          <Stack direction="column">
-            <Typography variant="body2" color="text.secondary">Academics </Typography>
-            <Rating precision={0.5} name="read-only" value={4.5} readOnly size="large" icon={<School />} emptyIcon={<SchoolOutlined />} />
-          </Stack>
+            <Stack spacing={3} sx={{ ml: { md: 5, lg: 20 } }}>
+              <Stack direction="column">
+                <Typography variant="body2" color="text.secondary">Academics </Typography>
+                <Rating precision={0.5} name="read-only" value={4.5} readOnly size="large" icon={<School />} emptyIcon={<SchoolOutlined />} />
+              </Stack>
 
-          <Stack direction="column">
-            <Typography variant="body2" color="text.secondary">Discipline </Typography>
-            <Rating precision={0.5} name="read-only" value={1} readOnly size="large" icon={<EmojiEvents />} emptyIcon={<EmojiEventsOutlined />} />
-          </Stack>
-        </Stack>
-        <Box sx={{ display: 'flex' }}>
-          <Link to={`/students/profile/${student.id}/edit`}>Edit</Link>
+              <Stack direction="column">
+                <Typography variant="body2" color="text.secondary">Discipline </Typography>
+                <Rating precision={0.5} name="read-only" value={1} readOnly size="large" icon={<EmojiEvents />} emptyIcon={<EmojiEventsOutlined />} />
+              </Stack>
+            </Stack>
+          </Box>
+
+          <Box sx={{ ml: 5, mt: 3, display: 'flex' }}>
+            <Button variant="outlined" color='secondary' onClick={() => { history.push(`/students/profile/${student.id}/edit`) }}>
+              <Edit /> <Typography sx={{ ml: 1 }}>Edit</Typography>
+            </Button>
+          </Box>
         </Box>
       </Box>
       <Divider />

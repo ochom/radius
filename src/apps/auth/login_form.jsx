@@ -1,6 +1,5 @@
 import React from "react";
 import { TextField } from "@mui/material";
-import { Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 export default function LoginForm({ loading, formData, submitFunction, updateFormData, setView }) {
@@ -53,8 +52,6 @@ export default function LoginForm({ loading, formData, submitFunction, updateFor
               color="secondary"
               size="large"
               loading={loading}
-              loadingPosition="start"
-              startIcon={<Save />}
             >
               {" "}
               Login

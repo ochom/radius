@@ -7,7 +7,7 @@ import {
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { OpenInBrowser } from "@mui/icons-material";
+import { Edit, OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
 import { UserAvatar } from "../../components/avatars";
 import { useHistory } from "react-router-dom";
@@ -77,12 +77,22 @@ const AllStudent = () => {
     });
   };
 
+
+
+  const editDetails = (student) => {
+    history.push(`/students/profile/${student.id}/edit`);
+  }
+
   const viewStudent = (student) => {
     history.push(`/students/profile/${student.id}`);
   }
 
 
-  let dropMenuOptions = [{ "title": "View", action: viewStudent, icon: <OpenInBrowser fontSize="small" /> }, { "title": "Delete", action: deleteStudent, icon: <DeleteIcon fontSize="small" color="red" /> }]
+  let dropMenuOptions = [
+    { "title": "Open", action: viewStudent, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
+    { "title": "Edit", action: editDetails, icon: <Edit fontSize="small" color="success" /> },
+    { "title": "Delete", action: deleteStudent, icon: <DeleteIcon fontSize="small" color="error" /> }
+  ]
 
   const cols = [
     { name: "", selector: row => row.photo, width: '70px' },

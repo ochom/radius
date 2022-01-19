@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
-$primary-color: #4e0c8bce;
+$primary-color: #9c27b0;
 
 * {
   margin: 0;
@@ -246,13 +246,21 @@ body {
   border: none;
   background-color: transparent;
   font-size: 2rem;
-  color: #3d3a3a;
+  color: $primary-color;
 }
 
 /* buttons */
 .btn-primary {
   background-color: $primary-color !important;
   border-color: $primary-color !important;
+  outline-color: $primary-color;
+}
+
+/* buttons */
+.btn-outline-primary {
+  background-color: #ffffff !important;
+  border-color: $primary-color !important;
+  color: $primary-color !important;
 }
 
 .user-thumbnail {
