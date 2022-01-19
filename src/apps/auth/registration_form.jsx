@@ -1,6 +1,5 @@
 import React from "react";
 import { Checkbox, TextField } from "@mui/material";
-import { Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
 export default function RegistrationForm({ loading, formData, submitFunction, updateFormData, setView }) {
@@ -153,8 +152,6 @@ export default function RegistrationForm({ loading, formData, submitFunction, up
                 color="secondary"
                 size="large"
                 loading={loading}
-                loadingPosition="start"
-                startIcon={<Save />}
               >
                 Save
               </LoadingButton>
