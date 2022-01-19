@@ -110,7 +110,7 @@ const AllStudent = () => {
         columns={cols}
         data={students.map((d) => {
           return {
-            photo: <UserAvatar sex={d.gender} src={d.passport} alt={d.fullName} />,
+            photo: <UserAvatar src={d.passport} alt={d.fullName} />,
             serialNumber: d.admissionNumber,
             name: d.fullName,
             level: d.class.level,
