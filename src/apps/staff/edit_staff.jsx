@@ -1,8 +1,8 @@
-import { Edit, Save } from '@mui/icons-material';
+import { Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import { Alert, Button, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, TextField } from "@mui/material";
+import { Alert, Avatar, Button, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
   AlertFailed,
@@ -11,6 +11,8 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Service } from '../../API/service';
 import { EmploymentType, Gender, StaffType } from '../../Models/enums';
+import { useHistory, useParams } from 'react-router-dom';
+import { CustomLoader } from '../../components/monitors';
 
 
 const initialFormData = {
@@ -28,44 +30,64 @@ const initialFormData = {
   primaryRole: ""
 }
 
-const NewStaff = () => {
+const EditStaff = () => {
+  const history = useHistory()
+  const { uid } = useParams()
+
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
   const [formData, setFormData] = useState(initialFormData)
-
   const [roles, setRoles] = useState([]);
 
-  const getRoles = () => {
-    let rolesQuery = {
-      query: `query roles{
+
+
+  useEffect(() => {
+    let query = {
+      query: `query($id: ID!){
         roles: getRoles{
           id
           name
         }
+        staff: getStaff(id:$id){
+          firstName
+          lastName
+          gender
+          dateOfBirth
+          idNumber
+          email
+          phoneNumber
+          serialNumber
+          employer
+          employmentNumber
+          staffType
+          primaryRole
+        }
       }`,
-      variables: {}
+      variables: {
+        id: uid
+      }
     }
-    new Service().getData(rolesQuery).then((res) => {
+    new Service().getData(query).then((res) => {
       setRoles(res?.roles.sort((a, b) => a.name > b.name) || [])
+      setFormData({ ...initialFormData, ...res?.staff })
+      setLoading(false)
     });
-  };
+  }, [uid]);
 
-  useEffect(() => {
-    getRoles()
-  }, []);
 
   const submitForm = e => {
     e.preventDefault();
     setSaving(true)
     let query =
     {
-      query: `mutation createStaff($data: NewStaff!){
-        session: createStaff(input: $data){
+      query: `mutation updateStaff($id: ID!, $data: NewStaff!){
+        updateStaff(id: $id, input: $data){
           id
         }
       }`,
       variables: {
+        id: uid,
         data: formData
       }
     }
@@ -82,35 +104,39 @@ const NewStaff = () => {
     });
   };
 
-  const onNewStaff = () => {
-    setSaved(false)
-    setFormData(initialFormData)
+
+  const openProfile = () => {
+    history.push(`/staffs/profile/${uid}`)
+  }
+
+  if (loading) {
+    return (
+      <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
+        <CustomLoader />
+      </Paper>)
   }
 
   if (saved) {
     return (
-      <Paper sx={{ px: 5, py: 2 }}>
+      <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
         <div className="py-5">
           <div className="d-flex justify-content-center my-5">
-            <Alert severity='success'>Staff created successfully</Alert>
+            <Alert severity='success'>Staff details updated successfully</Alert>
           </div>
           <div className="d-flex justify-content-center">
-            <Button variant='contained' color='secondary' size='large' onClick={onNewStaff}>Add New Staff</Button>
+            <Button variant='contained' color='secondary' onClick={openProfile}>Go to Staff Profile</Button>
           </div>
         </div>
       </Paper>
     )
   }
-
   return (
     <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
       <div className="d-flex my-3">
-        <Button alt={formData.firstName} variant='outlined' color='secondary'>
-          <Edit />
-        </Button>
+        <Avatar alt={formData.firstName}></Avatar>
         <div className="ms-4">
-          <h3 className='p-0 m-0'>Create Staff</h3>
-          <p className='text-secondary m-0'>create employee profile.</p>
+          <h3 className='p-0 m-0'>Edit Staff</h3>
+          <p className='text-secondary m-0'>edit the employee profile.</p>
         </div>
       </div>
       <form onSubmit={submitForm} method="post">
@@ -262,10 +288,16 @@ const NewStaff = () => {
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
 
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            sx={{ ml: 4 }}
+            onClick={openProfile}>Cancel</Button>
         </div>
       </form>
     </Paper>
   );
 };
 
-export default NewStaff;
+export default EditStaff;

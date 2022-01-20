@@ -1,4 +1,4 @@
-import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from "@mui/material";
 import { Menu as MenuIcon } from '@mui/icons-material'
 import { Box } from "@mui/system";
 import React, { useState } from "react";
@@ -73,12 +73,12 @@ function TopBar(props) {
             {user.school.name}
           </Typography>
 
-          <div>
-            <tooltip title="Open settings" is="native-html">
+          <Box>
+            <Tooltip title="Open settings" arrow>
               <IconButton onClick={handleOpen}>
                 <Avatar alt={user.firstName} src={profile} />
               </IconButton>
-            </tooltip>
+            </Tooltip>
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -101,7 +101,7 @@ function TopBar(props) {
                 </MenuItem>
               ))}
             </Menu>
-          </div>
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>
@@ -125,7 +125,7 @@ const menuItems = [
     exact: true,
   },
   { href: "/sms", icon: "bx bx-chat", title: "SMS", tooltip: "Messages" },
-  { href: "/staff", icon: "bx bx-user", title: "Staff", tooltip: "Staff" },
+  { href: "/staffs", icon: "bx bx-user", title: "Staffs", tooltip: "Staffs" },
   {
     href: "/classes",
     icon: "bx bxs-school",

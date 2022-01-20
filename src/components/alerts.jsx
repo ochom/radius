@@ -1,3 +1,4 @@
+import { Alert, Snackbar } from "@mui/material";
 import Swal from "sweetalert2";
 
 export const AlertSuccess = (message) => {
@@ -38,4 +39,19 @@ export const ConfirmAlert = () => {
     cancelButtonColor: '#d33',
     confirmButtonText: 'Yes, delete it!'
   })
+}
+
+
+export const CustomSnackBar = (props) => {
+  const { open, severity, message, onClose } = props
+  return (
+    <Snackbar open={open}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      autoHideDuration={6000}
+      onClose={onClose}>
+      <Alert severity={severity} sx={{ width: '100%' }} variant="filled">
+        {message}
+      </Alert>
+    </Snackbar>
+  )
 }
