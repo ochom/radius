@@ -60,7 +60,7 @@ const NewStaff = () => {
     setSaving(true)
     let query =
     {
-      query: `mutation createStaff($data: NewStaff!){
+      query: `mutation($data: NewStaff!){
         session: createStaff(input: $data){
           id
         }
@@ -215,7 +215,6 @@ const NewStaff = () => {
                 id="role"
                 label="Primary role"
                 value={formData.primaryRole}
-                required
                 fullWidth
                 onChange={e => setFormData({ ...formData, primaryRole: e.target.value })}
               >

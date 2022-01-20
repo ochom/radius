@@ -62,6 +62,7 @@ const EditStaff = () => {
           employmentNumber
           staffType
           primaryRole
+          passport
         }
       }`,
       variables: {
@@ -79,6 +80,7 @@ const EditStaff = () => {
   const submitForm = e => {
     e.preventDefault();
     setSaving(true)
+    delete formData['passport']
     let query =
     {
       query: `mutation updateStaff($id: ID!, $data: NewStaff!){
@@ -133,10 +135,10 @@ const EditStaff = () => {
   return (
     <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
       <div className="d-flex my-3">
-        <Avatar alt={formData.firstName}></Avatar>
+        <Avatar src={formData.passport} alt={formData.firstName} sx={{ width: "4rem", height: "4rem" }}></Avatar>
         <div className="ms-4">
           <h3 className='p-0 m-0'>Edit Staff</h3>
-          <p className='text-secondary m-0'>edit the employee profile.</p>
+          <p className='text-secondary m-0'>Edit the employee profile.</p>
         </div>
       </div>
       <form onSubmit={submitForm} method="post">
@@ -241,7 +243,6 @@ const EditStaff = () => {
                 id="role"
                 label="Primary role"
                 value={formData.primaryRole}
-                required
                 fullWidth
                 onChange={e => setFormData({ ...formData, primaryRole: e.target.value })}
               >

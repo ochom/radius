@@ -34,6 +34,7 @@ const AllStaff = () => {
           lastName
           employer
           gender
+          passport
         }
       }`,
       variables: {}
@@ -112,7 +113,7 @@ const AllStaff = () => {
         progressPending={loading}
         columns={cols} data={staffs.map((d) => {
           return {
-            photo: <UserAvatar sex={d.gender} />,
+            photo: <UserAvatar src={d.passport} alt={d.firstName} />,
             serialNumber: d.serialNumber,
             name: `${d.firstName} ${d.lastName}`,
             employer: d.employer,

@@ -56,6 +56,7 @@ const StaffDetails = (props) => {
             employmentNumber
             staffType
             primaryRole
+            passport
             age
           }
         }
