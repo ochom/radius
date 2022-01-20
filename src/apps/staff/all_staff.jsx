@@ -7,14 +7,16 @@ import {
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { OpenInBrowser } from "@mui/icons-material";
+import { Edit, OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
 import { UserAvatar } from "../../components/avatars";
+import { useHistory } from "react-router-dom";
 
 
 const AllStaff = () => {
-  const [loading, setLoading] = useState(true);
+  const history = useHistory()
 
+  const [loading, setLoading] = useState(true);
   const [staffs, setStaffs] = useState([]);
 
 
@@ -32,6 +34,7 @@ const AllStaff = () => {
           lastName
           employer
           gender
+          passport
         }
       }`,
       variables: {}
@@ -71,8 +74,19 @@ const AllStaff = () => {
     });
   };
 
+  const openProfile = (staff) => {
+    history.push(`staffs/profile/${staff.id}`)
+  }
 
-  let dropMenuOptions = [{ "title": "View", action: deleteStaff, icon: <OpenInBrowser fontSize="small" /> }, { "title": "Delete", action: deleteStaff, icon: <DeleteIcon fontSize="small" color="red" /> }]
+  const editDetails = (staff) => {
+    history.push(`staffs/profile/${staff.id}/edit`)
+  }
+
+  let dropMenuOptions = [
+    { "title": "Open", action: openProfile, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
+    { "title": "Edit", action: editDetails, icon: <Edit fontSize="small" color="success" /> },
+    { "title": "Delete", action: deleteStaff, icon: <DeleteIcon fontSize="small" color="error" /> }
+  ]
 
   const cols = [
     { name: "", selector: row => row.photo, width: '70px' },
@@ -99,7 +113,7 @@ const AllStaff = () => {
         progressPending={loading}
         columns={cols} data={staffs.map((d) => {
           return {
-            photo: <UserAvatar sex={d.gender} />,
+            photo: <UserAvatar src={d.passport} alt={d.firstName} />,
             serialNumber: d.serialNumber,
             name: `${d.firstName} ${d.lastName}`,
             employer: d.employer,

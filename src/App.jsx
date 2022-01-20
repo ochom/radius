@@ -20,7 +20,7 @@ function App() {
         <Route path="/register" component={Auth} />
         <DefaultPageLayout>
           <Route path="/sms" component={SMS} />
-          <Route path="/staff" component={Staff} />
+          <Route path="/staffs" component={Staff} />
           <Route path="/classes" component={Classes} />
           <Route path="/students" component={Student} />
           <Route path="/parents" component={Parents} />

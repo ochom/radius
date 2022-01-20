@@ -1,8 +1,8 @@
-import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Service } from '../../API/service';
 import { CustomLoader } from "../../components/monitors"
-import { AddPhotoAlternate, Adjust, Apartment, Assessment, Edit, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
+import { AddPhotoAlternate, Assignment, Edit, Event, Phone, School, Wc } from "@mui/icons-material";
 import { panelProps, TabPanel } from "../../components/tabs";
 import { useHistory, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
@@ -21,11 +21,11 @@ const defaultSnackStatus = {
   severity: "success"
 }
 
-const StudentDetails = (props) => {
+const StaffDetails = (props) => {
   const { uid } = useParams()
   const history = useHistory()
 
-  const [student, setStudent] = useState(false);
+  const [staff, setStaff] = useState(false);
   const [passport, setPassport] = useState(photo)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [saving, setSaving] = useState(false)
@@ -42,22 +42,22 @@ const StudentDetails = (props) => {
     let query = {
       query: `
         query($id:ID!){
-          student: getStudent(id:$id){
+          staff: getStaff(id:$id){
             id
-            fullName
-            dateOfBirth
-            dateOfAdmission
+            firstName
+            lastName
             gender
-            admissionNumber
-            nationalID
+            dateOfBirth
+            idNumber
+            email
+            phoneNumber
+            serialNumber
+            employer
+            employmentNumber
+            staffType
+            primaryRole
             passport
             age
-            active
-            homeAddress
-            class{
-              level
-              stream
-            }
           }
         }
       `,
@@ -66,8 +66,8 @@ const StudentDetails = (props) => {
       }
     }
     new Service().getData(query).then((res) => {
-      setStudent(res?.student || null)
-      setPassport({ ...photo, url: res?.student.passport })
+      setStaff(res?.staff || null)
+      setPassport({ ...photo, url: res?.staff.passport })
       setLoading(false)
     });
   }, [uid]);
@@ -89,10 +89,10 @@ const StudentDetails = (props) => {
     if (passport.image) {
       setSaving(true)
       let formData = new FormData()
-      formData.append("id", student.id)
+      formData.append("id", staff.id)
       formData.append("file", passport.image)
 
-      new UploadService().uploadStudentPassPort(formData, (progressEvent) => {
+      new UploadService().uploadStaffPassPort(formData, (progressEvent) => {
         const { loaded, total } = progressEvent;
         let percent = Math.floor((loaded * 100) / total);
         setUploadProgress(percent)
@@ -118,10 +118,10 @@ const StudentDetails = (props) => {
     return <CustomLoader />
   }
 
-  if (!student) {
+  if (!staff) {
     return (
       <Paper sx={{ px: 5, py: 2 }}>
-        <div className="py-5 d-flex justify-content-center"><Alert severity="warning">Student not found</Alert></div>
+        <div className="py-5 d-flex justify-content-center"><Alert severity="warning">Staff not found</Alert></div>
       </Paper>
     )
   }
@@ -133,7 +133,7 @@ const StudentDetails = (props) => {
         <Box sx={{ p: 3, display: 'flex' }} >
           <Stack>
             <div style={{ position: "relative" }}>
-              <Avatar variant="rounded" src={passport.url} alt={student.fullName} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
+              <Avatar variant="rounded" src={passport.url} alt={staff.fullName} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
                 <AddPhotoAlternate sx={{ fontSize: "8rem" }} />
               </Avatar>
               {saving &&
@@ -152,37 +152,37 @@ const StudentDetails = (props) => {
           </Stack>
           <Box >
             <Box sx={{ display: 'flex' }}>
-              <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
-                <Typography fontWeight={700}>{student.fullName}</Typography>
+              <Stack spacing={2} sx={{ ml: 5, alignItems: "start" }}>
+                <Stack direction="column" spacing={0}>
+                  <Typography fontWeight={700}>{staff.firstName} {staff.lastName}</Typography>
+                  <Typography variant="body2" color="text.secondary">{staff.email} </Typography>
+                </Stack>
                 <Typography variant="body2" color="text.secondary">
-                  <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {student.class.level} {student.class.stream}
+                  <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {staff.gender}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.gender}
+                  <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {staff.age} yrs old
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.age} yrs old
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  <Adjust sx={{ fontSize: "1.2rem" }} color={student.active ? "success" : "disabled"} />  {student.active ? "Active" : "Not active"}
+                  <Phone sx={{ fontSize: "1.2rem" }} color="secondary" />  {staff.phoneNumber}
                 </Typography>
               </Stack>
 
               <Stack spacing={3} sx={{ ml: { md: 5, lg: 20 } }}>
-                <Stack direction="column">
-                  <Typography variant="body2" color="text.secondary">Academics </Typography>
-                  <Rating precision={0.5} name="read-only" value={4.5} readOnly size="large" icon={<School />} emptyIcon={<SchoolOutlined />} />
+                <Stack direction="column" spacing={1}>
+                  <Typography variant="body2" color="text.secondary">Employer </Typography>
+                  <Typography variant="body1">{staff.employer} </Typography>
                 </Stack>
 
-                <Stack direction="column">
-                  <Typography variant="body2" color="text.secondary">Discipline </Typography>
-                  <Rating precision={0.5} name="read-only" value={1} readOnly size="large" icon={<EmojiEvents />} emptyIcon={<EmojiEventsOutlined />} />
+                <Stack direction="column" spacing={1}>
+                  <Typography variant="body2" color="text.secondary">Employment Number</Typography>
+                  <Typography variant="body1">{staff.employmentNumber} </Typography>
                 </Stack>
               </Stack>
             </Box>
 
             <Box sx={{ ml: 5, mt: 3, display: 'flex' }}>
-              <Button variant="outlined" color='secondary' onClick={() => { history.push(`/students/profile/${student.id}/edit`) }}>
+              <Button variant="outlined" color='secondary' onClick={() => { history.push(`/staffs/profile/${staff.id}/edit`) }}>
                 <Edit /> <Typography sx={{ ml: 1 }}>Edit</Typography>
               </Button>
             </Box>
@@ -196,26 +196,15 @@ const StudentDetails = (props) => {
             onChange={selectTab}
             textColor="secondary"
             indicatorColor="secondary">
-            <Tab icon={<Info sx={{ fontSize: 20 }} />} iconPosition="start" label="Address"  {...panelProps(0)} />
-            <Tab icon={<Group sx={{ fontSize: 20 }} />} iconPosition="start" label="Parents"  {...panelProps(1)} />
-            <Tab icon={<School sx={{ fontSize: 20 }} />} iconPosition="start" label="Courses"  {...panelProps(2)} />
-            <Tab icon={<Assessment sx={{ fontSize: 20 }} />} iconPosition="start" label="Exams"  {...panelProps(3)} />
-            <Tab icon={<Receipt sx={{ fontSize: 20 }} />} iconPosition="start" label="Invoices"  {...panelProps(4)} />
-            <Tab icon={<EmojiEvents sx={{ fontSize: 20 }} />} iconPosition="start" label="Awards"  {...panelProps(5)} />
-            <Tab icon={<Gavel sx={{ fontSize: 20 }} />} iconPosition="start" label="Discipline"  {...panelProps(6)} />
+            <Tab icon={<School sx={{ fontSize: 20 }} />} iconPosition="start" label="Subjects"  {...panelProps(0)} />
+            <Tab icon={<Assignment sx={{ fontSize: 20 }} />} iconPosition="start" label="Classes"  {...panelProps(1)} />
           </Tabs>
-          <TabPanel value={tabIndex} index={0}>
-            <div>
-              <pre>{student.homeAddress}</pre>
-            </div>
-          </TabPanel>
-          <TabPanel value={tabIndex} index={1}>Parents</TabPanel>
-          <TabPanel value={tabIndex} index={2} children={tabIndex}>Courses</TabPanel>
-          <TabPanel value={tabIndex} index={3} children={tabIndex}>Exams</TabPanel>
+          <TabPanel value={tabIndex} index={0}>Subjects</TabPanel>
+          <TabPanel value={tabIndex} index={1}>Classes</TabPanel>
         </Box>
       </Card>
     </>
   );
 };
 
-export default StudentDetails;
+export default StaffDetails;
