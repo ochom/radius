@@ -139,12 +139,6 @@ const menuItems = [
     tooltip: "Students",
   },
   {
-    href: "/parents",
-    icon: "bx bxs-user-account",
-    title: "Parents",
-    tooltip: "Parents",
-  },
-  {
     href: "/academics",
     icon: "bx bxs-graduation",
     title: "Academics",
