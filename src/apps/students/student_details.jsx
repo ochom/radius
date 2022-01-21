@@ -8,6 +8,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { UploadService } from "../../API/uploads";
 import { CustomSnackBar } from "../../components/alerts";
+import StudentParents from "./parents";
 
 const photo = {
   url: "",
@@ -198,7 +199,7 @@ const StudentDetails = (props) => {
             indicatorColor="secondary">
             <Tab icon={<Info sx={{ fontSize: 20 }} />} iconPosition="start" label="Address"  {...panelProps(0)} />
             <Tab icon={<Group sx={{ fontSize: 20 }} />} iconPosition="start" label="Parents"  {...panelProps(1)} />
-            <Tab icon={<School sx={{ fontSize: 20 }} />} iconPosition="start" label="Courses"  {...panelProps(2)} />
+            <Tab icon={<School sx={{ fontSize: 20 }} />} iconPosition="start" label="Subjects"  {...panelProps(2)} />
             <Tab icon={<Assessment sx={{ fontSize: 20 }} />} iconPosition="start" label="Exams"  {...panelProps(3)} />
             <Tab icon={<Receipt sx={{ fontSize: 20 }} />} iconPosition="start" label="Invoices"  {...panelProps(4)} />
             <Tab icon={<EmojiEvents sx={{ fontSize: 20 }} />} iconPosition="start" label="Awards"  {...panelProps(5)} />
@@ -209,9 +210,26 @@ const StudentDetails = (props) => {
               <pre>{student.homeAddress}</pre>
             </div>
           </TabPanel>
-          <TabPanel value={tabIndex} index={1}>Parents</TabPanel>
-          <TabPanel value={tabIndex} index={2} children={tabIndex}>Courses</TabPanel>
+          <TabPanel value={tabIndex} index={1}>
+            <StudentParents studentID={uid} />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={2} children={tabIndex}>
+            <Box>
+              <Button variant="contained" color="secondary">Add Subject</Button>
+            </Box>
+          </TabPanel>
           <TabPanel value={tabIndex} index={3} children={tabIndex}>Exams</TabPanel>
+          <TabPanel value={tabIndex} index={4} children={tabIndex}>Invoices</TabPanel>
+          <TabPanel value={tabIndex} index={5} children={tabIndex}>
+            <Box>
+              <Button variant="contained" color="secondary">Create Award</Button>
+            </Box>
+          </TabPanel>
+          <TabPanel value={tabIndex} index={6} children={tabIndex}>
+            <Box>
+              <Button variant="contained" color="secondary">Add Case</Button>
+            </Box>
+          </TabPanel>
         </Box>
       </Card>
     </>

@@ -6,7 +6,6 @@ import Auth from "./apps/auth";
 import Classes from "./apps/classrooms";
 import Dashboard from "./apps/dashboard";
 import Library from "./apps/library";
-import Parents from "./apps/parents";
 import Settings from "./apps/settings";
 import SMS from "./apps/sms";
 import Staff from "./apps/staff";
@@ -23,7 +22,6 @@ function App() {
           <Route path="/staffs" component={Staff} />
           <Route path="/classes" component={Classes} />
           <Route path="/students" component={Student} />
-          <Route path="/parents" component={Parents} />
           <Route path="/academics" component={Academics} />
           <Route path="/library" component={Library} />
           <Route path="/activity" component={Activity} />
