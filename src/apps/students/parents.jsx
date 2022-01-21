@@ -149,7 +149,7 @@ const StudentParents = (props) => {
         new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(`${parent.name} Parent deleted successfully`);
+              AlertSuccess("Parent deleted successfully");
               setTotalParents(totalParents - 1)
             } else {
               AlertFailed(res.message);
@@ -179,16 +179,18 @@ const StudentParents = (props) => {
       }
     }
     new Service().getData(query).then((res) => {
-      setFormData({
-        ...formData,
-        fullName: res?.parent.fullName,
-        gender: res?.parent.gender,
-        email: res?.parent.email,
-        mobile: res?.parent.mobile,
-        occupation: res?.parent.occupation,
-        idNumber: res?.parent.idNumber,
-        relationship: res?.parent.relationship,
-      })
+      if (res.parent) {
+        setFormData({
+          ...formData,
+          fullName: res?.parent.fullName,
+          gender: res?.parent.gender,
+          email: res?.parent.email,
+          mobile: res?.parent.mobile,
+          occupation: res?.parent.occupation,
+          idNumber: res?.parent.idNumber,
+          relationship: res?.parent.relationship,
+        })
+      }
       setSearchingParent(false)
       setSearchedParent(true)
     });
@@ -197,17 +199,19 @@ const StudentParents = (props) => {
   let dropMenuOptions = [{ "title": "Edit", action: editParent, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteParent, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
-    { name: "Name", selector: (row) => row.fullName, },
+    {
+      name: "Name", selector: (row) => row.fullName,
+    },
     {
       name: "Relationship", selector: (row) => row.relationship,
-      width: '150px',
     },
     {
       name: "Mobile", selector: (row) => row.mobile,
-      width: '150px',
     },
-    { name: "Email", selector: (row) => row.email, },
-    { name: "Occupation", selector: (row) => row.occupation },
+    {
+      name: "Email", selector: (row) => row.email,
+    },
+    // { name: "Occupation", selector: (row) => row.occupation },
     {
       selector: row => row.action,
       style: {
@@ -251,7 +255,7 @@ const StudentParents = (props) => {
                     <div className="mt-3">
                       <TextField
                         value={formData.idNumber}
-                        label="Enter ID Number"
+                        label="Parent's ID Number"
                         required
                         color="secondary"
                         fullWidth
@@ -287,12 +291,11 @@ const StudentParents = (props) => {
                       value={formData.gender}
                       onChange={e => setFormData({ ...formData, gender: e.target.value })}
                     >
-                      {Gender.map(g => <FormControlLabel value={g} key={g} control={<Radio color='secondary' />} label={g} />)}
+                      {Gender.map(g => <FormControlLabel value={g} key={g} control={<Radio color='secondary' required />} label={g} />)}
                     </RadioGroup>
                   </FormControl>
                 </div>
                 <div className="mt-3">
-
                   <FormControl fullWidth>
                     <InputLabel id="relationship-label">Relationship</InputLabel>
                     <Select

@@ -211,7 +211,7 @@ function Sidenav(props) {
 function DefaultPageLayout({ children }) {
   var user = null;
   var data = localStorage.getItem("authUser");
-  const [active, setActive] = useState(true)
+  const [active, setActive] = useState(false)
   if (data) {
     user = JSON.parse(data);
   }
