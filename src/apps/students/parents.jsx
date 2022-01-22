@@ -159,7 +159,8 @@ const StudentParents = (props) => {
     });
   };
 
-  const searchParent = () => {
+  const searchParent = (e) => {
+    e.preventDefault()
     setSearchingParent(true)
     let query = {
       query: `query ($data: ID!){
@@ -243,7 +244,7 @@ const StudentParents = (props) => {
           })} />
 
       <Modal isOpen={modal}>
-        <form onSubmit={submitForm} method="post">
+        <form onSubmit={(!searchedParent && !selectedParent) ? searchParent : submitForm} method="post">
           <ModalHeader toggle={toggleModal}>
             {selectedParent ? "Edit details" : "Add parent"}
           </ModalHeader>
@@ -251,7 +252,7 @@ const StudentParents = (props) => {
             {(!searchedParent && !selectedParent) &&
               <div className="row px-3">
                 {searchingParent ? <CustomLoader /> :
-                  <>
+                  <div>
                     <div className="mt-3">
                       <TextField
                         value={formData.idNumber}
@@ -263,9 +264,9 @@ const StudentParents = (props) => {
                       />
                     </div>
                     <div className="my-5">
-                      <Button color="secondary" variant="contained" onClick={searchParent}>Continue</Button>
+                      <Button color="secondary" variant="contained" type="submit">Continue</Button>
                     </div>
-                  </>
+                  </div>
                 }
               </div>
             }
