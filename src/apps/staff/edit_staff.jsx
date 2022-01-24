@@ -96,10 +96,10 @@ const EditStaff = () => {
 
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Staff saved successfully`);
+        AlertSuccess({ text: `Staff saved successfully` });
         setSaved(true)
       } else {
-        AlertFailed(res.message);
+        AlertFailed({ text: res.message });
       }
     }).finally(() => {
       setSaving(false)

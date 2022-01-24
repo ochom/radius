@@ -7,6 +7,7 @@ import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
+  AlertWarning,
   ConfirmAlert,
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
@@ -42,13 +43,7 @@ export default function Classrooms() {
   const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
-  const toggleModal = () => {
-    if (modal) {
-      setModal(false)
-    } else {
-      setModal(true)
-    }
-  }
+  const toggleModal = () => setModal(!modal)
 
   useEffect(() => {
     setLoading(true)
@@ -115,11 +110,11 @@ export default function Classrooms() {
 
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Classroom saved successfully`);
+        AlertSuccess({ text: `Classroom saved successfully` });
         toggleModal();
         setTotalRows(totalRows + 1)
       } else {
-        AlertFailed(res.message);
+        AlertFailed({ text: res.message });
       }
     }).finally(() => {
       setSaving(false)
@@ -165,7 +160,7 @@ export default function Classrooms() {
   };
 
   const deleteClassroom = row => {
-    ConfirmAlert().then((res) => {
+    ConfirmAlert({ title: "Delete classroom!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteClass($id: ID!){
@@ -180,12 +175,14 @@ export default function Classrooms() {
         new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(`Class deleted successfully`);
+              AlertSuccess({ text: `Class deleted successfully` });
               setTotalRows(totalRows - 1)
             } else {
-              AlertFailed(res.message);
+              AlertFailed({ text: res.message });
             }
           })
+      } else if (res.isDismissed) {
+        AlertWarning({ title: "Cancelled", text: "Request cancelled, class not deleted" })
       }
     });
   };
@@ -234,14 +231,12 @@ export default function Classrooms() {
             };
           })} />
 
-      {loadingSelected ?
-        <Modal isOpen={modal}>
+      <Modal isOpen={modal}>
+        {loadingSelected ?
           <ModalBody>
             <CustomLoader />
           </ModalBody>
-        </Modal> :
-
-        <Modal isOpen={modal}>
+          :
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
               <span>
@@ -327,8 +322,9 @@ export default function Classrooms() {
               </div>
             </ModalFooter>
           </form>
-        </Modal>
-      }
+        }
+
+      </Modal>
     </>
   );
 };

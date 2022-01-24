@@ -69,10 +69,10 @@ const NewStudent = () => {
 
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Student saved successfully`);
+        AlertSuccess({ text: `Student saved successfully` });
         setSaved(true)
       } else {
-        AlertFailed(res.message);
+        AlertFailed({ text: res.message });
       }
     }).finally(() => {
       setSaving(false)

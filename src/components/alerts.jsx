@@ -1,43 +1,50 @@
 import { Alert, Snackbar } from "@mui/material";
 import Swal from "sweetalert2";
 
-export const AlertSuccess = (message) => {
+export const AlertSuccess = (props) => {
   Swal.fire({
-    position: "center",
     icon: "success",
-    title: message,
-    showConfirmButton: false,
-    timer: 1500,
+    title: "Done!",
+    text: "Request successful",
+    showConfirmButton: true,
+    timer: 3000,
+    ...props
   });
 };
 
-export const AlertFailed = (message) => {
+export const AlertFailed = (props) => {
   Swal.fire({
     icon: "error",
-    title: message,
+    title: "Error!",
+    text: "Request failed",
     showConfirmButton: true,
     confirmButtonText: "Try again",
+    ...props
   });
 };
 
-export const AlertWarning = (message) => {
+export const AlertWarning = (props) => {
   Swal.fire({
     icon: "warning",
-    title: message,
+    title: "Notice!",
     showConfirmButton: true,
     confirmButtonText: "Ok",
+    confirmButtonColor: '#9c27b0',
+    ...props
   });
 };
 
-export const ConfirmAlert = () => {
+export const ConfirmAlert = (props) => {
   return Swal.fire({
     title: 'Are you sure?',
     text: "You won't be able to revert this!",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
+    confirmButtonColor: '#9c27b0',
+    cancelButtonColor: '#bababa',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, cancel',
+    ...props
   })
 }
 
