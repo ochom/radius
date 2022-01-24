@@ -81,16 +81,21 @@ const StaffRoles = () => {
     });
   };
 
-  const editRole = (role) => {
-    setSelectedRole(role);
+  const editRole = row => {
+    setSelectedRole({
+      id: row.id,
+      name: row.name,
+      description: row.description
+    });
+
     setFormData({
-      name: role.name,
-      description: role.description
+      name: row.name,
+      description: row.description
     })
     toggleModal();
   };
 
-  const deleteRole = (role) => {
+  const deleteRole = role => {
     ConfirmAlert().then((res) => {
       if (res.isConfirmed) {
         let query = {
@@ -173,9 +178,11 @@ const StaffRoles = () => {
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
+        onRowClicked={editRole}
         data={
           roles.map((role) => {
             return {
+              id: role.id,
               name: role.name,
               description: role.description,
               action: <DropdownMenu options={dropMenuOptions} row={role} />

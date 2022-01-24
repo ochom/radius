@@ -25,8 +25,8 @@ const AllStaff = () => {
   }, [])
 
   const getStaffs = () => {
-    let staffsQuery = {
-      query: `query staffs{
+    let query = {
+      query: `query{
         staffs: getStaffs{
           id
           serialNumber
@@ -39,7 +39,7 @@ const AllStaff = () => {
       }`,
       variables: {}
     }
-    new Service().getData(staffsQuery).then((res) => {
+    new Service().getData(query).then((res) => {
       setStaffs(res?.staffs || [])
       setLoading(false)
     });
@@ -74,12 +74,12 @@ const AllStaff = () => {
     });
   };
 
-  const openProfile = (staff) => {
-    history.push(`staffs/profile/${staff.id}`)
+  const openProfile = (row) => {
+    history.push(`staffs/profile/${row.id}`)
   }
 
-  const editDetails = (staff) => {
-    history.push(`staffs/profile/${staff.id}/edit`)
+  const editDetails = (row) => {
+    history.push(`staffs/profile/${row.id}/edit`)
   }
 
   let dropMenuOptions = [
@@ -111,8 +111,10 @@ const AllStaff = () => {
         title="Registered Employees & Staff"
         defaultSortFieldId={2}
         progressPending={loading}
+        onRowClicked={openProfile}
         columns={cols} data={staffs.map((d) => {
           return {
+            id: d.id,
             photo: <UserAvatar src={d.passport} alt={d.firstName} />,
             serialNumber: d.serialNumber,
             name: `${d.firstName} ${d.lastName}`,
