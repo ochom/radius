@@ -7,6 +7,7 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import {
   AlertFailed,
   AlertSuccess,
+  AlertWarning,
   ConfirmAlert,
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
@@ -23,18 +24,31 @@ const StaffRoles = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
+  const [totalRows, setTotalRows] = useState(0);
 
   const [roles, setRoles] = useState([]);
 
   const [formData, setFormData] = useState(initForm);
 
-  const toggleModal = () => {
-    if (modal) {
-      setModal(false)
-    } else {
-      setModal(true)
+  useEffect(() => {
+    setLoading(true)
+    let rolesQuery = {
+      query: `query roles{
+        roles: getRoles{
+          id
+          name
+          description
+        }
+      }`,
+      variables: {}
     }
-  }
+    new Service().getData(rolesQuery).then((res) => {
+      setRoles(res?.roles || [])
+      setLoading(false)
+    });
+  }, [totalRows]);
+
+  const toggleModal = () => setModal(!modal)
 
   const onNewRole = () => {
     toggleModal();
@@ -70,11 +84,11 @@ const StaffRoles = () => {
 
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Role saved successfully`);
+        AlertSuccess({ text: `Role saved successfully` });
         toggleModal();
-        getRoles();
+        setTotalRows(totalRows - 1)
       } else {
-        AlertFailed(res.message);
+        AlertFailed({ text: res.message });
       }
     }).finally(() => {
       setSaving(false)
@@ -96,7 +110,7 @@ const StaffRoles = () => {
   };
 
   const deleteRole = role => {
-    ConfirmAlert().then((res) => {
+    ConfirmAlert({ title: "Delete role!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteRole($id: ID!){
@@ -111,43 +125,17 @@ const StaffRoles = () => {
         new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(`${role.name} Role deleted successfully`);
+              AlertSuccess({ text: `${role.name} Role deleted successfully` });
+              setTotalRows(totalRows - 1)
             } else {
-              AlertFailed(res.message);
+              AlertFailed({ text: res.message });
             }
           })
-          .finally(() => {
-            getRoles();
-          });
+      } else if (res.isDismissed) {
+        AlertWarning({ title: "Cancelled", text: "Request cancelled, role not deleted" })
       }
     });
   };
-
-  const getRoles = () => {
-    setLoading(true)
-    let rolesQuery = {
-      query: `query roles{
-        roles: getRoles{
-          id
-          name
-          description
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(rolesQuery).then((res) => {
-      setRoles(res?.roles || [])
-      setLoading(false)
-    });
-  };
-
-
-  useEffect(() => {
-    const timeout = setTimeout(getRoles(), 5000);
-    return () => clearTimeout(timeout);
-  }, []);
-
-
 
   let dropMenuOptions = [{ "title": "Edit", action: editRole, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteRole, icon: <Delete fontSize="small" color="red" /> }]
 

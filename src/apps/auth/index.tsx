@@ -45,10 +45,10 @@ const Auth = () => {
       .then((res: Response) => {
         if (res.status === 200) {
           localStorage.setItem("authUser", JSON.stringify(res.data));
-          AlertSuccess(res.message);
+          AlertSuccess({ text: res.message });
           setIsLoggedIn(true);
         } else {
-          AlertFailed(res.message);
+          AlertFailed({ text: res.message });
         }
       })
       .finally(() => {
@@ -59,7 +59,7 @@ const Auth = () => {
   const handleRegister = (e: any) => {
     e.preventDefault();
     if (!registrationForm.agreedToTerms) {
-      AlertWarning("You MUST agree to Lysofts terms and conditions");
+      AlertWarning({ text: "You MUST agree to Lysofts terms and conditions" });
       return;
     }
 
@@ -68,10 +68,10 @@ const Auth = () => {
       .then((res: Response) => {
         if (res.status === 200) {
           localStorage.setItem("authUser", JSON.stringify(res.data));
-          AlertSuccess(res.message);
+          AlertSuccess({ text: res.message });
           setIsLoggedIn(true);
         } else {
-          AlertFailed(res.message);
+          AlertFailed({ text: res.message });
         }
       })
       .finally(() => {

@@ -98,10 +98,10 @@ const EditStudent = (props) => {
 
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Student details updated`);
+        AlertSuccess({ text: `Student details updated` });
         setSaved(true)
       } else {
-        AlertFailed(res.message);
+        AlertFailed({ text: res.message });
       }
     }).finally(() => {
       setSaving(false)

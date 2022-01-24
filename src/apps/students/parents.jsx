@@ -7,6 +7,7 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import {
   AlertFailed,
   AlertSuccess,
+  AlertWarning,
   ConfirmAlert,
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
@@ -68,13 +69,7 @@ const StudentParents = (props) => {
   }, [studentID, totalRows]);
 
 
-  const toggleModal = () => {
-    if (modal) {
-      setModal(false)
-    } else {
-      setModal(true)
-    }
-  }
+  const toggleModal = () => setModal(!modal)
 
   const onNewParent = () => {
     setFormData(initForm)
@@ -107,11 +102,11 @@ const StudentParents = (props) => {
 
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Parent saved successfully`);
+        AlertSuccess({ text: `Parent saved successfully` });
         toggleModal();
         setTotalRows(totalRows + 1)
       } else {
-        AlertFailed(res.message);
+        AlertFailed({ text: res.message });
       }
     }).finally(() => {
       setSaving(false)
@@ -163,7 +158,7 @@ const StudentParents = (props) => {
   };
 
   const deleteParent = (parent) => {
-    ConfirmAlert().then((res) => {
+    ConfirmAlert({ title: "Delete parent!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation ($studentID: ID!, $parentID: ID!){
@@ -180,9 +175,11 @@ const StudentParents = (props) => {
               AlertSuccess("Parent deleted successfully");
               setTotalRows(totalRows - 1)
             } else {
-              AlertFailed(res.message);
+              AlertFailed({ text: res.message });
             }
           })
+      } else if (res.isDismissed) {
+        AlertWarning({ title: "Cancelled", text: "Request cancelled, parent not deleted" })
       }
     });
   };

@@ -7,6 +7,7 @@ import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
+  AlertWarning,
   ConfirmAlert,
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
@@ -32,7 +33,7 @@ export default function Sessions() {
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true)
   const [loadingSelected, setLoadingSelected] = useState(false)
-  const [totalSessions, setTotalSessions] = useState(0);
+  const [totalRows, setTotalRows] = useState(0);
 
   const [saving, setSaving] = useState(false);
   const [selectedSessionID, setSelectedSessionID] = useState(null);
@@ -40,13 +41,7 @@ export default function Sessions() {
   const [data, setData] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
-  const toggleModal = () => {
-    if (modal) {
-      setModal(false)
-    } else {
-      setModal(true)
-    }
-  }
+  const toggleModal = () => setModal(!modal)
 
   useEffect(() => {
     setLoading(true)
@@ -68,7 +63,7 @@ export default function Sessions() {
       setData(res?.sessions || [])
       setLoading(false)
     });
-  }, [totalSessions]);
+  }, [totalRows]);
 
   const onNewSession = () => {
     toggleModal();
@@ -103,11 +98,11 @@ export default function Sessions() {
       }
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
-        AlertSuccess(`Session saved successfully`);
-        setTotalSessions(totalSessions + 1)
+        AlertSuccess({ text: `Session saved successfully` });
+        setTotalRows(totalRows + 1)
         toggleModal();
       } else {
-        AlertFailed(res.message);
+        AlertFailed({ text: res.message });
       }
     }).finally(() => {
       setSaving(false)
@@ -153,7 +148,7 @@ export default function Sessions() {
   };
 
   const deleteSession = (row) => {
-    ConfirmAlert().then((res) => {
+    ConfirmAlert({ title: "Delete session!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteSession($id: ID!){
@@ -168,12 +163,14 @@ export default function Sessions() {
         new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(`Session deleted successfully`);
-              setTotalSessions(totalSessions - 1)
+              AlertSuccess({ text: `Session deleted successfully` });
+              setTotalRows(totalRows - 1)
             } else {
-              AlertFailed(res.message);
+              AlertFailed({ text: res.message });
             }
           })
+      } else if (res.isDismissed) {
+        AlertWarning({ title: "Cancelled", text: "Request cancelled, session not deleted" })
       }
     });
   };
@@ -225,12 +222,12 @@ export default function Sessions() {
             };
           })} />
 
-      {loadingSelected ? <Modal isOpen={modal}>
-        <ModalBody>
-          <CustomLoader />
-        </ModalBody>
-      </Modal> :
-        <Modal isOpen={modal}>
+      <Modal isOpen={modal}>
+        {loadingSelected ?
+          <ModalBody>
+            <CustomLoader />
+          </ModalBody>
+          :
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
               <span>
@@ -338,8 +335,8 @@ export default function Sessions() {
               </div>
             </ModalFooter>
           </form>
-        </Modal>
-      }
+        }
+      </Modal>
     </>
   );
 };

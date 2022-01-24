@@ -3,6 +3,7 @@ import { DataTable } from "../../components/table";
 import {
   AlertFailed,
   AlertSuccess,
+  AlertWarning,
   ConfirmAlert,
 } from "../../components/alerts";
 import { DropdownMenu } from "../../components/menus";
@@ -47,7 +48,7 @@ const AllStaff = () => {
 
 
   const deleteStaff = (staff) => {
-    ConfirmAlert().then((res) => {
+    ConfirmAlert({ title: "Delete staff!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteStaff($id: ID!){
@@ -62,14 +63,16 @@ const AllStaff = () => {
         new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess(`Staff deleted successfully`);
+              AlertSuccess({ text: `Staff deleted successfully` });
             } else {
-              AlertFailed(res.message);
+              AlertFailed({ text: res.message });
             }
           })
           .finally(() => {
             getStaffs();
           });
+      } else if (res.isDismissed) {
+        AlertWarning({ title: "Cancelled", text: "Request cancelled, staff not deleted" })
       }
     });
   };
