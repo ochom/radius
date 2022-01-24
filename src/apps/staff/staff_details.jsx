@@ -66,7 +66,7 @@ const StaffDetails = (props) => {
       }
     }
     new Service().getData(query).then((res) => {
-      setStaff(res?.staff || null)
+      setStaff(res?.staff)
       setPassport({ ...photo, url: res?.staff.passport })
       setLoading(false)
     });

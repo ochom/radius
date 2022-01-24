@@ -12,6 +12,7 @@ import {
 import { DropdownMenu } from "../../components/menus";
 import { DataTable } from "../../components/table";
 import { LoadingButton } from "@mui/lab";
+import { CustomLoader } from "../../components/monitors";
 
 
 
@@ -32,7 +33,9 @@ export default function Classrooms() {
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false);
-  const [selectedClassroom, setSelectedClassroom] = useState(null);
+  const [totalRows, setTotalRows] = useState(0);
+  const [loadingSelected, setLoadingSelected] = useState(false)
+  const [selectedClassID, setSelectedClassID] = useState(null);
 
 
   const [classes, setClasses] = useState([]);
@@ -47,91 +50,7 @@ export default function Classrooms() {
     }
   }
 
-  const onNewClass = () => {
-    toggleModal();
-    setSelectedClassroom(null);
-    setFormData(initialFormData)
-  };
-
-  const submitForm = (e) => {
-    e.preventDefault();
-    setSaving(true)
-    let query = selectedClassroom
-      ? {
-        query: `mutation updateClass($id: ID!, $data: NewClass!){
-        session: updateClass(id: $id, input: $data){
-          id
-        }
-      }`,
-        variables: {
-          id: selectedClassroom.id,
-          data: formData
-        }
-      } :
-      {
-        query: `mutation createClass($data: NewClass!){
-        session: createClass(input: $data){
-          id
-        }
-      }`,
-        variables: {
-          data: formData
-        }
-      }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess(`Classroom saved successfully`);
-        toggleModal();
-        getClassrooms();
-      } else {
-        AlertFailed(res.message);
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
-  };
-
-  const editClassroom = (classroom) => {
-    setSelectedClassroom(classroom);
-    setFormData({
-      curriculum: classroom.curriculum,
-      level: classroom.level,
-      stream: classroom.stream,
-      classTeacherID: classroom.classTeacher.id,
-    })
-    toggleModal();
-  };
-
-  const deleteClassroom = (classroom) => {
-    ConfirmAlert().then((res) => {
-      if (res.isConfirmed) {
-        let query = {
-          query: `mutation deleteClass($id: ID!){
-            session: deleteClass(id: $id){
-              id
-            }
-          }`,
-          variables: {
-            id: classroom.id
-          }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess(`${classroom.level} ${classroom.stream} deleted successfully`);
-            } else {
-              AlertFailed(res.message);
-            }
-          })
-          .finally(() => {
-            getClassrooms();
-          });
-      }
-    });
-  };
-
-  const getClassrooms = () => {
+  useEffect(() => {
     setLoading(true)
     let classesQuery = {
       query: `query classes{
@@ -159,15 +78,119 @@ export default function Classrooms() {
       setTeachers(res?.teachers || [])
       setLoading(false)
     });
+  }, [totalRows]);
+
+
+  const onNewClass = () => {
+    toggleModal();
+    setSelectedClassID(null);
+    setFormData(initialFormData)
   };
 
-  useEffect(() => {
-    getClassrooms()
-  }, []);
+  const submitForm = (e) => {
+    e.preventDefault();
+    setSaving(true)
+    let query = selectedClassID
+      ? {
+        query: `mutation updateClass($id: ID!, $data: NewClass!){
+        session: updateClass(id: $id, input: $data){
+          id
+        }
+      }`,
+        variables: {
+          id: selectedClassID,
+          data: formData
+        }
+      } :
+      {
+        query: `mutation createClass($data: NewClass!){
+        session: createClass(input: $data){
+          id
+        }
+      }`,
+        variables: {
+          data: formData
+        }
+      }
 
+    new Service().createOrUpdate(query).then((res) => {
+      if (res.status === 200) {
+        AlertSuccess(`Classroom saved successfully`);
+        toggleModal();
+        setTotalRows(totalRows + 1)
+      } else {
+        AlertFailed(res.message);
+      }
+    }).finally(() => {
+      setSaving(false)
+    });
+  };
 
+  const editClassroom = row => {
+    setSelectedClassID(row.id);
+    setLoadingSelected(true)
+    let query = {
+      query: `query ($id: ID!){
+        classroom: getClass(id: $id){
+          id
+          curriculum
+          level
+          stream
+          classTeacher{
+            id
+            firstName
+            lastName
+          }
+        }
+      }`,
+      variables: {
+        id: row.id
+      }
+    }
 
-  let dropMenuOptions = [{ "title": "View", action: editClassroom, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteClassroom, icon: <Delete fontSize="small" color="red" /> }]
+    new Service().getData(query).then(res => {
+      if (res) {
+        let data = res.classroom
+        setFormData({
+          curriculum: data.curriculum,
+          level: data.level,
+          stream: data.stream,
+          classTeacherID: data.classTeacher.id,
+        })
+      }
+    }).finally(() => {
+      setLoadingSelected(false)
+    });
+    toggleModal();
+  };
+
+  const deleteClassroom = row => {
+    ConfirmAlert().then((res) => {
+      if (res.isConfirmed) {
+        let query = {
+          query: `mutation deleteClass($id: ID!){
+            session: deleteClass(id: $id){
+              id
+            }
+          }`,
+          variables: {
+            id: row.id
+          }
+        }
+        new Service().delete(query)
+          .then((res) => {
+            if (res.status === 200) {
+              AlertSuccess(`Class deleted successfully`);
+              setTotalRows(totalRows - 1)
+            } else {
+              AlertFailed(res.message);
+            }
+          })
+      }
+    });
+  };
+
+  let dropMenuOptions = [{ "title": "Edit", action: editClassroom, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteClassroom, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
     { name: "Curriculum", selector: (row) => row.curriculum, sortable: true },
@@ -198,9 +221,11 @@ export default function Classrooms() {
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
+        onRowClicked={editClassroom}
         data={
           classes.map((cl) => {
             return {
+              id: cl.id,
               curriculum: cl.curriculum,
               level: cl.level,
               stream: cl.stream,
@@ -209,93 +234,101 @@ export default function Classrooms() {
             };
           })} />
 
-      <Modal isOpen={modal}>
-        <form onSubmit={submitForm} method="post">
-          <ModalHeader toggle={toggleModal}>
-            <span>
-              <i className={`fa fa-${selectedClassroom ? "edit" : "plus-circle"}`}></i> {selectedClassroom ? "Edit class details" : "Create a new class"}
-            </span>
-          </ModalHeader>
+      {loadingSelected ?
+        <Modal isOpen={modal}>
           <ModalBody>
-            <div className="row px-3">
-              <div className="mt-3">
-                <FormControl fullWidth>
-                  <InputLabel id="curriculum-label">Curriculum</InputLabel>
-                  <Select
-                    labelId="curriculum-label"
-                    id="curriculum"
-                    label="Curriculum"
-                    color="secondary"
-                    required
-                    fullWidth
-                    value={formData.curriculum}
-                    onChange={e => setFormData({ ...formData, curriculum: e.target.value })}
-                  >
-                    <MenuItem value="8-4-4">8-4-4</MenuItem>
-                    <MenuItem value="2-6-6-3">2-6-6-3</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
-              <div className="mt-4">
-                <FormControl fullWidth>
-                  <InputLabel id="curriculum-label">Level</InputLabel>
-                  <Select
-                    labelId="level-label"
-                    id="level"
-                    label="Level"
-                    color="secondary"
-                    required
-                    fullWidth
-                    value={formData.level}
-                    onChange={e => setFormData({ ...formData, level: e.target.value })}
-                  >
-                    {(levels[formData.curriculum] || []).map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
-                  </Select>
-                </FormControl>
-              </div>
-              <div className="mt-4">
-                <TextField
-                  label="Stream"
-                  color="secondary"
-                  placeholder="(optional)"
-                  fullWidth
-                  value={formData.stream}
-                  onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
-                />
-              </div>
-              <div className="mt-4">
-                <FormControl fullWidth>
-                  <InputLabel id="teacher-label">Class Teacher</InputLabel>
-                  <Select
-                    labelId="teacher-label"
-                    id="teacher"
-                    label="Class Teacher"
-                    color="secondary"
-                    required
-                    fullWidth
-                    value={formData.classTeacherID}
-                    onChange={e => setFormData({ ...formData, classTeacherID: e.target.value })}
-                  >
-                    {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.firstName} {l.lastName}</MenuItem>)}
-                  </Select>
-                </FormControl>
-              </div>
-            </div>
+            <CustomLoader />
           </ModalBody>
-          <ModalFooter>
-            <div className="col-12 d-flex justify-content-start ps-4">
-              <LoadingButton
-                type='submit'
-                variant='contained'
-                color='secondary'
-                size='large'
-                loading={saving}
-                loadingPosition="start"
-                startIcon={<Save />}>Save</LoadingButton>
-            </div>
-          </ModalFooter>
-        </form>
-      </Modal>
+        </Modal> :
+
+        <Modal isOpen={modal}>
+          <form onSubmit={submitForm} method="post">
+            <ModalHeader toggle={toggleModal}>
+              <span>
+                <i className={`fa fa-${selectedClassID ? "edit" : "plus-circle"}`}></i> {selectedClassID ? "Edit class details" : "Create a new class"}
+              </span>
+            </ModalHeader>
+            <ModalBody>
+              <div className="row px-3">
+                <div className="mt-3">
+                  <FormControl fullWidth>
+                    <InputLabel id="curriculum-label">Curriculum</InputLabel>
+                    <Select
+                      labelId="curriculum-label"
+                      id="curriculum"
+                      label="Curriculum"
+                      color="secondary"
+                      required
+                      fullWidth
+                      value={formData.curriculum}
+                      onChange={e => setFormData({ ...formData, curriculum: e.target.value })}
+                    >
+                      <MenuItem value="8-4-4">8-4-4</MenuItem>
+                      <MenuItem value="2-6-6-3">2-6-6-3</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4">
+                  <FormControl fullWidth>
+                    <InputLabel id="curriculum-label">Level</InputLabel>
+                    <Select
+                      labelId="level-label"
+                      id="level"
+                      label="Level"
+                      color="secondary"
+                      required
+                      fullWidth
+                      value={formData.level}
+                      onChange={e => setFormData({ ...formData, level: e.target.value })}
+                    >
+                      {(levels[formData.curriculum] || []).map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4">
+                  <TextField
+                    label="Stream"
+                    color="secondary"
+                    placeholder="(optional)"
+                    fullWidth
+                    value={formData.stream}
+                    onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
+                  />
+                </div>
+                <div className="mt-4">
+                  <FormControl fullWidth>
+                    <InputLabel id="teacher-label">Class Teacher</InputLabel>
+                    <Select
+                      labelId="teacher-label"
+                      id="teacher"
+                      label="Class Teacher"
+                      color="secondary"
+                      required
+                      fullWidth
+                      value={formData.classTeacherID}
+                      onChange={e => setFormData({ ...formData, classTeacherID: e.target.value })}
+                    >
+                      {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.firstName} {l.lastName}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <div className="col-12 d-flex justify-content-start ps-4">
+                <LoadingButton
+                  type='submit'
+                  variant='contained'
+                  color='secondary'
+                  size='large'
+                  loading={saving}
+                  loadingPosition="start"
+                  startIcon={<Save />}>Save</LoadingButton>
+              </div>
+            </ModalFooter>
+          </form>
+        </Modal>
+      }
     </>
   );
 };

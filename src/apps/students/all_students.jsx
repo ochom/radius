@@ -79,17 +79,17 @@ const AllStudent = () => {
 
 
 
-  const editDetails = (student) => {
-    history.push(`/students/profile/${student.id}/edit`);
+  const editDetails = row => {
+    history.push(`/students/profile/${row.id}/edit`);
   }
 
-  const viewStudent = (student) => {
-    history.push(`/students/profile/${student.id}`);
+  const openProfile = row => {
+    history.push(`/students/profile/${row.id}`);
   }
 
 
   let dropMenuOptions = [
-    { "title": "Open", action: viewStudent, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
+    { "title": "Open", action: openProfile, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
     { "title": "Edit", action: editDetails, icon: <Edit fontSize="small" color="success" /> },
     { "title": "Delete", action: deleteStudent, icon: <DeleteIcon fontSize="small" color="error" /> }
   ]
@@ -118,8 +118,10 @@ const AllStudent = () => {
         title="All students"
         progressPending={loading}
         columns={cols}
+        onRowClicked={openProfile}
         data={students.map((d) => {
           return {
+            id: d.id,
             photo: <UserAvatar src={d.passport} alt={d.fullName} />,
             serialNumber: d.admissionNumber,
             name: d.fullName,
