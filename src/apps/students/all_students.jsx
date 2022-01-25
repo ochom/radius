@@ -12,6 +12,8 @@ import { Edit, OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
 import { UserAvatar } from "../../components/avatars";
 import { useHistory } from "react-router-dom";
+import { Button } from "@mui/material";
+import { Typography } from "@mui/material";
 
 const AllStudent = () => {
   const [loading, setLoading] = useState(true);
@@ -88,6 +90,10 @@ const AllStudent = () => {
     history.push(`/students/profile/${row.id}`);
   }
 
+  const onNewStudent = () => {
+    history.push(`/students/new`);
+  }
+
 
   let dropMenuOptions = [
     { "title": "Open", action: openProfile, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
@@ -115,6 +121,12 @@ const AllStudent = () => {
 
   return (
     <>
+      <div className="d-flex justify-content-end mb-3">
+        <Button color="secondary" onClick={onNewStudent}>
+          <Typography><i className="fa fa-plus"></i>  Add New Student</Typography>
+        </Button>
+      </div>
+
       <DataTable
         title="All students"
         progressPending={loading}

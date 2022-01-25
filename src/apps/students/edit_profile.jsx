@@ -42,7 +42,7 @@ const EditStudent = (props) => {
   useEffect(() => {
     let query = {
       query: `query loadData($id: ID!){
-        classrooms: getClasses{
+        classrooms: getClassrooms{
           id
           level
           stream

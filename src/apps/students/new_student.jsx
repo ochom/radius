@@ -35,7 +35,7 @@ const NewStudent = () => {
   const getClassrooms = () => {
     let query = {
       query: `query classrooms{
-        classrooms: getClasses{
+        classrooms: getClassrooms{
           id
           level
           stream

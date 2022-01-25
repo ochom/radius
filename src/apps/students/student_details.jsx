@@ -8,7 +8,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { UploadService } from "../../API/uploads";
 import { CustomSnackBar } from "../../components/alerts";
-import StudentParents from "./parents";
+import StudentParents from "./student_parents";
 
 const photo = {
   url: "",
