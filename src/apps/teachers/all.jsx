@@ -52,9 +52,7 @@ const AllTeacher = () => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteTeacher($id: ID!){
-            session: deleteTeacher(id: $id){
-              id
-            }
+            deleteTeacher(id: $id)
           }`,
           variables: {
             id: teacher.id

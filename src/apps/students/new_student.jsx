@@ -58,9 +58,7 @@ const NewStudent = () => {
     let query =
     {
       query: `mutation createStudent($data: NewStudent!){
-        session: createStudent(input: $data){
-          id
-        }
+        createStudent(input: $data)
       }`,
       variables: {
         data: formData

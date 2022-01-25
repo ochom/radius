@@ -55,9 +55,7 @@ const AllStudent = () => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteStudent($id: ID!){
-            session: deleteStudent(id: $id){
-              id
-            }
+            deleteStudent(id: $id)
           }`,
           variables: {
             id: student.id

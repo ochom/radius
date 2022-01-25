@@ -56,14 +56,14 @@ export default function Classrooms() {
           stream
           classTeacher{
             id
-            firstName
-            lastName
+            title
+            fullName
           }
         }
         teachers: getTeachers{
           id
-          firstName
-          lastName
+          title
+          fullName
         }
       }`,
       variables: {}
@@ -87,21 +87,17 @@ export default function Classrooms() {
     setSaving(true)
     let query = selectedClassroomID
       ? {
-        query: `mutation updateClassroom($id: ID!, $data: NewClassroom!){
-        session: updateClassroom(id: $id, input: $data){
-          id
-        }
-      }`,
+        query: `mutation ($id: ID!, $data: NewClassroom!){
+        updateClassroom(id: $id, input: $data)
+     }`,
         variables: {
           id: selectedClassroomID,
           data: formData
         }
       } :
       {
-        query: `mutation createClassroom($data: NewClassroom!){
-        session: createClassroom(input: $data){
-          id
-        }
+        query: `mutation ($data: NewClassroom!){
+        createClassroom(input: $data)
       }`,
         variables: {
           data: formData
@@ -133,8 +129,8 @@ export default function Classrooms() {
           stream
           classTeacher{
             id
-            firstName
-            lastName
+            title
+            fullName
           }
         }
       }`,
@@ -164,9 +160,7 @@ export default function Classrooms() {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteClassroom($id: ID!){
-            session: deleteClassroom(id: $id){
-              id
-            }
+            deleteClassroom(id: $id)
           }`,
           variables: {
             id: row.id
@@ -226,7 +220,7 @@ export default function Classrooms() {
               curriculum: cl.curriculum,
               level: cl.level,
               stream: cl.stream,
-              classTeacher: `${cl.classTeacher.firstName} ${cl.classTeacher.lastName}`,
+              classTeacher: `${cl.classTeacher.title} ${cl.classTeacher.fullName}`,
               action: <DropdownMenu options={dropMenuOptions} row={cl} />
             };
           })} />
@@ -303,7 +297,7 @@ export default function Classrooms() {
                       value={formData.classTeacherID}
                       onChange={e => setFormData({ ...formData, classTeacherID: e.target.value })}
                     >
-                      {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.firstName} {l.lastName}</MenuItem>)}
+                      {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.title} {l.fullName}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </div>
