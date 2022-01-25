@@ -55,7 +55,7 @@ const StudentDetails = (props) => {
             age
             active
             homeAddress
-            class{
+            classroom{
               level
               stream
             }
@@ -156,7 +156,7 @@ const StudentDetails = (props) => {
               <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
                 <Typography fontWeight={700}>{student.fullName}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {student.class.level} {student.class.stream}
+                  <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {student.classroom.level} {student.classroom.stream}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.gender}

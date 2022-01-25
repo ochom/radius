@@ -55,7 +55,7 @@ const EditStudent = (props) => {
           gender,
           dateOfBirth,
           homeAddress,
-          class{
+          classroom{
             id
           }
         }
@@ -68,7 +68,7 @@ const EditStudent = (props) => {
       setClassrooms(res?.classrooms.sort((a, b) => a.level > b.level) || [])
       setFormData({
         fullName: res?.student.fullName,
-        classID: res?.student.class.id,
+        classID: res?.student.classroom.id,
         admissionNumber: res?.student.admissionNumber,
         dateOfAdmission: res?.student.dateOfAdmission,
         nationalID: res?.student.nationalID,

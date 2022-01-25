@@ -35,7 +35,7 @@ const AllStudent = () => {
           admissionNumber
           gender
           passport
-          class{
+          classroom{
             level
             stream
           }
@@ -128,8 +128,8 @@ const AllStudent = () => {
             photo: <UserAvatar src={d.passport} alt={d.fullName} />,
             serialNumber: d.admissionNumber,
             name: d.fullName,
-            level: d.class.level,
-            stream: d.class.stream,
+            level: d.classroom.level,
+            stream: d.classroom.stream,
             gender: d.gender,
             action: <DropdownMenu options={dropMenuOptions} row={d} />
           };

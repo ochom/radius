@@ -46,7 +46,7 @@ export default function Sessions() {
   useEffect(() => {
     setLoading(true)
     let query = {
-      query: `query classes{
+      query: `query{
         sessions:getSessions{
           id
           academicYear

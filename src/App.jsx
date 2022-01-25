@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Academics from "./apps/academics";
 import Activity from "./apps/activity";
 import Auth from "./apps/auth";
-import Classes from "./apps/classrooms";
+import ClassesAndSessions from "./apps/classrooms";
 import Dashboard from "./apps/dashboard";
 import Library from "./apps/library";
 import Settings from "./apps/settings";
 import SMS from "./apps/sms";
-import Staff from "./apps/staff";
+import Teacher from "./apps/teachers";
 import Student from "./apps/students";
 import { DefaultPageLayout } from "./components";
 
@@ -19,8 +19,8 @@ function App() {
         <Route path="/register" component={Auth} />
         <DefaultPageLayout>
           <Route path="/sms" component={SMS} />
-          <Route path="/staffs" component={Staff} />
-          <Route path="/classes" component={Classes} />
+          <Route path="/teachers" component={Teacher} />
+          <Route path="/classes" component={ClassesAndSessions} />
           <Route path="/students" component={Student} />
           <Route path="/academics" component={Academics} />
           <Route path="/library" component={Library} />

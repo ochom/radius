@@ -28,5 +28,5 @@ export const URLS = {
   REGISTER: `${VERSION_ROOT}register`,
 
   STUDENT_PASSPORT: `${VERSION_ROOT}upload/student-passport`,
-  STAFF_PASSPORT: `${VERSION_ROOT}upload/staff-passport`,
+  STAFF_PASSPORT: `${VERSION_ROOT}upload/teacher-passport`,
 };
