@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Card, Container, Grid, Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import { Service } from "../../API/service";
@@ -17,11 +17,12 @@ function Dashboard() {
           totalClassrooms
           recentStudents{
             id
+            fullName
           }
 		      topTeachers{
             id
-            firstName
-            lastName
+            title
+            fullName
           }
         }
       }`,
@@ -40,13 +41,31 @@ function Dashboard() {
         {!data && <p>loading</p>}
         {data &&
           <Box>
-            <span>{data.totalTeachers}</span>
+            <Grid container spacing={3}>
+              <Grid item md={4}>
+                <Card sx={{ p: 4 }}>Teachers {data.totalTeachers}</Card>
+              </Grid>
+              <Grid item md={4} sx={{ p: 4 }}>
+                <Card sx={{ p: 4 }}>Students {data.totalStudents}</Card>
+              </Grid>
+              <Grid item md={4} sx={{ p: 4 }}>
+                <Card sx={{ p: 4 }}>Sessions {data.totalSessions}</Card>
+              </Grid>
+              <Grid item md={4} sx={{ p: 4 }}>
+                <Card sx={{ p: 4 }}>Classrooms {data.totalClassrooms}</Card>
+              </Grid>
+            </Grid>
 
-            <span>{data.totalStudents}</span>
+            Top teachers
+            <Stack direction="row" spacing={5} className='mb-5'>
+              {data.topTeachers.map(t => <Card sx={{ px: 4, py: 6, minWidth: '250px' }} key={t.id}>{t.title} {t.fullName}</Card>)}
+            </Stack>
 
-            <ul>
-              {data.topTeachers.map(t => <li key={t.id}>{t.lastName}</li>)}
-            </ul>
+            Recent Students
+            <Stack direction="row" spacing={5}>
+              {data.recentStudents.map(t => <Card sx={{ px: 4, py: 6 }} key={t.id}>{t.id} {t.fullName}</Card>)}
+            </Stack>
+
           </Box>
         }
       </Container>
