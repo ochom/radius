@@ -159,7 +159,7 @@ export default function Classrooms() {
     ConfirmAlert({ title: "Delete classroom!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
-          query: `mutation deleteClassroom($id: ID!){
+          query: `mutation ($id: ID!){
             deleteClassroom(id: $id)
           }`,
           variables: {

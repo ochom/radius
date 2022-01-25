@@ -57,7 +57,7 @@ const NewStudent = () => {
     setSaving(true)
     let query =
     {
-      query: `mutation createStudent($data: NewStudent!){
+      query: `mutation ($data: NewStudent!){
         createStudent(input: $data)
       }`,
       variables: {

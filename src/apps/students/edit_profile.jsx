@@ -85,10 +85,8 @@ const EditStudent = (props) => {
     setSaving(true)
     let query =
     {
-      query: `mutation updateStudent($id:ID!, $data: NewStudent!){
-        student: updateStudent(id: $id, input: $data){
-          id
-        }
+      query: `mutation ($id:ID!, $data: NewStudent!){
+        student: updateStudent(id: $id, input: $data)
       }`,
       variables: {
         id: uid,
