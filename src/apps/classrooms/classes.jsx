@@ -36,10 +36,10 @@ export default function Classrooms() {
   const [saving, setSaving] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [loadingSelected, setLoadingSelected] = useState(false)
-  const [selectedClassID, setSelectedClassID] = useState(null);
+  const [selectedClassroomID, setSelectedClassroomID] = useState(null);
 
 
-  const [classes, setClasses] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
@@ -47,29 +47,29 @@ export default function Classrooms() {
 
   useEffect(() => {
     setLoading(true)
-    let classesQuery = {
-      query: `query classes{
-        classes: getClasses{
+    let query = {
+      query: `query classrooms{
+        classrooms: getClassrooms{
           id
           curriculum
           level
           stream
           classTeacher{
             id
-            firstName
-            lastName
+            title
+            fullName
           }
         }
-        teachers: getStaffs{
+        teachers: getTeachers{
           id
-          firstName
-          lastName
+          title
+          fullName
         }
       }`,
       variables: {}
     }
-    new Service().getData(classesQuery).then((res) => {
-      setClasses(res?.classes || [])
+    new Service().getData(query).then((res) => {
+      setClassrooms(res?.classrooms || [])
       setTeachers(res?.teachers || [])
       setLoading(false)
     });
@@ -78,30 +78,26 @@ export default function Classrooms() {
 
   const onNewClass = () => {
     toggleModal();
-    setSelectedClassID(null);
+    setSelectedClassroomID(null);
     setFormData(initialFormData)
   };
 
   const submitForm = (e) => {
     e.preventDefault();
     setSaving(true)
-    let query = selectedClassID
+    let query = selectedClassroomID
       ? {
-        query: `mutation updateClass($id: ID!, $data: NewClass!){
-        session: updateClass(id: $id, input: $data){
-          id
-        }
-      }`,
+        query: `mutation ($id: ID!, $data: NewClassroom!){
+        updateClassroom(id: $id, input: $data)
+     }`,
         variables: {
-          id: selectedClassID,
+          id: selectedClassroomID,
           data: formData
         }
       } :
       {
-        query: `mutation createClass($data: NewClass!){
-        session: createClass(input: $data){
-          id
-        }
+        query: `mutation ($data: NewClassroom!){
+        createClassroom(input: $data)
       }`,
         variables: {
           data: formData
@@ -122,19 +118,19 @@ export default function Classrooms() {
   };
 
   const editClassroom = row => {
-    setSelectedClassID(row.id);
+    setSelectedClassroomID(row.id);
     setLoadingSelected(true)
     let query = {
       query: `query ($id: ID!){
-        classroom: getClass(id: $id){
+        classroom: getClassroom(id: $id){
           id
           curriculum
           level
           stream
           classTeacher{
             id
-            firstName
-            lastName
+            title
+            fullName
           }
         }
       }`,
@@ -163,10 +159,8 @@ export default function Classrooms() {
     ConfirmAlert({ title: "Delete classroom!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
-          query: `mutation deleteClass($id: ID!){
-            session: deleteClass(id: $id){
-              id
-            }
+          query: `mutation ($id: ID!){
+            deleteClassroom(id: $id)
           }`,
           variables: {
             id: row.id
@@ -175,14 +169,14 @@ export default function Classrooms() {
         new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess({ text: `Class deleted successfully` });
+              AlertSuccess({ text: `Classroom deleted successfully` });
               setTotalRows(totalRows - 1)
             } else {
               AlertFailed({ text: res.message });
             }
           })
       } else if (res.isDismissed) {
-        AlertWarning({ title: "Cancelled", text: "Request cancelled, class not deleted" })
+        AlertWarning({ title: "Cancelled", text: "Request cancelled, classroom not deleted" })
       }
     });
   };
@@ -209,24 +203,24 @@ export default function Classrooms() {
     <>
       <div className="mb-3 justify-content-end d-flex">
         <button className="btn btn-primary" onClick={onNewClass}>
-          <i className="fa fa-plus"></i> Add New Class
+          <i className="fa fa-plus"></i> Add New Classroom
         </button>
       </div>
 
       <DataTable
-        title="Classes list"
+        title="Classrooms list"
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
         onRowClicked={editClassroom}
         data={
-          classes.map((cl) => {
+          classrooms.map((cl) => {
             return {
               id: cl.id,
               curriculum: cl.curriculum,
               level: cl.level,
               stream: cl.stream,
-              classTeacher: `${cl.classTeacher.firstName} ${cl.classTeacher.lastName}`,
+              classTeacher: `${cl.classTeacher.title} ${cl.classTeacher.fullName}`,
               action: <DropdownMenu options={dropMenuOptions} row={cl} />
             };
           })} />
@@ -240,7 +234,7 @@ export default function Classrooms() {
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
               <span>
-                <i className={`fa fa-${selectedClassID ? "edit" : "plus-circle"}`}></i> {selectedClassID ? "Edit class details" : "Create a new class"}
+                <i className={`fa fa-${selectedClassroomID ? "edit" : "plus-circle"}`}></i> {selectedClassroomID ? "Edit classroom details" : "Create a new classroom"}
               </span>
             </ModalHeader>
             <ModalBody>
@@ -303,7 +297,7 @@ export default function Classrooms() {
                       value={formData.classTeacherID}
                       onChange={e => setFormData({ ...formData, classTeacherID: e.target.value })}
                     >
-                      {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.firstName} {l.lastName}</MenuItem>)}
+                      {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.title} {l.fullName}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </div>

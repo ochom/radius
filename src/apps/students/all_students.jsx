@@ -12,6 +12,8 @@ import { Edit, OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
 import { UserAvatar } from "../../components/avatars";
 import { useHistory } from "react-router-dom";
+import { Button } from "@mui/material";
+import { Typography } from "@mui/material";
 
 const AllStudent = () => {
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ const AllStudent = () => {
           admissionNumber
           gender
           passport
-          class{
+          classroom{
             level
             stream
           }
@@ -55,9 +57,7 @@ const AllStudent = () => {
       if (res.isConfirmed) {
         let query = {
           query: `mutation deleteStudent($id: ID!){
-            session: deleteStudent(id: $id){
-              id
-            }
+            deleteStudent(id: $id)
           }`,
           variables: {
             id: student.id
@@ -90,6 +90,10 @@ const AllStudent = () => {
     history.push(`/students/profile/${row.id}`);
   }
 
+  const onNewStudent = () => {
+    history.push(`/students/new`);
+  }
+
 
   let dropMenuOptions = [
     { "title": "Open", action: openProfile, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
@@ -117,6 +121,12 @@ const AllStudent = () => {
 
   return (
     <>
+      <div className="d-flex justify-content-end mb-3">
+        <Button color="secondary" onClick={onNewStudent}>
+          <Typography><i className="fa fa-plus"></i>  Add New Student</Typography>
+        </Button>
+      </div>
+
       <DataTable
         title="All students"
         progressPending={loading}
@@ -128,8 +138,8 @@ const AllStudent = () => {
             photo: <UserAvatar src={d.passport} alt={d.fullName} />,
             serialNumber: d.admissionNumber,
             name: d.fullName,
-            level: d.class.level,
-            stream: d.class.stream,
+            level: d.classroom.level,
+            stream: d.classroom.stream,
             gender: d.gender,
             action: <DropdownMenu options={dropMenuOptions} row={d} />
           };

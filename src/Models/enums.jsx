@@ -1,10 +1,12 @@
-export const StaffType = ["Teaching", "Support staff"]
+export const Titles = ["Mr.", "Mrs.", "Ms."]
 
-export const EmploymentType = ["Board of Management", "Teachers Service Commission"]
+export const Employers = ["Board of Management", "Teachers Service Commission"]
 
-export const Gender = ["male", "female"]
+export const Gender = ["Male", "Female"]
 
 export const Relationship = {
+  Male: ["Father", "Brother", "Guardian"],
+  Female: ["Mother", "Sister", "Guardian"],
   male: ["Father", "Brother", "Guardian"],
   female: ["Mother", "Sister", "Guardian"],
   "": ["Father", "Mother", "Brother", "Sister", "Guardian"]

@@ -46,7 +46,7 @@ export default function Sessions() {
   useEffect(() => {
     setLoading(true)
     let query = {
-      query: `query classes{
+      query: `query{
         sessions:getSessions{
           id
           academicYear
@@ -76,10 +76,8 @@ export default function Sessions() {
     setSaving(true)
     let query = selectedSessionID
       ? {
-        query: `mutation updateSession($id: ID!, $data: NewSession!){
-          session: updateSession(id: $id, input: $data){
-            id
-          }
+        query: `mutation($id: ID!, $data: NewSession!){
+          updateSession(id: $id, input: $data)
         }`,
         variables: {
           id: selectedSessionID,
@@ -87,10 +85,8 @@ export default function Sessions() {
         }
       } :
       {
-        query: `mutation createSession($data: NewSession!){
-          session: createSession(input: $data){
-            id
-          }
+        query: `mutation($data: NewSession!){
+          createSession(input: $data)
         }`,
         variables: {
           data: formData
@@ -151,10 +147,8 @@ export default function Sessions() {
     ConfirmAlert({ title: "Delete session!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
-          query: `mutation deleteSession($id: ID!){
-            session: deleteSession(id: $id){
-              id
-            }
+          query: `mutation ($id: ID!){
+            deleteSession(id: $id)
           }`,
           variables: {
             id: row.id

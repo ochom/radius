@@ -42,7 +42,7 @@ const EditStudent = (props) => {
   useEffect(() => {
     let query = {
       query: `query loadData($id: ID!){
-        classrooms: getClasses{
+        classrooms: getClassrooms{
           id
           level
           stream
@@ -55,7 +55,7 @@ const EditStudent = (props) => {
           gender,
           dateOfBirth,
           homeAddress,
-          class{
+          classroom{
             id
           }
         }
@@ -68,7 +68,7 @@ const EditStudent = (props) => {
       setClassrooms(res?.classrooms.sort((a, b) => a.level > b.level) || [])
       setFormData({
         fullName: res?.student.fullName,
-        classID: res?.student.class.id,
+        classID: res?.student.classroom.id,
         admissionNumber: res?.student.admissionNumber,
         dateOfAdmission: res?.student.dateOfAdmission,
         nationalID: res?.student.nationalID,
@@ -85,10 +85,8 @@ const EditStudent = (props) => {
     setSaving(true)
     let query =
     {
-      query: `mutation updateStudent($id:ID!, $data: NewStudent!){
-        student: updateStudent(id: $id, input: $data){
-          id
-        }
+      query: `mutation ($id:ID!, $data: NewStudent!){
+        student: updateStudent(id: $id, input: $data)
       }`,
       variables: {
         id: uid,

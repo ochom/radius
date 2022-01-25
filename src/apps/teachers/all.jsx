@@ -14,25 +14,25 @@ import { UserAvatar } from "../../components/avatars";
 import { useHistory } from "react-router-dom";
 
 
-const AllStaff = () => {
+const AllTeacher = () => {
   const history = useHistory()
 
   const [loading, setLoading] = useState(true);
-  const [staffs, setStaffs] = useState([]);
+  const [teachers, setTeachers] = useState([]);
 
 
   useEffect(() => {
-    getStaffs()
+    getTeachers()
   }, [])
 
-  const getStaffs = () => {
+  const getTeachers = () => {
     let query = {
       query: `query{
-        staffs: getStaffs{
+        teachers: getTeachers{
           id
           serialNumber
-          firstName
-          lastName
+          title
+          fullName
           employer
           gender
           passport
@@ -41,54 +41,52 @@ const AllStaff = () => {
       variables: {}
     }
     new Service().getData(query).then((res) => {
-      setStaffs(res?.staffs || [])
+      setTeachers(res?.teachers || [])
       setLoading(false)
     });
   };
 
 
-  const deleteStaff = (staff) => {
-    ConfirmAlert({ title: "Delete staff!" }).then((res) => {
+  const deleteTeacher = (teacher) => {
+    ConfirmAlert({ title: "Delete teacher!" }).then((res) => {
       if (res.isConfirmed) {
         let query = {
-          query: `mutation deleteStaff($id: ID!){
-            session: deleteStaff(id: $id){
-              id
-            }
+          query: `mutation deleteTeacher($id: ID!){
+            deleteTeacher(id: $id)
           }`,
           variables: {
-            id: staff.id
+            id: teacher.id
           }
         }
         new Service().delete(query)
           .then((res) => {
             if (res.status === 200) {
-              AlertSuccess({ text: `Staff deleted successfully` });
+              AlertSuccess({ text: `Teacher deleted successfully` });
             } else {
               AlertFailed({ text: res.message });
             }
           })
           .finally(() => {
-            getStaffs();
+            getTeachers();
           });
       } else if (res.isDismissed) {
-        AlertWarning({ title: "Cancelled", text: "Request cancelled, staff not deleted" })
+        AlertWarning({ title: "Cancelled", text: "Request cancelled, teacher not deleted" })
       }
     });
   };
 
   const openProfile = (row) => {
-    history.push(`staffs/profile/${row.id}`)
+    history.push(`teachers/profile/${row.id}`)
   }
 
   const editDetails = (row) => {
-    history.push(`staffs/profile/${row.id}/edit`)
+    history.push(`teachers/profile/${row.id}/edit`)
   }
 
   let dropMenuOptions = [
     { "title": "Open", action: openProfile, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
     { "title": "Edit", action: editDetails, icon: <Edit fontSize="small" color="success" /> },
-    { "title": "Delete", action: deleteStaff, icon: <DeleteIcon fontSize="small" color="error" /> }
+    { "title": "Delete", action: deleteTeacher, icon: <DeleteIcon fontSize="small" color="error" /> }
   ]
 
   const cols = [
@@ -111,16 +109,16 @@ const AllStaff = () => {
   return (
     <>
       <DataTable
-        title="Registered Employees & Staff"
+        title="Registered Employees & Teacher"
         defaultSortFieldId={2}
         progressPending={loading}
         onRowClicked={openProfile}
-        columns={cols} data={staffs.map((d) => {
+        columns={cols} data={teachers.map((d) => {
           return {
             id: d.id,
-            photo: <UserAvatar src={d.passport} alt={d.firstName} />,
+            photo: <UserAvatar src={d.passport} alt={d.title} />,
             serialNumber: d.serialNumber,
-            name: `${d.firstName} ${d.lastName}`,
+            name: `${d.title} ${d.fullName}`,
             employer: d.employer,
             gender: d.gender,
             action: <DropdownMenu options={dropMenuOptions} row={d} />
@@ -131,4 +129,4 @@ const AllStaff = () => {
   );
 };
 
-export default AllStaff;
+export default AllTeacher;

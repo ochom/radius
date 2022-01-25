@@ -29,7 +29,7 @@ export class UploadService {
   };
 
 
-  uploadStaffPassPort = async (data, onUploadProgress) => {
+  uploadTeacherPassPort = async (data, onUploadProgress) => {
     let authHeaders = AuthHeaders();
     const options = {
       headers: {

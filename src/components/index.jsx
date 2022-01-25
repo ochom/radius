@@ -125,12 +125,12 @@ const menuItems = [
     exact: true,
   },
   { href: "/sms", icon: "bx bx-chat", title: "SMS", tooltip: "Messages" },
-  { href: "/staffs", icon: "bx bx-user", title: "Staffs", tooltip: "Staffs" },
+  { href: "/teachers", icon: "bx bx-user", title: "Teachers", tooltip: "Teachers" },
   {
     href: "/classes",
     icon: "bx bxs-school",
-    title: "Classes",
-    tooltip: "Classes",
+    title: "Classrooms",
+    tooltip: "Classrooms",
   },
   {
     href: "/students",

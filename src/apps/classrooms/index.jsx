@@ -4,14 +4,14 @@ import Classrooms from "./classes"
 import Sessions from "./sessions"
 
 const menuItems = [
-  { title: "Classes", href: "/classes", icon: "bx bxs-school", exact: true },
+  { title: "Classrooms", href: "/classes", icon: "bx bxs-school", exact: true },
   { title: "Sessions", href: "/classes/sessions", icon: "bx bx-time-five" },
 ]
 
-function Classes() {
+function ClassesAndSessions() {
   return (
     <div>
-      <SubMenu titleName="Classes" titleIcon="bx bxs-school" items={menuItems} />
+      <SubMenu titleName="Classrooms" titleIcon="bx bxs-school" items={menuItems} />
       <PageBody>
         <Route
           path="/classes"
@@ -19,7 +19,6 @@ function Classes() {
             <>
               <Route path={url} component={Classrooms} exact />
               <Route path={`${url}/sessions`} component={Sessions} />
-              {/* <Route path={`${url}/register`} component={Roles} /> */}
             </>
           )}
         />
@@ -28,4 +27,4 @@ function Classes() {
   )
 }
 
-export default Classes
+export default ClassesAndSessions

@@ -21,11 +21,11 @@ const defaultSnackStatus = {
   severity: "success"
 }
 
-const StaffDetails = (props) => {
+const TeacherDetails = (props) => {
   const { uid } = useParams()
   const history = useHistory()
 
-  const [staff, setStaff] = useState(false);
+  const [teacher, setTeacher] = useState(false);
   const [passport, setPassport] = useState(photo)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [saving, setSaving] = useState(false)
@@ -42,10 +42,10 @@ const StaffDetails = (props) => {
     let query = {
       query: `
         query($id:ID!){
-          staff: getStaff(id:$id){
+          teacher: getTeacher(id:$id){
             id
-            firstName
-            lastName
+            title
+            fullName
             gender
             dateOfBirth
             idNumber
@@ -54,8 +54,6 @@ const StaffDetails = (props) => {
             serialNumber
             employer
             employmentNumber
-            staffType
-            primaryRole
             passport
             age
           }
@@ -66,8 +64,8 @@ const StaffDetails = (props) => {
       }
     }
     new Service().getData(query).then((res) => {
-      setStaff(res?.staff)
-      setPassport({ ...photo, url: res?.staff.passport })
+      setTeacher(res?.teacher)
+      setPassport({ ...photo, url: res?.teacher.passport })
       setLoading(false)
     });
   }, [uid]);
@@ -89,10 +87,10 @@ const StaffDetails = (props) => {
     if (passport.image) {
       setSaving(true)
       let formData = new FormData()
-      formData.append("id", staff.id)
+      formData.append("id", teacher.id)
       formData.append("file", passport.image)
 
-      new UploadService().uploadStaffPassPort(formData, (progressEvent) => {
+      new UploadService().uploadTeacherPassPort(formData, (progressEvent) => {
         const { loaded, total } = progressEvent;
         let percent = Math.floor((loaded * 100) / total);
         setUploadProgress(percent)
@@ -118,10 +116,10 @@ const StaffDetails = (props) => {
     return <CustomLoader />
   }
 
-  if (!staff) {
+  if (!teacher) {
     return (
       <Paper sx={{ px: 5, py: 2 }}>
-        <div className="py-5 d-flex justify-content-center"><Alert severity="warning">Staff not found</Alert></div>
+        <div className="py-5 d-flex justify-content-center"><Alert severity="warning">Teacher not found</Alert></div>
       </Paper>
     )
   }
@@ -133,7 +131,7 @@ const StaffDetails = (props) => {
         <Box sx={{ p: 3, display: 'flex' }} >
           <Stack>
             <div style={{ position: "relative" }}>
-              <Avatar variant="rounded" src={passport.url} alt={staff.fullName} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
+              <Avatar variant="rounded" src={passport.url} alt={teacher.fullName} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
                 <AddPhotoAlternate sx={{ fontSize: "8rem" }} />
               </Avatar>
               {saving &&
@@ -154,35 +152,35 @@ const StaffDetails = (props) => {
             <Box sx={{ display: 'flex' }}>
               <Stack spacing={2} sx={{ ml: 5, alignItems: "start" }}>
                 <Stack direction="column" spacing={0}>
-                  <Typography fontWeight={700}>{staff.firstName} {staff.lastName}</Typography>
-                  <Typography variant="body2" color="text.secondary">{staff.email} </Typography>
+                  <Typography fontWeight={700}>{teacher.title} {teacher.fullName}</Typography>
+                  <Typography variant="body2" color="text.secondary">{teacher.email} </Typography>
                 </Stack>
                 <Typography variant="body2" color="text.secondary">
-                  <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {staff.gender}
+                  <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {teacher.gender}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {staff.age} yrs old
+                  <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {teacher.age} yrs old
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Phone sx={{ fontSize: "1.2rem" }} color="secondary" />  {staff.phoneNumber}
+                  <Phone sx={{ fontSize: "1.2rem" }} color="secondary" />  {teacher.phoneNumber}
                 </Typography>
               </Stack>
 
               <Stack spacing={3} sx={{ ml: { md: 5, lg: 20 } }}>
                 <Stack direction="column" spacing={1}>
                   <Typography variant="body2" color="text.secondary">Employer </Typography>
-                  <Typography variant="body1">{staff.employer} </Typography>
+                  <Typography variant="body1">{teacher.employer} </Typography>
                 </Stack>
 
                 <Stack direction="column" spacing={1}>
                   <Typography variant="body2" color="text.secondary">Employment Number</Typography>
-                  <Typography variant="body1">{staff.employmentNumber} </Typography>
+                  <Typography variant="body1">{teacher.employmentNumber} </Typography>
                 </Stack>
               </Stack>
             </Box>
 
             <Box sx={{ ml: 5, mt: 3, display: 'flex' }}>
-              <Button variant="outlined" color='secondary' onClick={() => { history.push(`/staffs/profile/${staff.id}/edit`) }}>
+              <Button variant="outlined" color='secondary' onClick={() => { history.push(`/teachers/profile/${teacher.id}/edit`) }}>
                 <Edit /> <Typography sx={{ ml: 1 }}>Edit</Typography>
               </Button>
             </Box>
@@ -197,14 +195,14 @@ const StaffDetails = (props) => {
             textColor="secondary"
             indicatorColor="secondary">
             <Tab icon={<School sx={{ fontSize: 20 }} />} iconPosition="start" label="Subjects"  {...panelProps(0)} />
-            <Tab icon={<Assignment sx={{ fontSize: 20 }} />} iconPosition="start" label="Classes"  {...panelProps(1)} />
+            <Tab icon={<Assignment sx={{ fontSize: 20 }} />} iconPosition="start" label="Classrooms"  {...panelProps(1)} />
           </Tabs>
           <TabPanel value={tabIndex} index={0}>Subjects</TabPanel>
-          <TabPanel value={tabIndex} index={1}>Classes</TabPanel>
+          <TabPanel value={tabIndex} index={1}>Classrooms</TabPanel>
         </Box>
       </Card>
     </>
   );
 };
 
-export default StaffDetails;
+export default TeacherDetails;

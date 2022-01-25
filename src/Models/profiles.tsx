@@ -1,8 +1,8 @@
 import { Address } from "./common";
 
-export enum StaffType {
-  StaffTypeTeacher = "Teaching",
-  StaffTypeSupport = "Non Teaching",
+export enum TeacherType {
+  TeacherTypeTeacher = "Teaching",
+  TeacherTypeSupport = "Non Teaching",
 }
 
 export interface Role {
@@ -12,13 +12,13 @@ export interface Role {
   description: string;
 }
 
-export interface Staff {
+export interface Teacher {
   id?: string;
   schoolID: string;
   UserID: string;
   firstName: string;
   lastName: string;
-  staffType: StaffType;
+  teacherType: TeacherType;
   Address: string;
   EmailAddress: string;
   PhoneNumber: string;

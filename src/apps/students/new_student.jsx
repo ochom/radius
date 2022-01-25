@@ -35,7 +35,7 @@ const NewStudent = () => {
   const getClassrooms = () => {
     let query = {
       query: `query classrooms{
-        classrooms: getClasses{
+        classrooms: getClassrooms{
           id
           level
           stream
@@ -57,10 +57,8 @@ const NewStudent = () => {
     setSaving(true)
     let query =
     {
-      query: `mutation createStudent($data: NewStudent!){
-        session: createStudent(input: $data){
-          id
-        }
+      query: `mutation ($data: NewStudent!){
+        createStudent(input: $data)
       }`,
       variables: {
         data: formData
