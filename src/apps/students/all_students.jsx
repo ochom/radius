@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DataTable } from "../../components/table";
 import {
   AlertFailed,
@@ -12,23 +12,21 @@ import { Edit, OpenInBrowser } from "@mui/icons-material";
 import { Service } from "../../API/service";
 import { UserAvatar } from "../../components/avatars";
 import { useHistory } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { Typography } from "@mui/material";
 
 const AllStudent = () => {
   const [loading, setLoading] = useState(true);
 
   const [students, setStudents] = useState([]);
+  const [allStudents, setAllStudents] = useState([]);
+  const [totalRows, setTotalRows] = useState(0);
 
   let history = useHistory();
 
 
 
   useEffect(() => {
-    getStudents()
-  }, [])
-
-  const getStudents = () => {
     let query = {
       query: `query students{
         students: getStudents{
@@ -46,10 +44,12 @@ const AllStudent = () => {
       variables: {}
     }
     new Service().getData(query).then((res) => {
+      setAllStudents(res?.students || [])
       setStudents(res?.students || [])
+      setTotalRows(res?.students ? res.students.length : 0)
       setLoading(false)
     });
-  };
+  }, [totalRows])
 
 
   const deleteStudent = (student) => {
@@ -67,13 +67,11 @@ const AllStudent = () => {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Student deleted successfully` });
+              setTotalRows(totalRows - 1)
             } else {
               AlertFailed({ text: res.message });
             }
           })
-          .finally(() => {
-            getStudents();
-          });
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, student not deleted" })
       }
@@ -103,7 +101,7 @@ const AllStudent = () => {
 
   const cols = [
     { name: "", selector: row => row.photo, width: '70px' },
-    { name: "#", selector: row => row.serialNumber, sortable: true, width: '100px', },
+    { name: "#REG", selector: row => row.serialNumber, sortable: true, width: '100px', },
     { name: "Name", selector: row => row.name, sortable: true },
     { name: "Level", selector: row => row.level, sortable: true },
     { name: "Stream", selector: row => row.stream, sortable: true },
@@ -119,6 +117,31 @@ const AllStudent = () => {
     },
   ];
 
+  const searchStudent = e => {
+    var val = e.target.value.toLowerCase();
+    if (val) {
+      var newStudents = allStudents.filter(s => s.admissionNumber.toLowerCase().includes(val) || s.fullName.toLowerCase().includes(val));
+      setStudents(newStudents)
+    } else {
+      setStudents(allStudents)
+    }
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const subHeader = useMemo(() => {
+    return (
+      <div className="d-flex justify-content-end px-3">
+        <TextField
+          label="Search"
+          size="small"
+          placeholder="Search Reg or Name"
+          onChange={searchStudent}
+        />
+      </div>
+    )
+  })
+
+
   return (
     <>
       <div className="d-flex justify-content-end mb-3">
@@ -131,6 +154,9 @@ const AllStudent = () => {
         title="All students"
         progressPending={loading}
         columns={cols}
+        subHeader
+        subHeaderComponent={subHeader}
+        persistTableHead
         onRowClicked={openProfile}
         data={students.map((d) => {
           return {
