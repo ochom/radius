@@ -12,7 +12,7 @@ export const loadUser = async (token) => {
     headers: headers,
   })
     .then((res) => {
-      return res.data;
+      return res;
     })
     .catch((err) => {
       return err;

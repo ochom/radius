@@ -2,7 +2,7 @@ import { Card, Container, Grid, Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import { Service } from "../../API/service";
-import { PageBody } from "../customs"
+import { PageBody } from "../customs";
 
 function Dashboard() {
   const [data, setData] = useState(null);

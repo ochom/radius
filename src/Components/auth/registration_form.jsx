@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import { Button, Checkbox, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import { Button, Checkbox, TextField } from "@mui/material";
+import React, { useState } from "react";
+import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { register } from "../../API/auth";
 import {
-  AlertSuccess,
-  AlertFailed,
-  AlertWarning,
+  AlertFailed, AlertSuccess, AlertWarning
 } from "../customs/alerts";
-import { useHistory } from "react-router-dom";
-import { connect } from "react-redux";
 
 const initialFormData = {
   firstName: "",

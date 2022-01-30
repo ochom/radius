@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Button, TextField, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import { Button, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+import { useDispatch } from 'react-redux';
+import { useHistory } from "react-router-dom";
 import { login as Login } from "../../API/auth";
+import { login } from '../../reducers/auth-reducer';
 import {
   AlertFailed
 } from "../customs/alerts";
 
-import { useDispatch } from 'react-redux'
-import { login } from '../../reducers/auth-reducer'
 
-import { useHistory } from "react-router-dom";
 
 const initialFormData = {
   email: "",

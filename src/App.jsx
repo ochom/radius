@@ -1,47 +1,58 @@
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { loadUser } from "./API/auth";
 import Academics from "./Components/academics";
 import Activity from "./Components/activity";
 import Auth from "./Components/auth";
 import ClassesAndSessions from "./Components/classrooms";
+import DefaultPageLayout from "./Components/customs";
+import { CustomLoader } from "./Components/customs/monitors";
 import Dashboard from "./Components/dashboard";
 import Library from "./Components/library";
 import Settings from "./Components/settings";
 import SMS from "./Components/sms";
-import Teacher from "./Components/teachers";
 import Student from "./Components/students";
-import DefaultPageLayout from "./Components/customs";
-import { loadUser } from "./API/auth"
-import { useEffect, useState } from "react";
-import { CustomLoader } from "./Components/customs/monitors";
+import Teacher from "./Components/teachers";
+import { login } from "./reducers/auth-reducer";
 
-import { useSelector, useDispatch } from 'react-redux'
-import { login } from './reducers/auth-reducer'
 
 function App(props) {
-
-  const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false)
-
   const user = useSelector(state => state.auth.user)
+  const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
-    if (user) {
-      setLoading(true)
-      loadUser(user.token).then(res => {
-        console.log(res.data);
-        dispatch(login(res.data))
-      }).finally(() => {
-        setLoading(false)
-      })
+    const getUser = () => {
+      let token = localStorage.getItem('token')
+      if (token) {
+        setLoading(true);
+        loadUser(token)
+          .then((res) => {
+            if (res.status === 200) {
+              dispatch(login(res.data));
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
     }
+    getUser();
+    return () => {
+      getUser()
+    }
+  }, [dispatch]);
 
-  }, [dispatch, user]);
-
-  if (!user && loading) {
-    return <CustomLoader />
+  if (loading) {
+    return <CustomLoader />;
   }
 
-  if (!user) {
+  if (!loading && !user) {
     return <Auth />
   }
 

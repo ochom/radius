@@ -1,8 +1,9 @@
-import { connect } from "react-redux";
 import "./auth.css";
 import LoginForm from "./login_form";
 
+
 const Auth = () => {
+
   return (
     <div className="container">
       <div className="login-container">
@@ -12,4 +13,4 @@ const Auth = () => {
   );
 };
 
-export default connect(null, null)(Auth);
+export default Auth;
