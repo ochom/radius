@@ -1,22 +1,53 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Academics from "./Components/academics";
+import Activity from "./Components/activity";
+import Auth from "./Components/auth";
+import ClassesAndSessions from "./Components/classrooms";
+import Dashboard from "./Components/dashboard";
+import Library from "./Components/library";
+import Settings from "./Components/settings";
+import SMS from "./Components/sms";
+import Teacher from "./Components/teachers";
+import Student from "./Components/students";
+import DefaultPageLayout from "./Components/customs";
+import { loadUser } from "./API/auth"
+import { useEffect, useState } from "react";
+import { CustomLoader } from "./Components/customs/monitors";
 
-import Academics from "./apps/academics";
-import Activity from "./apps/activity";
-import Auth from "./apps/auth";
-import ClassesAndSessions from "./apps/classrooms";
-import Dashboard from "./apps/dashboard";
-import Library from "./apps/library";
-import Settings from "./apps/settings";
-import SMS from "./apps/sms";
-import Teacher from "./apps/teachers";
-import Student from "./apps/students";
-import { DefaultPageLayout } from "./components";
+import { useSelector, useDispatch } from 'react-redux'
+import { login } from './reducers/auth-reducer'
 
-function App() {
+function App(props) {
+
+  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false)
+
+  const user = useSelector(state => state.auth.user)
+
+  useEffect(() => {
+    if (user) {
+      setLoading(true)
+      loadUser(user.token).then(res => {
+        console.log(res.data);
+        dispatch(login(res.data))
+      }).finally(() => {
+        setLoading(false)
+      })
+    }
+
+  }, [dispatch, user]);
+
+  if (!user && loading) {
+    return <CustomLoader />
+  }
+
+  if (!user) {
+    return <Auth />
+  }
+
   return (
     <Router>
       <Switch>
-        <Route path="/register" component={Auth} />
         <DefaultPageLayout>
           <Route path="/sms" component={SMS} />
           <Route path="/teachers" component={Teacher} />
@@ -30,7 +61,8 @@ function App() {
         </DefaultPageLayout>
       </Switch>
     </Router>
-  );
+  )
 }
 
-export default App;
+
+export default App

@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { AuthHeaders, http, URLS } from "./config";
-import { GraphResponse, Response } from "../Models/common";
+import { GraphResponse, Response } from "../app/models";
 
 export class Service {
   getData = async (query: any) => {
