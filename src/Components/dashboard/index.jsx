@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import { Service } from "../../API/service";
 import { PageBody } from "../customs";
+import { CustomLoader } from "../customs/monitors";
 
 function Dashboard() {
   const [data, setData] = useState(null);
@@ -38,7 +39,7 @@ function Dashboard() {
   return (
     <PageBody>
       <Container>
-        {!data && <p>loading</p>}
+        {!data && <CustomLoader />}
         {data &&
           <Box>
             <Grid container spacing={3}>

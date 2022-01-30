@@ -21,14 +21,13 @@ function App(props) {
   const user = useSelector(state => state.auth.user)
   const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
     const getUser = () => {
       let token = localStorage.getItem('token')
       if (token) {
-        setLoading(true);
         loadUser(token)
           .then((res) => {
             if (res.status === 200) {
@@ -40,6 +39,8 @@ function App(props) {
           .finally(() => {
             setLoading(false);
           });
+      } else {
+        setLoading(false);
       }
     }
     getUser();
