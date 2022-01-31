@@ -1,9 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Button, Checkbox, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { register } from "../../API/auth";
 import {
   AlertFailed, AlertSuccess, AlertWarning
 } from "../customs/alerts";
@@ -22,7 +19,7 @@ const initialFormData = {
 
 
 const RegistrationForm = (props) => {
-  let history = useHistory()
+  let { toggleForm } = props
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
@@ -47,10 +44,6 @@ const RegistrationForm = (props) => {
         setLoading(false);
       });
   };
-
-  const openLoginForm = () => {
-    history.push('/register')
-  }
 
   return (
 
@@ -202,7 +195,7 @@ const RegistrationForm = (props) => {
                 size="large"
                 loading={loading}
               >
-                Save
+                Register
               </LoadingButton>
             </div>
           </div>
@@ -210,7 +203,7 @@ const RegistrationForm = (props) => {
             <Button
               type="button"
               color="secondary"
-              onClick={openLoginForm}
+              onClick={toggleForm}
             >
               Already have account?
             </Button>
@@ -222,6 +215,4 @@ const RegistrationForm = (props) => {
 }
 
 
-export default connect(state => ({
-  loggedIn: state.isAuthenticated,
-}), { register })(RegistrationForm)
+export default RegistrationForm
