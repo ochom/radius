@@ -4,6 +4,10 @@
 }
 
 .landing-section {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  align-content: center;
   border-bottom-left-radius: 1.5rem;
   border-bottom-right-radius: 1.5rem;
   background-size: auto;

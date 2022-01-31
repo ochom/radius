@@ -52,9 +52,9 @@ const Auth = () => {
                 </div>
                 <Typography variant="body2" color="grey"
                   sx={{ fontSize: "1.5rem", fontWeight: 500 }}>
-                  Manage Examinations, Finances, Students and Library from
+                  Manage Examinations, Finances, Students and Library.
                 </Typography>
-                <Typography color="secondary" variant="h6" mt={1}>Anywhere, Anytime</Typography>
+                <Typography color="secondary" variant="h4" mt={1}>Anywhere, Anytime</Typography>
               </div>
             </div>
             <div className="col-md-6 col-lg-5">
