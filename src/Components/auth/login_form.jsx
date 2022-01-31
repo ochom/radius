@@ -1,25 +1,22 @@
+import { Lock } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
-import { useHistory } from "react-router-dom";
 import { login as Login } from "../../API/auth";
 import { login } from '../../reducers/auth-reducer';
 import {
   AlertFailed
 } from "../customs/alerts";
 
-
-
 const initialFormData = {
   email: "",
   password: "",
 };
 
-
 const LoginForm = (props) => {
+  let { toggleForm } = props
 
-  let history = useHistory()
   const dispatch = useDispatch()
 
   const [loading, setLoading] = useState(false);
@@ -42,19 +39,20 @@ const LoginForm = (props) => {
       });
   };
 
-  const openRegistrationForm = () => {
-    history.push('/register')
-  }
 
   return (
-    <div className="login-card mx-auto">
+    <div className="login-card mr-0">
       <div className="card card-body p-5 border-0">
-        <h3 className="text-center my-4">User Login</h3>
+        <h3 className="text-center my-4">
+          <Lock color="secondary"
+            sx={{ fontSize: '2rem' }} /> Login
+        </h3>
         <form onSubmit={submitData}>
           <div className="col-12 mt-4">
             <TextField
               type="text"
               label="Email"
+              color="secondary"
               fullWidth
               required
               value={formData.email}
@@ -71,6 +69,7 @@ const LoginForm = (props) => {
             <TextField
               type="password"
               label="Password"
+              color="secondary"
               fullWidth
               required
               value={formData.password}
@@ -84,7 +83,9 @@ const LoginForm = (props) => {
           </div>
           <div className="row mt-3">
             <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-              <a href="/forgot-password">Forgot password?</a>
+              <Button color="secondary" className="no-transform">
+                Forgot password?
+              </Button>
             </div>
           </div>
 
@@ -106,7 +107,7 @@ const LoginForm = (props) => {
             <Button
               type="button"
               color="secondary"
-              onClick={openRegistrationForm}
+              onClick={toggleForm}
             >
               Don't have account?
             </Button>

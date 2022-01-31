@@ -1,0 +1,41 @@
+.login-container {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.landing-section {
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-image: url(./static/wave1.svg);
+  .about {
+    padding: 4rem;
+  }
+}
+
+.login-card {
+  width: 25rem;
+  height: auto;
+  box-shadow: 0 0 5px 5px #46454538;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.registration-card {
+  height: auto;
+}
+
+.MuiButton-root {
+  &.no-transform {
+    text-transform: none !important;
+  }
+}
+
+.MuiIcon-root {
+  position: relative;
+  top: 0 !important;
+  color: red !important;
+  vertical-align: 5px !important;
+}
