@@ -41,7 +41,7 @@ const LoginForm = (props) => {
 
 
   return (
-    <div className="login-card mr-0">
+    <div className="login-card mx-auto">
       <div className="card card-body p-5 border-0">
         <h3 className="text-center my-4">
           <Lock color="secondary"

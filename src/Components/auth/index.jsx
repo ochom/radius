@@ -1,17 +1,17 @@
 import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { useState } from "react";
 import LoginForm from "./login_form";
+import PricingForm from "./pricing";
 import RegistrationForm from "./registration_form";
+import SchoolProfile from "./school_profile";
 
-const pages = ['About', 'Pricing', 'Contact Us', 'Blog'];
+const pages = [
+  { title: 'About', href: '#about' },
+  { title: 'Pricing', href: '#pricing' },
+  { title: 'Contact Us', href: '#contacts' }
+];
 
 const Auth = () => {
-  const [form, setForm] = useState("login");
-
-  const toggleForm = () => {
-    setForm(form === "login" ? "registration" : "login")
-  }
   return (
     <Box>
       <AppBar position="static" sx={{ backgroundColor: 'white' }}>
@@ -29,20 +29,22 @@ const Auth = () => {
               Radius 360&#176;
             </Typography>
             <Box sx={{ flexGrow: 1, display: 'flex', ml: '10rem' }}>
-              {pages.map((page) => (
+              {pages.map((page) =>
                 <Button
-                  key={page}
+                  key={page.title}
+                  href={page.href}
                   sx={{ my: 2, mr: 3, color: '#9c27b0', display: 'block' }}
                 >
-                  {page}
+                  {page.title}
                 </Button>
-              ))}
+              )}
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
-      <Container>
-        <section className="landing-section my-4 py-5">
+
+      <section className="landing-section py-5">
+        <Container>
           <div className="row col-12">
             <div className="col-md-6 col-lg-7">
               <div className="about">
@@ -58,16 +60,30 @@ const Auth = () => {
               </div>
             </div>
             <div className="col-md-6 col-lg-5">
-              <LoginForm toggleForm={toggleForm} />
+              <LoginForm />
             </div>
           </div>
-        </section>
-        <div className="my-5">
-          <section className="mb-4">
-            <RegistrationForm toggleForm={toggleForm} />
-          </section>
-        </div>
-      </Container >
+        </Container>
+      </section>
+      <section id="registration" className="registration-section">
+        <Container>
+          <PricingForm />
+          <SchoolProfile />
+          <RegistrationForm />
+        </Container>
+      </section>
+      <section id="contacts" className="registration-section">
+        <Container>
+          <PricingForm />
+          <SchoolProfile />
+          <RegistrationForm />
+        </Container>
+      </section>
+      <section id="footer" className="footer-section">
+        <Container>
+
+        </Container>
+      </section>
     </Box>
 
   );
