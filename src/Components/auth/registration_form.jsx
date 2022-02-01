@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Button, Checkbox, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import {
   AlertFailed, AlertSuccess, AlertWarning
@@ -15,8 +15,6 @@ const initialFormData = {
   schoolAlias: "",
   agreedToTerms: false,
 };
-
-
 
 const RegistrationForm = (props) => {
   let { toggleForm } = props
@@ -46,10 +44,9 @@ const RegistrationForm = (props) => {
   };
 
   return (
-
-    <div className="registration-card mx-auto">
+    <div className="col-md-6 mx-auto">
       <div className="card card-body p-5 border-0">
-        <h3 className="text-center my-4">Create a new School Profile</h3>
+        <h3 className="text-center my-4">Your profile</h3>
         <form onSubmit={submitData}>
           <div className="row">
             <div className="col-6 my-3">
@@ -130,63 +127,6 @@ const RegistrationForm = (props) => {
                 }
               />
             </div>
-
-            <div className="col-8 mx-auto mt-4">
-              <hr />
-            </div>
-
-            <div className="col-12 my-3">
-              <TextField
-                type="text"
-                label="School name"
-                placeholder="e.g Akala Secondary School"
-                fullWidth
-                required
-                value={formData.schoolName}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    schoolName: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="col-12 my-3">
-              <TextField
-                type="text"
-                label="Alias (Abbreviation)"
-                placeholder="e.g AKSS"
-                fullWidth
-                required
-                value={formData.schoolAlias}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    schoolAlias: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div className="col-12 my-3">
-              <Checkbox
-                checked={formData.agreedToTerms}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    agreedToTerms: e.target.checked,
-                  })
-                }
-              />
-              <a
-                href="https://lysofts.co.ke/radius/terms-and-conditions"
-                target="_blank"
-                rel="noreferrer"
-              >
-                I agree to Lysofts terms and conditions
-              </a>
-            </div>
-
             <div className="d-grid">
               <LoadingButton
                 type="submit"

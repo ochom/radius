@@ -4,13 +4,11 @@
 }
 
 .landing-section {
-  min-height: 75vh;
+  min-height: 90vh;
   display: flex;
   align-items: center;
   align-content: center;
-  border-bottom-left-radius: 1.5rem;
-  border-bottom-right-radius: 1.5rem;
-  background-size: auto;
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: bottom;
   background-image: url(./static/wave1.svg);
@@ -29,6 +27,17 @@
 
 .registration-card {
   height: auto;
+}
+
+.footer-section {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-image: url(./static/wave1.svg);
 }
 
 .MuiButton-root {
