@@ -268,3 +268,31 @@ body {
   height: 2rem !important;
   margin-left: 0.4rem;
 }
+
+.dashboard {
+  .card-widgets {
+    .card {
+      border: none !important;
+      border-radius: 0.8rem;
+      box-shadow: 3px 5px 10px 0px #b1b0b038;
+      .label {
+        color: grey;
+      }
+      .icon {
+        font-size: 3rem;
+        color: rgb(179, 179, 179);
+      }
+    }
+  }
+  .recent-students {
+    background-color: white;
+    padding: 0 !important;
+    border-radius: 0.8rem;
+    box-shadow: 3px 5px 10px 0px #b1b0b038;
+  }
+  .top-teachers {
+    background-color: white;
+    border-radius: 0.8rem;
+    box-shadow: 3px 5px 10px 0px #b1b0b038;
+  }
+}
