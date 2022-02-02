@@ -3,6 +3,7 @@ import { Avatar, Button, Card, Chip, Grid, List, ListItem, ListItemAvatar, ListI
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Service } from "../../API/service";
 import { PageBody } from "../customs";
@@ -11,7 +12,10 @@ import { CustomLoader } from "../customs/monitors";
 
 function Dashboard() {
   let history = useHistory()
+  const user = useSelector(state => state.auth.user)
   const [data, setData] = useState(null);
+  const [hour, setHour] = useState(null);
+
 
   useEffect(() => {
     let query = {
@@ -48,6 +52,15 @@ function Dashboard() {
       setData(res?.data || null)
     });
 
+    const date = new Date();
+    const hours = date.getHours()
+    let greetTime = "morning"
+    if (hours > 12 && hours <= 17) {
+      greetTime = "afternoon"
+    } else if (hours > 17 && hours <= 24) {
+      greetTime = "evening"
+    }
+    setHour(greetTime)
   }, [])
 
   const studentCols = [
@@ -67,7 +80,10 @@ function Dashboard() {
         {!data && <CustomLoader />}
         {data &&
           <Box>
-            <Grid container spacing={3} className="card-widgets" sx={{ mt: 3 }}>
+            <Typography sx={{ my: 2, mx: 5 }}>
+              Hi <b>{user.firstName}</b>, good {hour}!
+            </Typography>
+            <Grid container spacing={3} className="card-widgets">
               <Grid item sm={6} md={3}>
                 <Card className="card" sx={{ p: 4 }}>
                   <Grid container>
