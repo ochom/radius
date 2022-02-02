@@ -1,13 +1,12 @@
-import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from "@mui/material";
-import { Menu as MenuIcon } from '@mui/icons-material'
+import { AdminPanelSettings, Mail, Menu as MenuIcon, Notifications } from '@mui/icons-material';
+import { AppBar, Avatar, Badge, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from "react-router-dom";
-import { useSelector } from 'react-redux'
+import { logout } from '../../reducers/auth-reducer';
 import profile from "../../static/profile.jpg";
 
-import { useDispatch } from 'react-redux'
-import { logout } from '../../reducers/auth-reducer'
 
 function SubMenu({ titleIcon, titleName, items }) {
   return (
@@ -61,23 +60,32 @@ function TopBar(props) {
 
   return (
     <Box className="topbar">
-      <AppBar position="static" color="secondary">
+      <AppBar position="static" sx={{ backgroundColor: 'white' }}>
         <Toolbar>
           <IconButton
             size="large"
             edge="start"
-            color="inherit"
+            color="secondary"
             aria-label="menu"
             sx={{ mr: 2 }}
             onClick={toggleSideNav}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: "#9c27b0" }}>
             {user.school.name}
           </Typography>
 
           <Box>
+            <Badge badgeContent={0} color="secondary" sx={{ mr: 3 }}>
+              <AdminPanelSettings color="action" />
+            </Badge>
+            <Badge badgeContent={0} showZero color="secondary" sx={{ mr: 3 }}>
+              <Notifications color="action" />
+            </Badge>
+            <Badge badgeContent={0} showZero color="secondary" sx={{ mr: 3 }}>
+              <Mail color="action" />
+            </Badge>
             <Tooltip title="Open settings" arrow>
               <IconButton onClick={handleOpen}>
                 <Avatar alt={user.firstName} src={profile} />
