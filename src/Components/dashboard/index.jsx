@@ -1,5 +1,5 @@
 import { AccessTimeOutlined, LibraryBooksOutlined, PeopleOutline, PersonOutlined } from "@mui/icons-material";
-import { Avatar, Button, Card, Chip, Grid, List, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Card, Chip, Container, Grid, List, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
@@ -76,7 +76,7 @@ function Dashboard() {
   }
   return (
     <PageBody>
-      <Box className="dashboard" sx={{ px: { lg: 10 } }}>
+      <Container className="dashboard">
         {!data && <CustomLoader />}
         {data &&
           <Box>
@@ -84,7 +84,7 @@ function Dashboard() {
               Hi <b>{user.firstName}</b>, good {hour}!
             </Typography>
             <Grid container spacing={3} className="card-widgets">
-              <Grid item sm={6} md={3}>
+              <Grid item sm={6} lg={3}>
                 <Card className="card" sx={{ p: 4 }}>
                   <Grid container>
                     <Grid item sm={8}>
@@ -98,7 +98,7 @@ function Dashboard() {
                   </Grid>
                 </Card>
               </Grid>
-              <Grid item sm={6} md={3}>
+              <Grid item sm={6} lg={3}>
                 <Card className="card" sx={{ p: 4 }}>
                   <Grid container>
                     <Grid item sm={8}>
@@ -112,7 +112,7 @@ function Dashboard() {
                   </Grid>
                 </Card>
               </Grid>
-              <Grid item sm={6} md={3}>
+              <Grid item sm={6} lg={3}>
                 <Card className="card" sx={{ p: 4 }}>
                   <Grid container>
                     <Grid item sm={8}>
@@ -126,7 +126,7 @@ function Dashboard() {
                   </Grid>
                 </Card>
               </Grid>
-              <Grid item sm={6} md={3}>
+              <Grid item sm={6} lg={3}>
                 <Card className="card" sx={{ p: 4 }}>
                   <Grid container>
                     <Grid item sm={8}>
@@ -142,8 +142,8 @@ function Dashboard() {
               </Grid>
             </Grid>
 
-            <Grid container sx={{ my: 3 }} spacing={3} >
-              <Grid item sm={12} md={8}>
+            <Grid container sx={{ my: 3 }} spacing={3}>
+              <Grid item sm={12} lg={8}>
                 <Box className="recent-students">
                   <Stack direction="row" justifyContent="space-between" sx={{ px: 5 }}>
                     <Typography color="secondary" variant="h5" sx={{ my: 2 }}>
@@ -166,7 +166,7 @@ function Dashboard() {
                     }))} />
                 </Box>
               </Grid>
-              <Grid item sm={12} md={4}>
+              <Grid item sm={12} lg={4}>
                 <Box className="top-teachers">
                   <Stack>
                     <Typography color="secondary" variant="h5" sx={{ mt: 2, mx: 3 }}>
@@ -190,7 +190,7 @@ function Dashboard() {
 
           </Box >
         }
-      </Box >
+      </Container >
     </PageBody >
   )
 }
