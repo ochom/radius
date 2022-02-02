@@ -14,36 +14,42 @@ const pages = [
 const Auth = () => {
   return (
     <Box>
-      <AppBar position="static" sx={{ backgroundColor: 'white' }}>
+      <AppBar position="fixed" sx={{ backgroundColor: 'white' }}>
         <Container>
           <Toolbar>
             <Typography
               variant="h6"
               noWrap
               component="div"
-              sx={{ mr: 2, display: { md: 'flex' }, color: '#9c27b0' }}
+              sx={{ mr: 2, display: 'flex', flexGrow: 1, color: '#9c27b0' }}
             >
-              <Typography sx={{ fontSize: '1.5rem', mr: 1 }}>
+              <Typography sx={{ fontSize: '1.5rem', mr: 1, }}>
                 <i className="bx bxl-sketch" ></i>
               </Typography>
               Radius 360&#176;
             </Typography>
-            <Box sx={{ flexGrow: 1, display: 'flex', ml: '10rem' }}>
+            <Box sx={{ flexGrow: 1, display: 'flex' }}>
               {pages.map((page) =>
                 <Button
                   key={page.title}
                   href={page.href}
-                  sx={{ my: 2, mr: 3, color: '#9c27b0', display: 'block' }}
+                  color="secondary"
+                  sx={{ my: 2, mr: 2, display: 'block' }}
                 >
                   {page.title}
                 </Button>
               )}
             </Box>
+            <Box>
+              <Button color="secondary" className="no-transform" sx={{ mr: 3 }} href="#login">Sign in</Button>
+              <Button variant="outlined" color="secondary" className="no-transform" sx={{ mr: 3 }} href="#contacts">Talk to sales</Button>
+              <Button variant="contained" color="secondary" className="no-transform" href="#register">Try for free</Button>
+            </Box>
           </Toolbar>
         </Container>
       </AppBar>
-
-      <section className="landing-section py-5">
+      <section id="about"></section>
+      <section className="landing-section py-5" id="login">
         <Container>
           <div className="row col-12">
             <div className="col-md-6 col-lg-7">
@@ -65,7 +71,7 @@ const Auth = () => {
           </div>
         </Container>
       </section>
-      <section id="registration" className="registration-section">
+      <section id="register" className="registration-section">
         <Container>
           <PricingForm />
           <SchoolProfile />
