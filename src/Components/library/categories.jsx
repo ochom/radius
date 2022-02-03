@@ -1,6 +1,6 @@
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, TextField } from '@mui/material';
+import { Button, Container, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
@@ -162,27 +162,29 @@ export default function Categories() {
 
   return (
     <>
-      <div className="mb-3 justify-content-end d-flex">
-        <Button color="secondary" variant="contained" onClick={onNewCategory}>
-          <Add /> Add New Category
-        </Button>
-      </div>
+      <Container>
+        <div className="mb-3 justify-content-end d-flex">
+          <Button color="secondary" variant="contained" onClick={onNewCategory}>
+            <Add /> Add New Category
+          </Button>
+        </div>
 
-      <DataTable
-        title="Book Categories"
-        progressPending={loading}
-        defaultSortFieldId={1}
-        columns={cols}
-        onRowClicked={editCategory}
-        data={
-          bookCategories.map((row) => {
+        <DataTable
+          title="Book Categories"
+          progressPending={loading}
+          defaultSortFieldId={1}
+          columns={cols}
+          onRowClicked={editCategory}
+          data={bookCategories.map((row) => {
             return {
               id: row.id,
               name: row.name,
               description: row.description,
               action: <DropdownMenu options={dropMenuOptions} row={row} />
             };
-          })} />
+          })}
+        />
+      </Container>
 
       <Modal isOpen={modal}>
         {loadingSelected ?

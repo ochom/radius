@@ -4,7 +4,7 @@ import Books from "./books"
 import Borrowing from "./borrowing"
 import Categories from "./categories"
 import Dashboard from "./dashboard"
-import Notes from "./notes"
+import Reports from "./reports"
 import Publishers from "./publishers"
 
 const menuItems = [
@@ -13,7 +13,7 @@ const menuItems = [
   { title: "Publishers", href: "/library/publishers", icon: "bx bxs-right-arrow" },
   { title: "Books", href: "/library/books", icon: "bx bxs-right-arrow" },
   { title: "Issue/Return", href: "/library/issue", icon: "bx bxs-right-arrow" },
-  { title: "Notes", href: "/library/notes", icon: "bx bxs-right-arrow" },
+  { title: "Reports", href: "/library/reports", icon: "bx bxs-right-arrow" },
 ]
 
 function Library() {
@@ -31,7 +31,7 @@ function Library() {
               <Route path={`${url}/books`} component={Books} />
               <Route path={`${url}/issue`} component={Borrowing} />
               <Route path={`${url}/publishers`} component={Publishers} />
-              <Route path={`${url}/notes`} component={Notes} />
+              <Route path={`${url}/reports`} component={Reports} />
             </>
           )}
         />

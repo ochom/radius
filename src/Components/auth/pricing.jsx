@@ -14,8 +14,7 @@ const PricingForm = (props) => {
       <Box>
         <Stack direction="row" sx={{ display: 'flex', justifyContent: 'center' }}>
           {packages.map((p) =>
-            <Card key={p} className={selectedPackage === p && "packages selected"}
-              sx={{ mx: 2 }}>
+            <Card key={p} sx={{ mx: 2 }}>
               <Box sx={{ py: 5, px: 5, justifyContent: 'center' }}>
                 <Typography variant="h6" sx={{ textAlign: 'center' }}>{p}</Typography>
                 <Box sx={{ mt: 3 }}>

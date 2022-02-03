@@ -170,14 +170,14 @@ export default function Publishers() {
           defaultSortFieldId={1}
           columns={cols}
           onRowClicked={editPublisher}
-          data={
-            publishers.map((row) => {
-              return {
-                id: row.id,
-                name: row.name,
-                action: <DropdownMenu options={dropMenuOptions} row={row} />
-              };
-            })} />
+          data={publishers.map((row) => {
+            return {
+              id: row.id,
+              name: row.name,
+              action: <DropdownMenu options={dropMenuOptions} row={row} />
+            };
+          })}
+        />
       </Container>
 
       <Modal isOpen={modal}>
