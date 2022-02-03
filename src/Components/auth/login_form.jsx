@@ -29,14 +29,15 @@ const LoginForm = (props) => {
     Login(formData)
       .then((res) => {
         if (res.status === 200) {
+          setLoading(false);
           dispatch(login(res.data))
         } else {
+          setLoading(false);
           AlertFailed({ text: res.message });
         }
-      })
-      .finally(() => {
+      }).catch(err => {
         setLoading(false);
-      });
+      })
   };
 
 
