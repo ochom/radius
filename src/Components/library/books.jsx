@@ -23,10 +23,13 @@ const initialFormData = {
 export default function Books() {
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true)
+
+  const [searching, setSearching] = useState(false)
+  const [searched, setSearched] = useState(false)
+  const [selectedBookID, setSelectedBookID] = useState(null);
+
   const [saving, setSaving] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
-  const [loadingSelected, setLoadingSelected] = useState(false)
-  const [selectedBookID, setSelectedBookID] = useState(null);
 
 
   const [books, setBooks] = useState([]);
@@ -53,9 +56,10 @@ export default function Books() {
 
 
   const onNewBook = () => {
-    toggleModal();
-    setSelectedBookID(null);
     setFormData(initialFormData)
+    setSelectedBookID(null);
+    setSearched(false)
+    toggleModal();
   };
 
   const submitForm = (e) => {
@@ -95,12 +99,13 @@ export default function Books() {
 
   const editBook = row => {
     setSelectedBookID(row.id);
-    setLoadingSelected(true)
+    setSearching(true)
     let query = {
       query: `query ($id: ID!){
         book: getBook(id: $id){
           id
           title
+          barcode
         }
       }`,
       variables: {
@@ -112,11 +117,13 @@ export default function Books() {
       if (res) {
         let data = res.book
         setFormData({
-          title: data.title
+          ...formData,
+          barcode: data.barcode,
+          title: data.title,
         })
       }
     }).finally(() => {
-      setLoadingSelected(false)
+      setSearching(false)
     });
     toggleModal();
   };
@@ -146,6 +153,33 @@ export default function Books() {
       }
     });
   };
+
+
+  const searchBook = (e) => {
+    e.preventDefault()
+    setSearching(true)
+    let query = {
+      query: `query ($data: String!){
+        book: getBookByBarcode(barcode: $data){
+          id
+          title
+        }
+      }`,
+      variables: {
+        data: formData.barcode
+      }
+    }
+    new Service().getData(query).then((res) => {
+      if (res?.book) {
+        setFormData({
+          ...formData,
+          title: res.book.title
+        })
+      }
+      setSearching(false)
+      setSearched(true)
+    });
+  }
 
   let dropMenuOptions = [{ "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
 
@@ -192,11 +226,42 @@ export default function Books() {
       </Container>
 
       <Modal isOpen={modal}>
-        {loadingSelected ?
+        {(searching) &&
           <ModalBody>
             <CustomLoader />
           </ModalBody>
-          :
+        }
+
+
+        {/* New book ID modal */}
+        {(!searching && !searched && !selectedBookID) &&
+          <>
+            <ModalHeader toggle={toggleModal}><i className="fa fa-plus-circle"></i> Add book</ModalHeader>
+            <ModalBody>
+              <form onSubmit={searchBook} method="post">
+                <div>
+                  <div className="mt-3">
+                    <TextField
+                      value={formData.barcode}
+                      label="Barcode"
+                      required
+                      color="secondary"
+                      fullWidth
+                      onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                    />
+                  </div>
+                  <div className="my-5">
+                    <Button color="secondary" variant="contained" type="submit">Continue</Button>
+                  </div>
+                </div>
+              </form>
+            </ModalBody>
+          </>
+        }
+
+
+        {/* New book details modal */}
+        {(searched || (searched && selectedBookID)) &&
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
               <span>
@@ -207,12 +272,71 @@ export default function Books() {
               <div className="row px-3">
                 <div className="mt-3">
                   <TextField
+                    label="Barcode"
+                    color="secondary"
+                    required
+                    aria-readonly
+                    fullWidth
+                    defaultValue={formData.barcode}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
                     label="Book title"
                     color="secondary"
                     required
                     fullWidth
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    label="Book category"
+                    color="secondary"
+                    required
+                    fullWidth
+                    value={formData.categoryID}
+                    onChange={(e) => setFormData({ ...formData, categoryID: e.target.value })}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    label="Edition"
+                    color="secondary"
+                    fullWidth
+                    value={formData.edition}
+                    onChange={(e) => setFormData({ ...formData, edition: e.target.value })}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    label="Author"
+                    color="secondary"
+                    fullWidth
+                    value={formData.author}
+                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    label="Publisher"
+                    color="secondary"
+                    required
+                    fullWidth
+                    value={formData.publisher}
+                    onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    label="Other"
+                    color="secondary"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    value={formData.metaData}
+                    onChange={(e) => setFormData({ ...formData, metaData: e.target.value })}
                   />
                 </div>
               </div>
@@ -231,7 +355,6 @@ export default function Books() {
             </ModalFooter>
           </form>
         }
-
       </Modal>
     </>
   );
