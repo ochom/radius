@@ -1,6 +1,7 @@
 import { Add, Delete, Edit, LibraryBooksOutlined, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, Container, TextField, Typography } from '@mui/material';
+import { Button, Container, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
@@ -13,9 +14,8 @@ const initialFormData = {
   barcode: "",
   title: "",
   author: "",
-  publisher: "",
   edition: "",
-  published: "",
+  publisherID: "",
   categoryID: "",
   metaData: ""
 }
@@ -33,6 +33,8 @@ export default function Books() {
 
 
   const [books, setBooks] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [publishers, setPublishers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
@@ -43,13 +45,33 @@ export default function Books() {
       query: `query{
         books: getBooks{
           id
+          barcode
           title
+          publisher{
+            id
+            name
+          }
+          category{
+            id
+            name
+          }
+          createdAt
+        }
+        categories: getBookCategories{
+          id
+          name
+        }
+        publishers: getPublishers{
+          id
+          name
         }
       }`,
       variables: {}
     }
     new Service().getData(query).then((res) => {
       setBooks(res?.books || [])
+      setCategories(res?.categories || [])
+      setPublishers(res?.publishers || [])
       setLoading(false)
     });
   }, [totalRows]);
@@ -104,8 +126,19 @@ export default function Books() {
       query: `query ($id: ID!){
         book: getBook(id: $id){
           id
-          title
           barcode
+          title
+          author
+          edition
+          publisher{
+            id
+            name
+          }
+          category{
+            id
+            name
+          }
+          metaData
         }
       }`,
       variables: {
@@ -120,10 +153,16 @@ export default function Books() {
           ...formData,
           barcode: data.barcode,
           title: data.title,
+          author: data.author,
+          edition: data.edition,
+          categoryID: data.category.id,
+          publisherID: data.publisher.id,
+          metaData: data.metaData
         })
       }
     }).finally(() => {
       setSearching(false)
+      setSearched(true)
     });
     toggleModal();
   };
@@ -162,7 +201,19 @@ export default function Books() {
       query: `query ($data: String!){
         book: getBookByBarcode(barcode: $data){
           id
+          barcode
           title
+          author
+          edition
+          publisher{
+            id
+            name
+          }
+          category{
+            id
+            name
+          }
+          metaData
         }
       }`,
       variables: {
@@ -171,9 +222,16 @@ export default function Books() {
     }
     new Service().getData(query).then((res) => {
       if (res?.book) {
+        let data = res.book
         setFormData({
           ...formData,
-          title: res.book.title
+          barcode: data.barcode,
+          title: data.title,
+          author: data.author,
+          edition: data.edition,
+          categoryID: data.category.id,
+          publisherID: data.publisher.id,
+          metaData: data.metaData
         })
       }
       setSearching(false)
@@ -184,7 +242,11 @@ export default function Books() {
   let dropMenuOptions = [{ "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
-    { name: "Name", selector: (row) => row.title, sortable: true },
+    { name: "Barcode", selector: (row) => row.barcode, sortable: true },
+    { name: "Title", selector: (row) => row.title, sortable: true },
+    { name: "Category", selector: (row) => row.category, sortable: true },
+    { name: "Publisher", selector: (row) => row.publisher, sortable: true },
+    { name: "Created", selector: (row) => row.created, sortable: true },
     {
       selector: row => row.action,
       style: {
@@ -218,7 +280,11 @@ export default function Books() {
           data={books.map((row) => {
             return {
               id: row.id,
+              barcode: row.barcode,
               title: row.title,
+              category: row.category.name,
+              publisher: row.publisher.name,
+              created: moment(row.createdAt).format("DD-MM-yyyy h:mm:ss a"),
               action: <DropdownMenu options={dropMenuOptions} row={row} />
             };
           })}
@@ -250,9 +316,10 @@ export default function Books() {
                       onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                     />
                   </div>
-                  <div className="my-5">
+                  <Stack direction="row" spacing={3} className="my-5">
+                    <Button color="secondary" variant="outlined" type="submit">Scan</Button>
                     <Button color="secondary" variant="contained" type="submit">Continue</Button>
-                  </div>
+                  </Stack>
                 </div>
               </form>
             </ModalBody>
@@ -277,7 +344,8 @@ export default function Books() {
                     required
                     aria-readonly
                     fullWidth
-                    defaultValue={formData.barcode}
+                    value={formData.barcode}
+                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                   />
                 </div>
                 <div className="mt-3">
@@ -291,14 +359,19 @@ export default function Books() {
                   />
                 </div>
                 <div className="mt-3">
-                  <TextField
-                    label="Book category"
-                    color="secondary"
-                    required
-                    fullWidth
-                    value={formData.categoryID}
-                    onChange={(e) => setFormData({ ...formData, categoryID: e.target.value })}
-                  />
+                  <FormControl fullWidth color='secondary'>
+                    <InputLabel id="category-label">Book Category</InputLabel>
+                    <Select
+                      labelId="category-label"
+                      id="category"
+                      label="Book Category"
+                      required
+                      value={formData.categoryID}
+                      onChange={e => setFormData({ ...formData, categoryID: e.target.value })}
+                    >
+                      {categories.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
+                    </Select>
+                  </FormControl>
                 </div>
                 <div className="mt-3">
                   <TextField
@@ -319,14 +392,19 @@ export default function Books() {
                   />
                 </div>
                 <div className="mt-3">
-                  <TextField
-                    label="Publisher"
-                    color="secondary"
-                    required
-                    fullWidth
-                    value={formData.publisher}
-                    onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
-                  />
+                  <FormControl fullWidth color='secondary'>
+                    <InputLabel id="publisher-label">Publisher</InputLabel>
+                    <Select
+                      labelId="publisher-label"
+                      id="publisher"
+                      label="Publisher"
+                      required
+                      value={formData.publisherID}
+                      onChange={e => setFormData({ ...formData, publisherID: e.target.value })}
+                    >
+                      {publishers.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
+                    </Select>
+                  </FormControl>
                 </div>
                 <div className="mt-3">
                   <TextField
