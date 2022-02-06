@@ -291,7 +291,7 @@ export default function Books() {
       </Container>
 
       <Modal isOpen={modal}>
-        {(searching) &&
+        {searching &&
           <ModalBody>
             <CustomLoader />
           </ModalBody>

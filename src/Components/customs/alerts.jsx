@@ -1,6 +1,13 @@
 import { Alert, Snackbar } from "@mui/material";
 import Swal from "sweetalert2";
 
+export const defaultSnackStatus = {
+  open: false,
+  message: "Hello world",
+  severity: "success"
+}
+
+
 export const AlertSuccess = (props) => {
   Swal.fire({
     icon: "success",
