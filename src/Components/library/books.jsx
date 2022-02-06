@@ -327,7 +327,7 @@ export default function Books() {
 
 
         {/* New book details modal */}
-        {(searched || (searched && selectedBookID)) &&
+        {(!searching && (searched || (searched && selectedBookID))) &&
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
               <span>
