@@ -25,7 +25,7 @@ const customStyles = {
     highlightOnHoverStyle: {
       backgroundColor: '#4e0c8b1c',
       borderBottomColor: '#FFFFFF',
-      borderRadius: '25px',
+      borderRadius: '15px',
       outline: '1px solid #FFFFFF',
     },
   },

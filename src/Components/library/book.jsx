@@ -36,6 +36,7 @@ export default function Book(props) {
           barcode
           author
           edition
+          cover
           createdAt
           publisher{
             id
@@ -63,6 +64,7 @@ export default function Book(props) {
     new Service().getData(query).then((res) => {
       if (res) {
         setBook(res.book || null)
+        setAlbum({ ...photo, url: res.book.cover })
         setTeachers(res.lenders?.students || [])
         setStudents(res.lenders?.teachers || [])
       }
@@ -96,7 +98,7 @@ export default function Book(props) {
       formData.append("id", uid)
       formData.append("file", album.image)
 
-      new UploadService().uploadStudentPassPort(formData, (progressEvent) => {
+      new UploadService().uploadBookCover(formData, (progressEvent) => {
         const { loaded, total } = progressEvent;
         let percent = Math.floor((loaded * 100) / total);
         setUploadProgress(percent)

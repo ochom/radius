@@ -54,4 +54,30 @@ export class UploadService {
         };
       });
   };
+
+  uploadBookCover = async (data, onUploadProgress) => {
+    let authHeaders = AuthHeaders();
+    const options = {
+      headers: {
+        ...authHeaders,
+        "Content-Type": "multipart/form-data"
+      },
+      onUploadProgress
+    }
+
+    return axios.post(URLS.BOOK_COVER, data, options)
+      .then((res) => {
+        if (res.status === 200) {
+          return {
+            status: res.status,
+            message: res.data,
+          };
+        }
+      })
+      .catch((err) => {
+        return {
+          message: "upload failed",
+        };
+      });
+  };
 }
