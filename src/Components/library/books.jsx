@@ -246,12 +246,10 @@ export default function Books() {
       name: "", selector: (row) => row.cover,
       width: '80px',
     },
-    { name: "Category", selector: (row) => row.category, sortable: true },
     { name: "Barcode", selector: (row) => row.barcode, sortable: true },
     { name: "Title", selector: (row) => row.title, sortable: true },
     { name: "Category", selector: (row) => row.category, sortable: true },
     { name: "Publisher", selector: (row) => row.publisher, sortable: true },
-    { name: "Created", selector: (row) => row.created, sortable: true },
     {
       selector: row => row.action,
       style: {
