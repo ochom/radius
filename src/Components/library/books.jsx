@@ -1,8 +1,9 @@
 import { Add, Delete, Edit, LibraryBooksOutlined, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, Container, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Button, Container, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
@@ -21,6 +22,8 @@ const initialFormData = {
 }
 
 export default function Books() {
+  const history = useHistory();
+
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true)
 
@@ -222,21 +225,17 @@ export default function Books() {
     }
     new Service().getData(query).then((res) => {
       if (res?.book) {
-        let data = res.book
-        setFormData({
-          ...formData,
-          barcode: data.barcode,
-          title: data.title,
-          author: data.author,
-          edition: data.edition,
-          categoryID: data.category.id,
-          publisherID: data.publisher.id,
-          metaData: data.metaData
-        })
+        AlertSuccess({ text: `Book already registered` });
+        toggleModal();
       }
+    }).finally(() => {
       setSearching(false)
       setSearched(true)
     });
+  }
+
+  const openBook = (row) => {
+    history.push(`/library/books/${row.id}`)
   }
 
   let dropMenuOptions = [{ "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
@@ -276,7 +275,7 @@ export default function Books() {
           progressPending={loading}
           defaultSortFieldId={1}
           columns={cols}
-          onRowClicked={editBook}
+          onRowClicked={openBook}
           data={books.map((row) => {
             return {
               id: row.id,
@@ -311,15 +310,15 @@ export default function Books() {
                       value={formData.barcode}
                       label="Barcode"
                       required
+                      autoFocus={true}
                       color="secondary"
                       fullWidth
                       onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                     />
                   </div>
-                  <Stack direction="row" spacing={3} className="my-5">
-                    <Button color="secondary" variant="outlined" type="submit">Scan</Button>
+                  <div className="my-5">
                     <Button color="secondary" variant="contained" type="submit">Continue</Button>
-                  </Stack>
+                  </div>
                 </div>
               </form>
             </ModalBody>
