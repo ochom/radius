@@ -1,6 +1,6 @@
-import { Add, Delete, Edit, LibraryBooksOutlined, Save } from '@mui/icons-material';
+import { Add, Assignment, Delete, Edit, LibraryBooksOutlined, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, Container, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Avatar, Button, Container, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -50,6 +50,7 @@ export default function Books() {
           id
           barcode
           title
+          cover
           publisher{
             id
             name
@@ -241,6 +242,11 @@ export default function Books() {
   let dropMenuOptions = [{ "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
+    {
+      name: "", selector: (row) => row.cover,
+      width: '80px',
+    },
+    { name: "Category", selector: (row) => row.category, sortable: true },
     { name: "Barcode", selector: (row) => row.barcode, sortable: true },
     { name: "Title", selector: (row) => row.title, sortable: true },
     { name: "Category", selector: (row) => row.category, sortable: true },
@@ -279,6 +285,7 @@ export default function Books() {
           data={books.map((row) => {
             return {
               id: row.id,
+              cover: <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>,
               barcode: row.barcode,
               title: row.title,
               category: row.category.name,

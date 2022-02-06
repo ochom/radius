@@ -22,4 +22,5 @@ export const URLS = {
 
   STUDENT_PASSPORT: `${VERSION_ROOT}upload/student-passport`,
   STAFF_PASSPORT: `${VERSION_ROOT}upload/teacher-passport`,
+  BOOK_COVER: `${VERSION_ROOT}upload/book-cover`,
 };
