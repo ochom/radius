@@ -1,20 +1,15 @@
-import { AddPhotoAlternate, Apartment, Event, PeopleAlt, Person, Wc } from '@mui/icons-material';
+import { AddPhotoAlternate, Category, Event, PeopleAlt, Person } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Avatar, Card, CircularProgress, Container, Divider, Paper, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Service } from '../../API/service';
+import { UploadService } from '../../API/uploads';
+import { CustomSnackBar, defaultSnackStatus } from '../customs/alerts';
+import { photo } from '../customs/avatars';
 import { CustomLoader } from '../customs/monitors';
 import { panelProps, TabPanel } from '../customs/tabs';
-
-
-
-const photo = {
-  url: "",
-  image: null,
-  isNew: false,
-}
 
 
 export default function Book(props) {
@@ -28,6 +23,7 @@ export default function Book(props) {
   const [book, setBook] = useState([]);
   const [teachers, setTeachers] = useState(null);
   const [students, setStudents] = useState(null);
+  const [snackBar, setSnackBar] = useState(defaultSnackStatus);
 
   useEffect(() => {
     setLoading(true)
@@ -38,6 +34,8 @@ export default function Book(props) {
           barcode
           title
           barcode
+          author
+          edition
           createdAt
           publisher{
             id
@@ -78,31 +76,47 @@ export default function Book(props) {
   };
 
   const handleImage = (e) => {
+    var el = window._protected_reference = document.createElement("INPUT");
+    el.type = "file";
+    el.accept = "image/*";
+    el.addEventListener("change", (e2) => {
+      window._protected_reference = null
+      if (el.files.length) {
+        setAlbum({ url: URL.createObjectURL(el.files[0]), isNew: true, image: el.files[0] })
+      }
+    })
+    el.click()
 
   }
 
   const submitAlbum = (e) => {
+    if (album.image) {
+      setSaving(true)
+      let formData = new FormData()
+      formData.append("id", uid)
+      formData.append("file", album.image)
 
+      new UploadService().uploadStudentPassPort(formData, (progressEvent) => {
+        const { loaded, total } = progressEvent;
+        let percent = Math.floor((loaded * 100) / total);
+        setUploadProgress(percent)
+      }).then((res) => {
+        if (res?.status === 200) {
+          setAlbum({ ...album, isNew: false })
+          setSnackBar({ open: true, message: "Photo uploaded successfully", severity: "success" })
+        } else {
+          setSnackBar({ open: true, message: "Photo uploaded failed", severity: "error" })
+        }
+      }).finally(() => {
+        setSaving(false)
+        setUploadProgress(0)
+      });
+    }
   }
 
-
-  const cols = [
-    { name: "Barcode", selector: (row) => row.barcode, sortable: true },
-    { name: "Title", selector: (row) => row.title, sortable: true },
-    { name: "Category", selector: (row) => row.category, sortable: true },
-    { name: "Publisher", selector: (row) => row.publisher, sortable: true },
-    { name: "Created", selector: (row) => row.created, sortable: true },
-    {
-      selector: row => row.action,
-      style: {
-        color: "grey"
-      },
-      allowOverflow: true,
-      button: true,
-      width: '56px',
-    },
-  ]
-
+  const closeSnackBar = () => {
+    setSnackBar({ ...snackBar, open: false })
+  }
 
   if (loading) {
     return <CustomLoader />
@@ -120,12 +134,13 @@ export default function Book(props) {
 
   return (
     <>
+      <CustomSnackBar {...snackBar} onClose={closeSnackBar} />
       <Container>
         <Card>
           <Box sx={{ p: 3, display: 'flex' }} >
             <Stack>
               <div style={{ position: "relative" }}>
-                <Avatar variant="rounded" src={book.title} alt={book.title} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
+                <Avatar variant="rounded" src={album.url} alt={book.title} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
                   <AddPhotoAlternate sx={{ fontSize: "8rem" }} />
                 </Avatar>
                 {saving &&
@@ -145,18 +160,17 @@ export default function Book(props) {
             <Box >
               <Box sx={{ display: 'flex' }}>
                 <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
-                  <Typography fontWeight={700}>{book.title}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {book.category.name}
+                  <Typography fontWeight={700} variant='h5'>{book.title}
+                    <Typography variant='body2' color="GrayText">{book.category.name}</Typography>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.publisher.name}
+                    <Category sx={{ fontSize: "1.2rem" }} color="secondary" /> {book.publisher.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.edition} Edition
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.author}
+                    <Person sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.author}
                   </Typography>
                 </Stack>
               </Box>
@@ -171,8 +185,8 @@ export default function Book(props) {
               onChange={selectTab}
               textColor="secondary"
               indicatorColor="secondary">
-              <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label="Students"  {...panelProps(0)} />
-              <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Teachers"  {...panelProps(1)} />
+              <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label="Students (231)"  {...panelProps(0)} />
+              <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Teachers  (33)"  {...panelProps(1)} />
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
               <div>

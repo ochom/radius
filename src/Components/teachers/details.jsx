@@ -7,19 +7,8 @@ import { panelProps, TabPanel } from "../customs/tabs";
 import { useHistory, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { UploadService } from "../../API/uploads";
-import { CustomSnackBar } from "../customs/alerts";
-
-const photo = {
-  url: "",
-  image: null,
-  isNew: false,
-}
-
-const defaultSnackStatus = {
-  open: false,
-  message: "hey there",
-  severity: "success"
-}
+import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
+import { photo } from "../customs/avatars";
 
 const TeacherDetails = (props) => {
   const { uid } = useParams()
