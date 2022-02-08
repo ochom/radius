@@ -252,6 +252,12 @@ const EditTeacher = () => {
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
 
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            sx={{ ml: 4 }}
+            onClick={openProfile}>Cancel</Button>
         </div>
       </form>
     </Paper>
