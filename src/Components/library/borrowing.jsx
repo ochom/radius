@@ -1,10 +1,9 @@
-import { Add, Assignment, Delete, Edit, PeopleAlt, Person, Save } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Button, Card, Container, FormControl, InputLabel, MenuItem, Select, Tab, Tabs, TextField } from '@mui/material';
+import { Add, Assignment, Delete, Edit, PeopleAlt, Person } from '@mui/icons-material';
+import { Button, Card, Container, Tab, Tabs, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
 import { UserAvatar } from '../customs/avatars';
@@ -30,14 +29,15 @@ export default function Borrowing() {
 
   const [searching, setSearching] = useState(false)
   const [searched, setSearched] = useState(false)
-  const [selectedBookID, setSelectedBookID] = useState(null);
 
   const [saving, setSaving] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [tabIndex, setTabIndex] = useState(0)
 
-  const [books, setStudents] = useState([]);
-  const [publishers, setTeachers] = useState([]);
+  const [lender, setLender] = useState("")
+
+  const [students, setStudents] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
@@ -63,43 +63,7 @@ export default function Borrowing() {
   }, [totalRows]);
 
 
-  const submitForm = (e) => {
-    e.preventDefault();
-    setSaving(true)
-    let query = selectedBookID
-      ? {
-        query: `mutation ($id: ID!, $data: NewBook!){
-        updateBook(id: $id, input: $data)
-     }`,
-        variables: {
-          id: selectedBookID,
-          data: formData
-        }
-      } :
-      {
-        query: `mutation ($data: NewBook!){
-        createBook(input: $data)
-      }`,
-        variables: {
-          data: formData
-        }
-      }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Book saved successfully` });
-        toggleModal();
-        setTotalRows(totalRows + 1)
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
-  };
-
-  const editBook = row => {
-    setSelectedBookID(row.id);
+  const returnBook = row => {
     setSearching(true)
     let query = {
       query: `query ($id: ID!){
@@ -173,7 +137,7 @@ export default function Borrowing() {
   };
 
 
-  const searchBook = (e) => {
+  const searchLender = (e) => {
     e.preventDefault()
     setSearching(true)
     let query = {
@@ -214,7 +178,12 @@ export default function Borrowing() {
     setTabIndex(newValue);
   };
 
-  let dropMenuOptions = [{ "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
+  const issueBook = () => {
+    setLender("")
+    toggleModal()
+  }
+
+  let dropMenuOptions = [{ "title": "Edit", action: returnBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
     { name: "Reg.", selector: (row) => row.barcode, width: '80px' },
@@ -233,6 +202,15 @@ export default function Borrowing() {
     },
   ]
 
+  const IssueButton = ({ person }) => {
+    return (
+      <Button variant='contained' color='secondary' className='no-transform'
+        sx={{ my: 2 }} onClick={issueBook}>
+        Issue Book to  {person}
+      </Button>
+    )
+  }
+
   return (
     <>
       <Container>
@@ -246,10 +224,6 @@ export default function Borrowing() {
                 placeholder='Search ...'
                 color='secondary'
                 sx={{ mt: 2, mr: 3, width: { sm: '150px', lg: '250px' } }} />
-              <Button variant='contained' color='secondary' className='no-transform'
-                sx={{ mt: 2, mr: 5 }}>
-                <Add /> Issue
-              </Button>
             </Box>
             <Tabs
               sx={{ borderBottom: '1px solid #e8e8e8', }}
@@ -262,9 +236,10 @@ export default function Borrowing() {
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
               <DataTable
+                title={<IssueButton person="Student" />}
                 progressPending={loading}
                 columns={cols}
-                data={books.map((row) => {
+                data={students.map((row) => {
                   return {
                     id: row.id,
                     cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
@@ -279,10 +254,11 @@ export default function Borrowing() {
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
               <DataTable
+                title={<IssueButton person="Teacher" />}
                 progressPending={loading}
                 defaultSortFieldId={1}
                 columns={cols}
-                data={books.map((row) => {
+                data={teachers.map((row) => {
                   return {
                     id: row.id,
                     cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
@@ -300,131 +276,37 @@ export default function Borrowing() {
       </Container>
 
       <Modal isOpen={modal}>
-        {searching &&
+        {searching ?
           <ModalBody>
             <CustomLoader />
-          </ModalBody>
-        }
-
-
-        {/* New book ID modal */}
-        {(!searching && !searched && !selectedBookID) &&
+          </ModalBody> :
           <>
-            <ModalHeader toggle={toggleModal}>Issue Book</ModalHeader>
+            <ModalHeader toggle={toggleModal}>
+              {tabIndex === 0 ? "Find Student" : "Find Staff"}
+            </ModalHeader>
             <ModalBody>
-              <form onSubmit={searchBook} method="post">
+              <form onSubmit={searchLender} method="post">
                 <div>
                   <div className="mt-3">
                     <TextField
-                      value={formData.barcode}
-                      label="Barcode"
+                      value={lender}
+                      label={tabIndex === 0 ? "Enter Admission Number" : "Enter ID Number"}
                       required
                       autoFocus={true}
                       color="secondary"
+                      placeholder={tabIndex === 0 ? "Admission Number" : "ID Number"}
                       fullWidth
-                      onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                      onChange={(e) => setLender(e.target.value)}
                     />
                   </div>
-                  <div className="my-5">
-                    <Button color="secondary" variant="contained" type="submit">Continue</Button>
+                  <div className="mt-4 mb-3">
+                    <Button color="secondary" variant="contained" type="submit" sx={{ mr: 3 }}>Continue</Button>
+                    <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
                   </div>
                 </div>
               </form>
             </ModalBody>
           </>
-        }
-
-
-        {/* New book details modal */}
-        {(!searching && (searched || (searched && selectedBookID))) &&
-          <form onSubmit={submitForm} method="post">
-            <ModalHeader toggle={toggleModal}>
-              <span>
-                {selectedBookID ? "Edit book details" : "Create a new book"}
-              </span>
-            </ModalHeader>
-            <ModalBody>
-              <div className="row px-3">
-                <div className="mt-3">
-                  <TextField
-                    label="Barcode"
-                    color="secondary"
-                    required
-                    aria-readonly
-                    fullWidth
-                    value={formData.barcode}
-                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Book title"
-                    color="secondary"
-                    required
-                    fullWidth
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Edition"
-                    color="secondary"
-                    fullWidth
-                    value={formData.edition}
-                    onChange={(e) => setFormData({ ...formData, edition: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Author"
-                    color="secondary"
-                    fullWidth
-                    value={formData.author}
-                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <FormControl fullWidth color='secondary'>
-                    <InputLabel id="publisher-label">Publisher</InputLabel>
-                    <Select
-                      labelId="publisher-label"
-                      id="publisher"
-                      label="Publisher"
-                      required
-                      value={formData.publisherID}
-                      onChange={e => setFormData({ ...formData, publisherID: e.target.value })}
-                    >
-                      {publishers.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Other"
-                    color="secondary"
-                    multiline
-                    rows={4}
-                    fullWidth
-                    value={formData.metaData}
-                    onChange={(e) => setFormData({ ...formData, metaData: e.target.value })}
-                  />
-                </div>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <div className="col-12 d-flex justify-content-start ps-4">
-                <LoadingButton
-                  type='submit'
-                  variant='contained'
-                  color='secondary'
-                  size='large'
-                  loading={saving}
-                  loadingPosition="start"
-                  startIcon={<Save />}>Save</LoadingButton>
-              </div>
-            </ModalFooter>
-          </form>
         }
       </Modal>
     </>
