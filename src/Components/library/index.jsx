@@ -7,6 +7,8 @@ import Dashboard from "./dashboard"
 import Reports from "./reports"
 import Publishers from "./publishers"
 import Book from "./book"
+import StudentsLender from "./student_lender"
+import TeachersLender from "./teachers_lender"
 
 const menuItems = [
   { title: "Dashboard", href: "/library", icon: "bx bxs-right-arrow", exact: true },
@@ -31,7 +33,9 @@ function Library() {
               <Route path={`${url}/categories`} component={Categories} />
               <Route path={`${url}/books`} component={Books} exact />
               <Route path={`${url}/books/:uid`} component={Book} />
-              <Route path={`${url}/issue`} component={Borrowing} />
+              <Route path={`${url}/issue`} component={Borrowing} exact />
+              <Route path={`${url}/issue/students/:uid`} component={StudentsLender} />
+              <Route path={`${url}/issue/teachers/:uid`} component={TeachersLender} />
               <Route path={`${url}/publishers`} component={Publishers} />
               <Route path={`${url}/reports`} component={Reports} />
             </>

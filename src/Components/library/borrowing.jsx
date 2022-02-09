@@ -1,8 +1,9 @@
-import { Add, Assignment, Delete, Edit, PeopleAlt, Person } from '@mui/icons-material';
+import { Assignment, Delete, Edit, PeopleAlt, Person } from '@mui/icons-material';
 import { Button, Card, Container, Tab, Tabs, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
@@ -23,6 +24,7 @@ const initialFormData = {
 }
 
 export default function Borrowing() {
+  const history = useHistory()
 
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true)
@@ -136,44 +138,6 @@ export default function Borrowing() {
     });
   };
 
-
-  const searchLender = (e) => {
-    e.preventDefault()
-    setSearching(true)
-    let query = {
-      query: `query ($data: String!){
-        book: getBookByBarcode(barcode: $data){
-          id
-          barcode
-          title
-          author
-          edition
-          publisher{
-            id
-            name
-          }
-          category{
-            id
-            name
-          }
-          metaData
-        }
-      }`,
-      variables: {
-        data: formData.barcode
-      }
-    }
-    new Service().getData(query).then((res) => {
-      if (res?.book) {
-        AlertSuccess({ text: `Book already registered` });
-        toggleModal();
-      }
-    }).finally(() => {
-      setSearching(false)
-      setSearched(true)
-    });
-  }
-
   const selectTab = (event, newValue) => {
     setTabIndex(newValue);
   };
@@ -181,6 +145,63 @@ export default function Borrowing() {
   const issueBook = () => {
     setLender("")
     toggleModal()
+  }
+
+
+
+  const searchLender = (e) => {
+    e.preventDefault();
+    if (tabIndex === 0) {
+      searchBorrowerStudent()
+    } else {
+      searchBorrowerTeacher()
+    }
+  }
+
+
+  const searchBorrowerStudent = () => {
+    setSearching(true)
+    let query = {
+      query: `query ($data: String!){
+        student: getStudentByAdmissionNumber(admissionNumber: $data){
+          id
+        }
+      }`,
+      variables: {
+        data: lender
+      }
+    }
+    new Service().getData(query).then((res) => {
+      if (res?.student) {
+        history.push(`/library/issue/students/${res?.student.id}`)
+      } else {
+        setSearching(false)
+        setSearched(true)
+      }
+    })
+  }
+
+
+  const searchBorrowerTeacher = () => {
+    setSearching(true)
+    let query = {
+      query: `query ($data: String!){
+        teacher: getTeacherByIDNumber(idNumber: $data){
+          id
+        }
+      }`,
+      variables: {
+        data: lender
+      }
+    }
+    new Service().getData(query).then((res) => {
+      if (res?.teacher) {
+        history.push(`/library/issue/teachers/${res?.teacher.id}`)
+      } else {
+        setSearching(false)
+        setSearched(true)
+      }
+    })
   }
 
   let dropMenuOptions = [{ "title": "Edit", action: returnBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
