@@ -3,7 +3,7 @@ import { Button, Card, Container, Tab, Tabs, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalBody } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
 import { UserAvatar } from '../customs/avatars';
@@ -34,7 +34,7 @@ export default function Borrowing() {
   const [totalRows, setTotalRows] = useState(0);
   const [tabIndex, setTabIndex] = useState(0)
 
-  const [lender, setLender] = useState(null)
+  const [lender, setLender] = useState("")
 
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -178,6 +178,11 @@ export default function Borrowing() {
     setTabIndex(newValue);
   };
 
+  const issueBook = () => {
+    setLender("")
+    toggleModal()
+  }
+
   let dropMenuOptions = [{ "title": "Edit", action: returnBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
 
   const cols = [
@@ -197,6 +202,15 @@ export default function Borrowing() {
     },
   ]
 
+  const IssueButton = ({ person }) => {
+    return (
+      <Button variant='contained' color='secondary' className='no-transform'
+        sx={{ my: 2 }} onClick={issueBook}>
+        Issue Book to  {person}
+      </Button>
+    )
+  }
+
   return (
     <>
       <Container>
@@ -210,10 +224,6 @@ export default function Borrowing() {
                 placeholder='Search ...'
                 color='secondary'
                 sx={{ mt: 2, mr: 3, width: { sm: '150px', lg: '250px' } }} />
-              <Button variant='contained' color='secondary' className='no-transform'
-                sx={{ mt: 2, mr: 5 }} onClick={toggleModal}>
-                <Add /> Issue
-              </Button>
             </Box>
             <Tabs
               sx={{ borderBottom: '1px solid #e8e8e8', }}
@@ -226,6 +236,7 @@ export default function Borrowing() {
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
               <DataTable
+                title={<IssueButton person="Student" />}
                 progressPending={loading}
                 columns={cols}
                 data={students.map((row) => {
@@ -243,6 +254,7 @@ export default function Borrowing() {
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
               <DataTable
+                title={<IssueButton person="Teacher" />}
                 progressPending={loading}
                 defaultSortFieldId={1}
                 columns={cols}
@@ -264,8 +276,14 @@ export default function Borrowing() {
       </Container>
 
       <Modal isOpen={modal}>
-        <ModalBody>
-          {searching ? <CustomLoader /> :
+        {searching ?
+          <ModalBody>
+            <CustomLoader />
+          </ModalBody> :
+          <>
+            <ModalHeader toggle={toggleModal}>
+              {tabIndex === 0 ? "Find Student" : "Find Staff"}
+            </ModalHeader>
             <ModalBody>
               <form onSubmit={searchLender} method="post">
                 <div>
@@ -281,14 +299,15 @@ export default function Borrowing() {
                       onChange={(e) => setLender(e.target.value)}
                     />
                   </div>
-                  <div className="my-5">
-                    <Button color="secondary" variant="contained" type="submit">Continue</Button>
+                  <div className="mt-4 mb-3">
+                    <Button color="secondary" variant="contained" type="submit" sx={{ mr: 3 }}>Continue</Button>
+                    <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
                   </div>
                 </div>
               </form>
             </ModalBody>
-          }
-        </ModalBody>
+          </>
+        }
       </Modal>
     </>
   );
