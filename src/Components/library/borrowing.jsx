@@ -1,5 +1,5 @@
-import { Assignment, Delete, Edit, PeopleAlt, Person } from '@mui/icons-material';
-import { Alert, Button, Card, Container, Stack, Tab, Tabs, TextField } from '@mui/material';
+import { Apartment, Approval, Assignment, Delete, Edit, Numbers, PeopleAlt, Person } from '@mui/icons-material';
+import { Alert, Avatar, Button, Card, Container, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -32,7 +32,6 @@ export default function Borrowing() {
   const [searching, setSearching] = useState(false)
   const [searched, setSearched] = useState(false)
 
-  const [saving, setSaving] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -148,7 +147,16 @@ export default function Borrowing() {
     setLender("")
     setStudent(null)
     setTeacher(null)
+    setSearched(false)
     toggleModal()
+  }
+
+
+  const searchLenderAgain = () => {
+    setLender("")
+    setStudent(null)
+    setTeacher(null)
+    setSearched(false)
   }
 
   const searchLender = (e) => {
@@ -167,6 +175,13 @@ export default function Borrowing() {
       query: `query ($data: String!){
         student: getStudentByAdmissionNumber(admissionNumber: $data){
           id
+          fullName
+          admissionNumber
+          passport
+          classroom{
+            level
+            stream
+          }
         }
       }`,
       variables: {
@@ -175,11 +190,11 @@ export default function Borrowing() {
     }
     new Service().getData(query).then((res) => {
       if (res?.student) {
-        history.push(`/library/issue/students/${res?.student.id}`)
-      } else {
-        setSearching(false)
-        setSearched(true)
+        setStudent(res.student)
       }
+    }).finally(() => {
+      setSearching(false)
+      setSearched(true)
     })
   }
 
@@ -190,6 +205,10 @@ export default function Borrowing() {
       query: `query ($data: String!){
         teacher: getTeacherByIDNumber(idNumber: $data){
           id
+          fullName
+          serialNumber
+          idNumber
+          passport
         }
       }`,
       variables: {
@@ -198,11 +217,11 @@ export default function Borrowing() {
     }
     new Service().getData(query).then((res) => {
       if (res?.teacher) {
-        history.push(`/library/issue/teachers/${res?.teacher.id}`)
-      } else {
-        setSearching(false)
-        setSearched(true)
+        setTeacher(res.teacher)
       }
+    }).finally(() => {
+      setSearching(false)
+      setSearched(true)
     })
   }
 
@@ -232,6 +251,15 @@ export default function Borrowing() {
         Issue Book to  {person}
       </Button>
     )
+  }
+
+  const openLendingProfile = () => {
+    if (student) {
+      history.push(`/library/issue/students/${student.id}`)
+    } else if (teacher) {
+      history.push(`/library/issue/teachers/${teacher.id}`)
+
+    }
   }
 
   return (
@@ -310,7 +338,7 @@ export default function Borrowing() {
               </ModalHeader>
               <ModalBody>
                 <form onSubmit={searchLender} method="post">
-                  <Box sx={{ mt: 2 }}>
+                  <Box sx={{ my: 2, px: 3 }}>
                     <TextField
                       value={lender}
                       label={tabIndex === 0 ? "Enter Admission Number" : "Enter ID Number"}
@@ -322,22 +350,76 @@ export default function Borrowing() {
                       onChange={(e) => setLender(e.target.value)}
                     />
                   </Box>
-                  <Box sx={{ my: 2 }}>
-                    <Button color="secondary" variant="contained" type="submit" sx={{ mr: 3 }}>Continue</Button>
+                  <Stack sx={{ mt: 3, mb: 2, px: 3 }} direction="row" justifyContent="space-between">
+                    <Button color="secondary" variant="contained" type="submit">Continue</Button>
                     <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
-                  </Box>
+                  </Stack>
                 </form>
               </ModalBody>
             </> :
             (searched && (student || teacher)) ?
               <ModalBody>
-                <Box sx={{}}>
-                  Hey Me
+                <Box sx={{ my: 2, px: 3 }}>
+                  {student &&
+                    <Stack>
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Avatar src={student.passport} alt={student.fullName}
+                          sx={{ height: '7rem', width: '7rem' }}>
+                          <Person sx={{ width: '60%', height: '60%' }} />
+                        </Avatar>
+                      </Box>
+                      <Typography variant='h5' align='center' sx={{ mt: 2 }}>{student.fullName}</Typography>
+                      <List sx={{ width: "100%" }}>
+                        <ListItem>
+                          <ListItemAvatar>
+                            <Numbers />
+                          </ListItemAvatar>
+                          <ListItemText primary={student.admissionNumber} secondary="Admission Number"></ListItemText>
+                        </ListItem>
+                        <Divider />
+                        <ListItem>
+                          <ListItemAvatar>
+                            <Apartment />
+                          </ListItemAvatar>
+                          <ListItemText primary={`${student.classroom.level} ${student.classroom.stream}`} secondary="Classroom"></ListItemText>
+                        </ListItem>
+                        <Divider />
+                      </List>
+                    </Stack>
+                  }
+
+                  {teacher &&
+                    <Stack>
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Avatar src={teacher.passport} alt={teacher.fullName}
+                          sx={{ height: '7rem', width: '7rem' }}>
+                          <Person sx={{ width: '60%', height: '60%' }} />
+                        </Avatar>
+                      </Box>
+                      <Typography variant='h5' align='center' sx={{ mt: 2 }}>{teacher.fullName}</Typography>
+                      <List sx={{ width: "100%" }}>
+                        <ListItem>
+                          <ListItemAvatar>
+                            <Approval />
+                          </ListItemAvatar>
+                          <ListItemText primary={teacher.serialNumber} secondary="Staff Number"></ListItemText>
+                        </ListItem>
+                        <Divider />
+                        <ListItem>
+                          <ListItemAvatar>
+                            <Numbers />
+                          </ListItemAvatar>
+                          <ListItemText primary={teacher.idNumber} secondary="ID Number"></ListItemText>
+                        </ListItem>
+                        <Divider />
+                      </List>
+                    </Stack>
+                  }
                 </Box>
-                <Box sx={{ my: 2 }}>
-                  <Button color="secondary" variant="contained" type="submit" sx={{ mr: 3 }}>Continue</Button>
-                  <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
-                </Box>
+                <Stack sx={{ mt: 3, mb: 2, px: 3 }} direction="row" justifyContent="space-between">
+                  <Button color="secondary" variant="contained" onClick={openLendingProfile}>Continue</Button>
+                  <Button color="secondary" variant="outlined" onClick={toggleModal}>Cancel</Button>
+                </Stack>
               </ModalBody>
               :
               <ModalBody>
@@ -346,7 +428,7 @@ export default function Borrowing() {
                     <Alert severity='warning'>{tabIndex === 0 ? "Student" : "Teacher"} not found</Alert>
                   </Box>
                   <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-                    <Button color='secondary' variant='outlined'>Search Again</Button>
+                    <Button color='secondary' variant='outlined' onClick={searchLenderAgain}>Search Again</Button>
                   </Box>
                 </Stack>
               </ModalBody>
