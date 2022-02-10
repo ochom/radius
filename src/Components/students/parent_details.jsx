@@ -45,7 +45,7 @@ const ParentDetails = (props) => {
     setSearching(true)
     let query = {
       query: `query ($data: ID!){
-        parent: getParentByIDNumber(id: $data){
+        parent: getParentByIDNumber(id: $data) {
           id
           fullName
           gender
@@ -56,12 +56,9 @@ const ParentDetails = (props) => {
           children{
             id
             fullName
-            admissionNumber
             relationship
-            classroom{
-              level
-              stream
-            }
+            admissionNumber
+            classroom
           }
         }
       }`,
@@ -174,13 +171,13 @@ const ParentDetails = (props) => {
                   columns={cols}
                   onRowClicked={openProfile}
                   data={
-                    (parent?.children || []).map((child) => {
+                    (parent?.children || []).map(child => {
                       return {
                         id: child.id,
                         reg: child.admissionNumber,
                         fullName: child.fullName,
                         relationship: child.relationship,
-                        classroom: child.classroom.level
+                        classroom: child.classroom
                       };
                     })} />
 
