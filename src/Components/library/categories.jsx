@@ -1,7 +1,8 @@
+import { gql, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, Container, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Button, Card, Container, TextField } from '@mui/material';
+import React, { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
@@ -14,37 +15,28 @@ const initialFormData = {
   description: "",
 }
 
+const QUERY = gql`query{
+  categories: getBookCategories{
+    id
+    name
+    description
+  }
+}
+`
+
 export default function Categories() {
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(true)
+
+  const { loading, error, data, refetch } = useQuery(QUERY)
   const [saving, setSaving] = useState(false);
-  const [totalRows, setTotalRows] = useState(0);
+
   const [loadingSelected, setLoadingSelected] = useState(false)
   const [selectedCategoryID, setSelectedCategoryID] = useState(null);
 
-
-  const [bookCategories, setCategories] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
 
-  useEffect(() => {
-    setLoading(true)
-    let query = {
-      query: `query{
-        bookCategories: getBookCategories{
-          id
-          name
-          description
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setCategories(res?.bookCategories || [])
-      setLoading(false)
-    });
-  }, [totalRows]);
 
 
   const onNewCategory = () => {
@@ -79,7 +71,7 @@ export default function Categories() {
       if (res.status === 200) {
         AlertSuccess({ text: `Category saved successfully` });
         toggleModal();
-        setTotalRows(totalRows + 1)
+        refetch();
       } else {
         AlertFailed({ text: res.message });
       }
@@ -133,7 +125,7 @@ export default function Categories() {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Category deleted successfully` });
-              setTotalRows(totalRows - 1)
+              refetch();
             } else {
               AlertFailed({ text: res.message });
             }
@@ -160,6 +152,26 @@ export default function Categories() {
     },
   ]
 
+  if (loading) {
+    return (
+      <Container>
+        <Card>
+          <CustomLoader />
+        </Card>
+      </Container>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Card>
+          <AlertFailed severity='error'>Oops! {error.message} </AlertFailed>
+        </Card>
+      </Container>
+    )
+  }
+
   return (
     <>
       <Container>
@@ -175,7 +187,7 @@ export default function Categories() {
           defaultSortFieldId={1}
           columns={cols}
           onRowClicked={editCategory}
-          data={bookCategories.map((row) => {
+          data={data.categories.map((row) => {
             return {
               id: row.id,
               name: row.name,

@@ -1,11 +1,12 @@
 import {
   gql, useQuery
 } from "@apollo/client";
-import { Add, AddPhotoAlternate, Adjust, Apartment, Event, Wc } from "@mui/icons-material";
-import { Alert, Avatar, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import { Add, AddPhotoAlternate, Adjust, Apartment, Close, Event, Wc } from "@mui/icons-material";
+import { Alert, Avatar, Button, Card, Container, Divider, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { CustomLoader } from "../customs/monitors";
+import { DataTable } from "../customs/table";
 
 
 const STUDENT_QUERY = gql`
@@ -28,6 +29,7 @@ const STUDENT_QUERY = gql`
 
 export default function StudentsLender() {
   let { uid } = useParams()
+  let history = useHistory()
 
   const { loading, error, data } = useQuery(STUDENT_QUERY, {
     variables: { id: uid },
@@ -39,7 +41,7 @@ export default function StudentsLender() {
     return <Alert severity="error">Error :( {error.message} </Alert>
   }
 
-  return <>
+  return <Container>
     <Card>
       <Box sx={{ p: 3, display: 'flex' }} >
         <Stack>
@@ -66,15 +68,21 @@ export default function StudentsLender() {
             </Stack>
           </Box>
 
-          <Box sx={{ ml: 5, mt: 3, display: 'flex' }}>
+          <Stack sx={{ ml: 5, mt: 3 }} direction="row" spacing={3}>
             <Button variant="contained" color='secondary'>
               <Add /> <Typography sx={{ ml: 1 }}>Add Book</Typography>
             </Button>
-          </Box>
+
+            <Button variant="outlined" color='secondary' onClick={() => history.push("/library/issue")}>
+              <Close /> <Typography sx={{ ml: 1 }}>Close</Typography>
+            </Button>
+          </Stack>
         </Box>
       </Box>
       <Divider />
+      <DataTable
+        title="Books borrowed" />
     </Card>
-  </>
+  </Container>
 
 }

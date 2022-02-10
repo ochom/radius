@@ -1,7 +1,8 @@
+import { gql, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, Container, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Alert, Button, Card, Container, TextField } from '@mui/material';
+import React, { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
@@ -13,36 +14,26 @@ const initialFormData = {
   name: ""
 }
 
+const QUERY = gql`query{
+  publishers: getPublishers{
+    id
+    name
+  }
+}`
+
 export default function Publishers() {
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(true)
+  const { loading, error, data, refetch } = useQuery(QUERY)
+
   const [saving, setSaving] = useState(false);
-  const [totalRows, setTotalRows] = useState(0);
   const [loadingSelected, setLoadingSelected] = useState(false)
   const [selectedPublisherID, setSelectedPublisherID] = useState(null);
 
 
-  const [publishers, setPublishers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
 
-  useEffect(() => {
-    setLoading(true)
-    let query = {
-      query: `query{
-        publishers: getPublishers{
-          id
-          name
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setPublishers(res?.publishers || [])
-      setLoading(false)
-    });
-  }, [totalRows]);
 
 
   const onNewPublisher = () => {
@@ -77,7 +68,7 @@ export default function Publishers() {
       if (res.status === 200) {
         AlertSuccess({ text: `Publisher saved successfully` });
         toggleModal();
-        setTotalRows(totalRows + 1)
+        refetch();
       } else {
         AlertFailed({ text: res.message });
       }
@@ -129,7 +120,7 @@ export default function Publishers() {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Publisher deleted successfully` });
-              setTotalRows(totalRows - 1)
+              refetch();
             } else {
               AlertFailed({ text: res.message });
             }
@@ -154,6 +145,25 @@ export default function Publishers() {
       width: '56px',
     },
   ]
+  if (loading) {
+    return (
+      <Container>
+        <Card>
+          <CustomLoader />
+        </Card>
+      </Container>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Card>
+          <Alert severity='error'>Oops! {error.message} </Alert>
+        </Card>
+      </Container>
+    )
+  }
 
   return (
     <>
@@ -170,7 +180,7 @@ export default function Publishers() {
           defaultSortFieldId={1}
           columns={cols}
           onRowClicked={editPublisher}
-          data={publishers.map((row) => {
+          data={data.publishers.map((row) => {
             return {
               id: row.id,
               name: row.name,
