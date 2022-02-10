@@ -381,7 +381,7 @@ export default function Borrowing() {
                           <ListItemAvatar>
                             <Apartment />
                           </ListItemAvatar>
-                          <ListItemText primary={`${student.classroom.level} ${student.classroom.stream}`} secondary="Classroom"></ListItemText>
+                          <ListItemText primary={`${student.classroom.level}, ${student.classroom.stream}`} secondary="Classroom"></ListItemText>
                         </ListItem>
                         <Divider />
                       </List>
