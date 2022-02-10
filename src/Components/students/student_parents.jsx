@@ -50,12 +50,18 @@ const StudentParents = (props) => {
         parents: getParents(studentID: $studentID){
           id
           fullName
-          relationship
           gender
           idNumber
           mobile
           email
           occupation
+          children {
+            id
+            fullName
+            classroom
+            admissionNumber
+            relationship
+          }
         }
       }`,
       variables: {
@@ -120,16 +126,20 @@ const StudentParents = (props) => {
     setSelectedParentID(row.id);
     toggleModal();
     let query = {
-      query: `query ($studentID: ID!, $parentID: ID!){
-        parent: getParent(studentID: $studentID, parentID: $parentID){
+      query: `query ($parentID: ID!){
+        parent: getParentByID( id: $parentID){
           id
           fullName
-          relationship
           gender
           idNumber
           mobile
           email
           occupation
+          children{
+            id
+            fullName
+            relationship
+          }
         }
       }`,
       variables: {
@@ -148,7 +158,7 @@ const StudentParents = (props) => {
           mobile: data.mobile,
           occupation: data.occupation,
           idNumber: data.idNumber,
-          relationship: data.relationship,
+          relationship: data.children?.filter(c => c.id === studentID)[0]?.relationship,
         })
       }
     }).finally(() => {
@@ -256,11 +266,11 @@ const StudentParents = (props) => {
         columns={cols}
         onRowClicked={editParent}
         data={
-          parents.map((parent) => {
+          parents.map(parent => {
             return {
               id: parent.id,
               fullName: parent.fullName,
-              relationship: parent.relationship,
+              relationship: parent.children?.filter(c => c.id === studentID)[0]?.relationship,
               mobile: parent.mobile,
               email: parent.email,
               occupation: parent.occupation,

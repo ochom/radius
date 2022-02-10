@@ -1,5 +1,5 @@
 import { Assignment, Delete, Edit, PeopleAlt, Person } from '@mui/icons-material';
-import { Button, Card, Container, Tab, Tabs, TextField } from '@mui/material';
+import { Alert, Button, Card, Container, Stack, Tab, Tabs, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -37,6 +37,8 @@ export default function Borrowing() {
   const [tabIndex, setTabIndex] = useState(0)
 
   const [lender, setLender] = useState("")
+  const [student, setStudent] = useState(null)
+  const [teacher, setTeacher] = useState(null)
 
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -144,10 +146,10 @@ export default function Borrowing() {
 
   const issueBook = () => {
     setLender("")
+    setStudent(null)
+    setTeacher(null)
     toggleModal()
   }
-
-
 
   const searchLender = (e) => {
     e.preventDefault();
@@ -301,14 +303,14 @@ export default function Borrowing() {
           <ModalBody>
             <CustomLoader />
           </ModalBody> :
-          <>
-            <ModalHeader toggle={toggleModal}>
-              {tabIndex === 0 ? "Find Student" : "Find Staff"}
-            </ModalHeader>
-            <ModalBody>
-              <form onSubmit={searchLender} method="post">
-                <div>
-                  <div className="mt-3">
+          (!searching && !searched) ?
+            <>
+              <ModalHeader toggle={toggleModal}>
+                {tabIndex === 0 ? "Find Student" : "Find Staff"}
+              </ModalHeader>
+              <ModalBody>
+                <form onSubmit={searchLender} method="post">
+                  <Box sx={{ mt: 2 }}>
                     <TextField
                       value={lender}
                       label={tabIndex === 0 ? "Enter Admission Number" : "Enter ID Number"}
@@ -319,15 +321,35 @@ export default function Borrowing() {
                       fullWidth
                       onChange={(e) => setLender(e.target.value)}
                     />
-                  </div>
-                  <div className="mt-4 mb-3">
+                  </Box>
+                  <Box sx={{ my: 2 }}>
                     <Button color="secondary" variant="contained" type="submit" sx={{ mr: 3 }}>Continue</Button>
                     <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
-                  </div>
-                </div>
-              </form>
-            </ModalBody>
-          </>
+                  </Box>
+                </form>
+              </ModalBody>
+            </> :
+            (searched && (student || teacher)) ?
+              <ModalBody>
+                <Box sx={{}}>
+                  Hey Me
+                </Box>
+                <Box sx={{ my: 2 }}>
+                  <Button color="secondary" variant="contained" type="submit" sx={{ mr: 3 }}>Continue</Button>
+                  <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
+                </Box>
+              </ModalBody>
+              :
+              <ModalBody>
+                <Stack sx={{ py: 3, px: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Alert severity='warning'>{tabIndex === 0 ? "Student" : "Teacher"} not found</Alert>
+                  </Box>
+                  <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+                    <Button color='secondary' variant='outlined'>Search Again</Button>
+                  </Box>
+                </Stack>
+              </ModalBody>
         }
       </Modal>
     </>
