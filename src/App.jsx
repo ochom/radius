@@ -1,3 +1,8 @@
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache
+} from "@apollo/client";
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -22,7 +27,6 @@ function App(props) {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const getUser = () => {
@@ -49,6 +53,17 @@ function App(props) {
     }
   }, [dispatch]);
 
+
+  const client = new ApolloClient({
+    uri: `${process.env.REACT_APP_API_ROUTE}/query`,
+    headers: {
+      Authorization: user ? `Bearer ${user.token}` : ""
+    },
+    cache: new InMemoryCache(),
+  });
+
+
+
   if (loading) {
     return <CustomLoader />;
   }
@@ -58,21 +73,23 @@ function App(props) {
   }
 
   return (
-    <Router>
-      <Switch>
-        <DefaultPageLayout>
-          <Route path="/sms" component={SMS} />
-          <Route path="/teachers" component={Teacher} />
-          <Route path="/classes" component={ClassesAndSessions} />
-          <Route path="/students" component={Student} />
-          <Route path="/academics" component={Academics} />
-          <Route path="/library" component={Library} />
-          <Route path="/activity" component={Activity} />
-          <Route path="/settings" component={Settings} />
-          <Route exact path="/" component={Dashboard} />
-        </DefaultPageLayout>
-      </Switch>
-    </Router>
+    <ApolloProvider client={client}>
+      <Router>
+        <Switch>
+          <DefaultPageLayout>
+            <Route path="/sms" component={SMS} />
+            <Route path="/teachers" component={Teacher} />
+            <Route path="/classes" component={ClassesAndSessions} />
+            <Route path="/students" component={Student} />
+            <Route path="/academics" component={Academics} />
+            <Route path="/library" component={Library} />
+            <Route path="/activity" component={Activity} />
+            <Route path="/settings" component={Settings} />
+            <Route exact path="/" component={Dashboard} />
+          </DefaultPageLayout>
+        </Switch>
+      </Router>
+    </ApolloProvider>
   )
 }
 

@@ -1,13 +1,13 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+import "font-awesome/css/font-awesome.min.css";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 import "./App.scss";
-import "./auth.scss";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "font-awesome/css/font-awesome.min.css";
 import store from "./app/store";
+import "./auth.scss";
+import reportWebVitals from "./reportWebVitals";
 
 ReactDOM.render(
   <Provider store={store}>

@@ -1,8 +1,9 @@
+import { gql, useQuery } from '@apollo/client';
 import { Apartment, Approval, Assignment, Delete, Edit, Numbers, PeopleAlt, Person } from '@mui/icons-material';
 import { Alert, Avatar, Button, Card, Container, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
@@ -23,47 +24,44 @@ const initialFormData = {
   metaData: ""
 }
 
+const QUERY = gql`
+query{
+  students: getStudents{
+    id
+    fullName
+    admissionNumber
+    createdAt
+  }
+
+  teachers: getStudents{
+    id
+    fullName
+    admissionNumber
+    createdAt
+  }
+}
+`
+
 export default function Borrowing() {
   const history = useHistory()
 
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(true)
 
   const [searching, setSearching] = useState(false)
   const [searched, setSearched] = useState(false)
 
-  const [totalRows, setTotalRows] = useState(0);
   const [tabIndex, setTabIndex] = useState(0)
 
   const [lender, setLender] = useState("")
+
+  const { loading, error, data, refetch } = useQuery(QUERY)
+
   const [student, setStudent] = useState(null)
   const [teacher, setTeacher] = useState(null)
 
-  const [students, setStudents] = useState([]);
-  const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
-
-  useEffect(() => {
-    setLoading(true)
-    let query = {
-      query: `query{
-        students: getStudents{
-          id
-          fullName
-          admissionNumber
-          createdAt
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setStudents(res?.students || [])
-      setTeachers(res?.students || [])
-      setLoading(false)
-    });
-  }, [totalRows]);
 
 
   const returnBook = row => {
@@ -128,7 +126,7 @@ export default function Borrowing() {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Book deleted successfully` });
-              setTotalRows(totalRows - 1)
+              refetch()
             } else {
               AlertFailed({ text: res.message });
             }
@@ -262,6 +260,26 @@ export default function Borrowing() {
     }
   }
 
+  if (loading) {
+    return (
+      <Container>
+        <Card>
+          <CustomLoader />
+        </Card>
+      </Container>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Card>
+          <Alert severity='error'>Oops! {error.message} </Alert>
+        </Card>
+      </Container>
+    )
+  }
+
   return (
     <>
       <Container>
@@ -290,7 +308,7 @@ export default function Borrowing() {
                 title={<IssueButton person="Student" />}
                 progressPending={loading}
                 columns={cols}
-                data={students.map((row) => {
+                data={data.students.map((row) => {
                   return {
                     id: row.id,
                     cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
@@ -309,7 +327,7 @@ export default function Borrowing() {
                 progressPending={loading}
                 defaultSortFieldId={1}
                 columns={cols}
-                data={teachers.map((row) => {
+                data={data.teachers.map((row) => {
                   return {
                     id: row.id,
                     cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,

@@ -1,10 +1,11 @@
-import { Add, Assignment, Delete, Edit, LibraryBooksOutlined, Save } from '@mui/icons-material';
+import { gql, useQuery } from '@apollo/client';
+import { Add, Assignment, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Avatar, Button, Container, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Button, Container, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Card, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
 import { DropdownMenu } from '../customs/menus';
@@ -21,64 +22,49 @@ const initialFormData = {
   metaData: ""
 }
 
+const QUERY = gql`query{
+  books: getBooks{
+    id
+    barcode
+    title
+    cover
+    publisher{
+      id
+      name
+    }
+    category{
+      id
+      name
+    }
+    createdAt
+  }
+  categories: getBookCategories{
+    id
+    name
+  }
+  publishers: getPublishers{
+    id
+    name
+  }
+}`
+
 export default function Books() {
   const history = useHistory();
+  const { loading, error, data, refetch } = useQuery(QUERY)
 
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(true)
 
   const [searching, setSearching] = useState(false)
   const [searched, setSearched] = useState(false)
   const [selectedBookID, setSelectedBookID] = useState(null);
 
   const [saving, setSaving] = useState(false);
-  const [totalRows, setTotalRows] = useState(0);
 
 
-  const [books, setBooks] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [publishers, setPublishers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
 
-  useEffect(() => {
-    setLoading(true)
-    let query = {
-      query: `query{
-        books: getBooks{
-          id
-          barcode
-          title
-          cover
-          publisher{
-            id
-            name
-          }
-          category{
-            id
-            name
-          }
-          createdAt
-        }
-        categories: getBookCategories{
-          id
-          name
-        }
-        publishers: getPublishers{
-          id
-          name
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setBooks(res?.books || [])
-      setCategories(res?.categories || [])
-      setPublishers(res?.publishers || [])
-      setLoading(false)
-    });
-  }, [totalRows]);
 
 
   const onNewBook = () => {
@@ -114,7 +100,7 @@ export default function Books() {
       if (res.status === 200) {
         AlertSuccess({ text: `Book saved successfully` });
         toggleModal();
-        setTotalRows(totalRows + 1)
+        refetch();
       } else {
         AlertFailed({ text: res.message });
       }
@@ -186,7 +172,7 @@ export default function Books() {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Book deleted successfully` });
-              setTotalRows(totalRows - 1)
+              refetch();
             } else {
               AlertFailed({ text: res.message });
             }
@@ -261,6 +247,26 @@ export default function Books() {
     },
   ]
 
+  if (loading) {
+    return (
+      <Container>
+        <Card>
+          <CustomLoader />
+        </Card>
+      </Container>
+    )
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Card>
+          <Alert severity='error'>Oops! {error.message} </Alert>
+        </Card>
+      </Container>
+    )
+  }
+
   return (
     <>
       <Container>
@@ -271,16 +277,12 @@ export default function Books() {
         </div>
 
         <DataTable
-          title={
-            <Typography color="secondary" variant="h5">
-              <LibraryBooksOutlined style={{ verticalAlign: "middle" }} /> <b>Books</b>
-            </Typography>
-          }
+          title="Books"
           progressPending={loading}
           defaultSortFieldId={1}
           columns={cols}
           onRowClicked={openBook}
-          data={books.map((row) => {
+          data={data.books.map((row) => {
             return {
               id: row.id,
               cover: <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>,
@@ -373,7 +375,7 @@ export default function Books() {
                       value={formData.categoryID}
                       onChange={e => setFormData({ ...formData, categoryID: e.target.value })}
                     >
-                      {categories.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
+                      {data.categories.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </div>
@@ -406,7 +408,7 @@ export default function Books() {
                       value={formData.publisherID}
                       onChange={e => setFormData({ ...formData, publisherID: e.target.value })}
                     >
-                      {publishers.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
+                      {data.publishers.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </div>
