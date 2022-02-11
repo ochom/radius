@@ -1,19 +1,19 @@
 
-import React, { useState, useEffect } from "react";
-import { Delete, Edit, Save } from "@mui/icons-material";
-import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Add, Delete, Edit, Save } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
   AlertWarning,
-  ConfirmAlert,
+  ConfirmAlert
 } from "../customs/alerts";
 import { DropdownMenu } from "../customs/menus";
-import { DataTable } from "../customs/table";
-import { LoadingButton } from "@mui/lab";
 import { CustomLoader } from "../customs/monitors";
+import { DataTable } from "../customs/table";
 
 
 
@@ -201,11 +201,11 @@ export default function Classrooms() {
 
   return (
     <>
-      <div className="mb-3 justify-content-end d-flex">
-        <button className="btn btn-primary" onClick={onNewClass}>
-          <i className="fa fa-plus"></i> Add New Classroom
-        </button>
-      </div>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
+        <Button color="secondary" variant="contained" className="no-transform" onClick={onNewClass}>
+          <Add /> Add New Classroom
+        </Button>
+      </Box>
 
       <DataTable
         title="Classrooms list"

@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
 import { Apartment, Approval, Assignment, Delete, Edit, Numbers, PeopleAlt, Person } from '@mui/icons-material';
-import { Alert, Avatar, Button, Card, Container, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Button, Card, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import React, { useState } from 'react';
@@ -262,87 +262,81 @@ export default function Borrowing() {
 
   if (loading) {
     return (
-      <Container>
-        <Card>
-          <CustomLoader />
-        </Card>
-      </Container>
+      <Card>
+        <CustomLoader />
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <Container>
-        <Card>
-          <Alert severity='error'>Oops! {error.message} </Alert>
-        </Card>
-      </Container>
+      <Card>
+        <Alert severity='error'>Oops! {error.message} </Alert>
+      </Card>
     )
   }
 
   return (
     <>
-      <Container>
-        <Card>
-          <Box sx={{ width: '100%', position: 'relative' }}>
-            <Box
-              style={{ position: 'absolute', width: 'auto', marginLeft: 'calc(100% - 400px)', justifyContent: 'end', zIndex: 100 }}
-              sx={{ display: { md: 'none', lg: 'flex' } }}>
-              <TextField size='small'
-                label='Search'
-                placeholder='Search ...'
-                color='secondary'
-                sx={{ mt: 2, mr: 3, width: { sm: '150px', lg: '250px' } }} />
-            </Box>
-            <Tabs
-              sx={{ borderBottom: '1px solid #e8e8e8', }}
-              value={tabIndex}
-              onChange={selectTab}
-              textColor="secondary"
-              indicatorColor="secondary">
-              <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label="Students (231)"  {...panelProps(0)} />
-              <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Teachers  (33)"  {...panelProps(1)} />
-            </Tabs>
-            <TabPanel value={tabIndex} index={0}>
-              <DataTable
-                title={<IssueButton person="Student" />}
-                progressPending={loading}
-                columns={cols}
-                data={data.students.map((row) => {
-                  return {
-                    id: row.id,
-                    cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
-                    barcode: row.admissionNumber,
-                    title: row.fullName,
-                    category: row.category,
-                    created: moment(row.createdAt).format("DD-MM-yyyy"),
-                    action: <DropdownMenu options={dropMenuOptions} row={row} />
-                  };
-                })}
-              />
-            </TabPanel>
-            <TabPanel value={tabIndex} index={1}>
-              <DataTable
-                title={<IssueButton person="Teacher" />}
-                progressPending={loading}
-                defaultSortFieldId={1}
-                columns={cols}
-                data={data.teachers.map((row) => {
-                  return {
-                    id: row.id,
-                    cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
-                    barcode: row.admissionNumber,
-                    title: row.fullName,
-                    category: row.category,
-                    created: moment(row.createdAt).format("DD-MM-yyyy"),
-                    action: <DropdownMenu options={dropMenuOptions} row={row} />
-                  };
-                })}
-              />
-            </TabPanel>
+      <Card>
+        <Box sx={{ width: '100%', position: 'relative' }}>
+          <Box
+            style={{ position: 'absolute', width: 'auto', marginLeft: 'calc(100% - 400px)', justifyContent: 'end', zIndex: 100 }}
+            sx={{ display: { md: 'none', lg: 'flex' } }}>
+            <TextField size='small'
+              label='Search'
+              placeholder='Search ...'
+              color='secondary'
+              sx={{ mt: 2, mr: 3, width: { sm: '150px', lg: '250px' } }} />
           </Box>
-        </Card>
-      </Container>
+          <Tabs
+            sx={{ borderBottom: '1px solid #e8e8e8', }}
+            value={tabIndex}
+            onChange={selectTab}
+            textColor="secondary"
+            indicatorColor="secondary">
+            <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label="Students (231)"  {...panelProps(0)} />
+            <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Teachers  (33)"  {...panelProps(1)} />
+          </Tabs>
+          <TabPanel value={tabIndex} index={0}>
+            <DataTable
+              title={<IssueButton person="Student" />}
+              progressPending={loading}
+              columns={cols}
+              data={data.students.map((row) => {
+                return {
+                  id: row.id,
+                  cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
+                  barcode: row.admissionNumber,
+                  title: row.fullName,
+                  category: row.category,
+                  created: moment(row.createdAt).format("DD-MM-yyyy"),
+                  action: <DropdownMenu options={dropMenuOptions} row={row} />
+                };
+              })}
+            />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1}>
+            <DataTable
+              title={<IssueButton person="Teacher" />}
+              progressPending={loading}
+              defaultSortFieldId={1}
+              columns={cols}
+              data={data.teachers.map((row) => {
+                return {
+                  id: row.id,
+                  cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
+                  barcode: row.admissionNumber,
+                  title: row.fullName,
+                  category: row.category,
+                  created: moment(row.createdAt).format("DD-MM-yyyy"),
+                  action: <DropdownMenu options={dropMenuOptions} row={row} />
+                };
+              })}
+            />
+          </TabPanel>
+        </Box>
+      </Card>
 
       <Modal isOpen={modal}>
         {searching ?

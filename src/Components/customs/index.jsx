@@ -1,5 +1,5 @@
 import { AdminPanelSettings, Mail, Menu as MenuIcon, Notifications } from '@mui/icons-material';
-import { AppBar, Avatar, Badge, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from "@mui/material";
+import { AppBar, Avatar, Badge, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
@@ -122,9 +122,9 @@ function TopBar(props) {
 
 function PageBody({ children }) {
   return (
-    <div className="page_body">
-      <div className="container-fluid mt-2 px-5 py-2">{children}</div>
-    </div>
+    <Box className="page_body">
+      <Container sx={{ mt: 5 }}>{children}</Container>
+    </Box>
   );
 }
 

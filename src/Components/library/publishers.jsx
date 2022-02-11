@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Button, Card, Container, TextField } from '@mui/material';
+import { Alert, Box, Button, Card, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
@@ -145,50 +145,45 @@ export default function Publishers() {
       width: '56px',
     },
   ]
+
   if (loading) {
     return (
-      <Container>
-        <Card>
-          <CustomLoader />
-        </Card>
-      </Container>
+      <Card>
+        <CustomLoader />
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <Container>
-        <Card>
-          <Alert severity='error'>Oops! {error.message} </Alert>
-        </Card>
-      </Container>
+      <Card>
+        <Alert severity='error'>Oops! {error.message} </Alert>
+      </Card>
     )
   }
 
   return (
     <>
-      <Container>
-        <div className="mb-3 justify-content-end d-flex">
-          <Button color="secondary" variant="contained" onClick={onNewPublisher}>
-            <Add /> Add New Publisher
-          </Button>
-        </div>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
+        <Button color="secondary" variant="contained" onClick={onNewPublisher}>
+          <Add /> Add New Publisher
+        </Button>
+      </Box>
 
-        <DataTable
-          title="Book Publishers"
-          progressPending={loading}
-          defaultSortFieldId={1}
-          columns={cols}
-          onRowClicked={editPublisher}
-          data={data.publishers.map((row) => {
-            return {
-              id: row.id,
-              name: row.name,
-              action: <DropdownMenu options={dropMenuOptions} row={row} />
-            };
-          })}
-        />
-      </Container>
+      <DataTable
+        title="Book Publishers"
+        progressPending={loading}
+        defaultSortFieldId={1}
+        columns={cols}
+        onRowClicked={editPublisher}
+        data={data.publishers.map((row) => {
+          return {
+            id: row.id,
+            name: row.name,
+            action: <DropdownMenu options={dropMenuOptions} row={row} />
+          };
+        })}
+      />
 
       <Modal isOpen={modal}>
         {loadingSelected ?
