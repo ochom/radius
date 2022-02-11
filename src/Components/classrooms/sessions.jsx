@@ -1,21 +1,21 @@
 
-import React, { useState, useEffect } from "react";
-import { Delete, Edit, Save } from "@mui/icons-material";
-import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Add, Delete, Edit, Save } from "@mui/icons-material";
+import { LoadingButton, LocalizationProvider, MobileDatePicker } from "@mui/lab";
+import DateAdapter from '@mui/lab/AdapterMoment';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
   AlertWarning,
-  ConfirmAlert,
+  ConfirmAlert
 } from "../customs/alerts";
 import { DropdownMenu } from "../customs/menus";
-import { DataTable } from "../customs/table";
-import { LoadingButton, LocalizationProvider, MobileDatePicker } from "@mui/lab";
-import DateAdapter from '@mui/lab/AdapterMoment';
-import moment from "moment";
 import { CustomLoader } from "../customs/monitors";
+import { DataTable } from "../customs/table";
 
 
 const initialFormData = {
@@ -192,11 +192,11 @@ export default function Sessions() {
 
   return (
     <>
-      <div className="mb-3 justify-content-end d-flex">
-        <button className="btn btn-primary" onClick={onNewSession}>
-          <i className="fa fa-plus"></i> Add New Session
-        </button>
-      </div>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
+        <Button color="secondary" variant="contained" className="no-transform" onClick={onNewSession}>
+          <Add /> Add New Session
+        </Button>
+      </Box>
 
       <DataTable
         title="Sessions list"

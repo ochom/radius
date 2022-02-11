@@ -1,17 +1,18 @@
+import { Add, Edit, OpenInBrowser } from "@mui/icons-material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { DataTable } from "../customs/table";
+import { useHistory } from "react-router-dom";
+import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
   AlertWarning,
-  ConfirmAlert,
+  ConfirmAlert
 } from "../customs/alerts";
-import { DropdownMenu } from "../customs/menus";
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Edit, OpenInBrowser } from "@mui/icons-material";
-import { Service } from "../../API/service";
 import { UserAvatar } from "../customs/avatars";
-import { useHistory } from "react-router-dom";
+import { DropdownMenu } from "../customs/menus";
+import { DataTable } from "../customs/table";
 
 
 const AllTeacher = () => {
@@ -76,11 +77,15 @@ const AllTeacher = () => {
   };
 
   const openProfile = (row) => {
-    history.push(`teachers/profile/${row.id}`)
+    history.push(`/teachers/profile/${row.id}`)
   }
 
   const editDetails = (row) => {
-    history.push(`teachers/profile/${row.id}/edit`)
+    history.push(`/teachers/profile/${row.id}/edit`)
+  }
+
+  const onNewTeacher = () => {
+    history.push("/teachers/new")
   }
 
   let dropMenuOptions = [
@@ -108,6 +113,11 @@ const AllTeacher = () => {
 
   return (
     <>
+      <Box sx={{ my: 3, display: 'flex', justifyContent: 'end' }}>
+        <Button color="secondary" variant="contained" className="no-transform" onClick={onNewTeacher}>
+          <Add /> Add New Teacher
+        </Button>
+      </Box>
       <DataTable
         title="Registered Employees & Teacher"
         defaultSortFieldId={2}
@@ -123,8 +133,8 @@ const AllTeacher = () => {
             gender: d.gender,
             action: <DropdownMenu options={dropMenuOptions} row={d} />
           };
-        })} />
-
+        })}
+      />
     </>
   );
 };

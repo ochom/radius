@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { Add, Assignment, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Avatar, Button, Container, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Alert, Avatar, Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -249,53 +249,47 @@ export default function Books() {
 
   if (loading) {
     return (
-      <Container>
-        <Card>
-          <CustomLoader />
-        </Card>
-      </Container>
+      <Card>
+        <CustomLoader />
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <Container>
-        <Card>
-          <Alert severity='error'>Oops! {error.message} </Alert>
-        </Card>
-      </Container>
+      <Card>
+        <Alert severity='error'>Oops! {error.message} </Alert>
+      </Card>
     )
   }
 
   return (
     <>
-      <Container>
-        <div className="mb-3 justify-content-end d-flex">
-          <Button color="secondary" variant="contained" onClick={onNewBook}>
-            <Add /> Add New Book
-          </Button>
-        </div>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
+        <Button color="secondary" variant="contained" onClick={onNewBook}>
+          <Add /> Add New Book
+        </Button>
+      </Box>
 
-        <DataTable
-          title="Books"
-          progressPending={loading}
-          defaultSortFieldId={1}
-          columns={cols}
-          onRowClicked={openBook}
-          data={data.books.map((row) => {
-            return {
-              id: row.id,
-              cover: <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>,
-              barcode: row.barcode,
-              title: row.title,
-              category: row.category.name,
-              publisher: row.publisher.name,
-              created: moment(row.createdAt).format("DD-MM-yyyy h:mm:ss a"),
-              action: <DropdownMenu options={dropMenuOptions} row={row} />
-            };
-          })}
-        />
-      </Container>
+      <DataTable
+        title="Books"
+        progressPending={loading}
+        defaultSortFieldId={1}
+        columns={cols}
+        onRowClicked={openBook}
+        data={data.books.map((row) => {
+          return {
+            id: row.id,
+            cover: <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>,
+            barcode: row.barcode,
+            title: row.title,
+            category: row.category.name,
+            publisher: row.publisher.name,
+            created: moment(row.createdAt).format("DD-MM-yyyy h:mm:ss a"),
+            action: <DropdownMenu options={dropMenuOptions} row={row} />
+          };
+        })}
+      />
 
       <Modal isOpen={modal}>
         {searching &&

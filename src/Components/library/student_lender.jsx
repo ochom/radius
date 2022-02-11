@@ -2,7 +2,7 @@ import {
   gql, useQuery
 } from "@apollo/client";
 import { Add, AddPhotoAlternate, Adjust, Apartment, Close, Event, Wc } from "@mui/icons-material";
-import { Alert, Avatar, Button, Card, Container, Divider, Stack, Typography } from "@mui/material";
+import { Alert, Avatar, Button, Card, Divider, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useHistory, useParams } from "react-router-dom";
 import { CustomLoader } from "../customs/monitors";
@@ -41,7 +41,7 @@ export default function StudentsLender() {
     return <Alert severity="error">Error :( {error.message} </Alert>
   }
 
-  return <Container>
+  return <>
     <Card>
       <Box sx={{ p: 3, display: 'flex' }} >
         <Stack>
@@ -83,6 +83,6 @@ export default function StudentsLender() {
       <DataTable
         title="Books borrowed" />
     </Card>
-  </Container>
+  </>
 
 }

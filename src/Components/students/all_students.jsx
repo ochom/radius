@@ -1,19 +1,18 @@
+import { Edit, OpenInBrowser } from "@mui/icons-material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
-import { DataTable } from "../customs/table";
+import { useHistory } from "react-router-dom";
+import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
   AlertWarning,
-  ConfirmAlert,
+  ConfirmAlert
 } from "../customs/alerts";
-import { DropdownMenu } from "../customs/menus";
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Edit, OpenInBrowser } from "@mui/icons-material";
-import { Service } from "../../API/service";
 import { UserAvatar } from "../customs/avatars";
-import { useHistory } from "react-router-dom";
-import { Button, TextField } from "@mui/material";
-import { Typography } from "@mui/material";
+import { DropdownMenu } from "../customs/menus";
+import { DataTable } from "../customs/table";
 
 const AllStudent = () => {
   const [loading, setLoading] = useState(true);
@@ -144,11 +143,11 @@ const AllStudent = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-end mb-3">
-        <Button color="secondary" onClick={onNewStudent}>
+      <Box sx={{ my: 3, display: 'flex', justifyContent: 'end' }}>
+        <Button color="secondary" variant="contained" className="no-transform" onClick={onNewStudent}>
           <Typography><i className="fa fa-plus"></i>  Add New Student</Typography>
         </Button>
-      </div>
+      </Box>
 
       <DataTable
         title="All students"

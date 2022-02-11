@@ -1,6 +1,6 @@
 import { AddPhotoAlternate, Category, Event, PeopleAlt, Person } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Avatar, Card, CircularProgress, Container, Divider, Paper, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { Alert, Avatar, Card, CircularProgress, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -126,85 +126,81 @@ export default function Book(props) {
 
   if (!loading && !book) {
     return (
-      <Container>
-        <Paper sx={{ p: 10, }}>
-          <Alert severity="warning">Book not found</Alert>
-        </Paper>
-      </Container>
+      <Card sx={{ p: 10, }}>
+        <Alert severity="warning">Book not found</Alert>
+      </Card>
     )
   }
 
   return (
     <>
       <CustomSnackBar {...snackBar} onClose={closeSnackBar} />
-      <Container>
-        <Card>
-          <Box sx={{ p: 3, display: 'flex' }} >
-            <Stack>
-              <div style={{ position: "relative" }}>
-                <Avatar variant="rounded" src={album.url} alt={book.title} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
-                  <AddPhotoAlternate sx={{ fontSize: "8rem" }} />
+      <Card>
+        <Box sx={{ p: 3, display: 'flex' }} >
+          <Stack>
+            <div style={{ position: "relative" }}>
+              <Avatar variant="rounded" src={album.url} alt={book.title} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
+                <AddPhotoAlternate sx={{ fontSize: "8rem" }} />
+              </Avatar>
+              {saving &&
+                <Avatar variant="rounded" sx={{ position: "absolute", width: "10rem", height: "10rem", top: 0, left: 0, bgcolor: "#555555e2" }} >
+                  <CircularProgress variant="determinate" value={uploadProgress} color="secondary" style={{ width: "7rem", height: "7rem" }} />
                 </Avatar>
-                {saving &&
-                  <Avatar variant="rounded" sx={{ position: "absolute", width: "10rem", height: "10rem", top: 0, left: 0, bgcolor: "#555555e2" }} >
-                    <CircularProgress variant="determinate" value={uploadProgress} color="secondary" style={{ width: "7rem", height: "7rem" }} />
-                  </Avatar>
-                }
-              </div>
-              {(album.isNew && !saving) &&
-                <LoadingButton
-                  type='submit'
-                  variant='contained'
-                  color='secondary'
-                  loading={saving}
-                  onClick={submitAlbum}>Upload</LoadingButton>}
-            </Stack>
-            <Box >
-              <Box sx={{ display: 'flex' }}>
-                <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
-                  <Typography fontWeight={700} variant='h5'>{book.title}
-                    <Typography variant='body2' color="GrayText">{book.category.name}</Typography>
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <Category sx={{ fontSize: "1.2rem" }} color="secondary" /> {book.publisher.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.edition} Edition
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <Person sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.author}
-                  </Typography>
-                </Stack>
-              </Box>
+              }
+            </div>
+            {(album.isNew && !saving) &&
+              <LoadingButton
+                type='submit'
+                variant='contained'
+                color='secondary'
+                loading={saving}
+                onClick={submitAlbum}>Upload</LoadingButton>}
+          </Stack>
+          <Box >
+            <Box sx={{ display: 'flex' }}>
+              <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
+                <Typography fontWeight={700} variant='h5'>{book.title}
+                  <Typography variant='body2' color="GrayText">{book.category.name}</Typography>
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <Category sx={{ fontSize: "1.2rem" }} color="secondary" /> {book.publisher.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.edition} Edition
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <Person sx={{ fontSize: "1.2rem" }} color="secondary" />  {book.author}
+                </Typography>
+              </Stack>
             </Box>
           </Box>
-          <Divider />
+        </Box>
+        <Divider />
 
-          <Box sx={{ width: '100%' }}>
-            <Tabs
-              sx={{ borderBottom: '1px solid #e8e8e8', }}
-              value={tabIndex}
-              onChange={selectTab}
-              textColor="secondary"
-              indicatorColor="secondary">
-              <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label="Students (231)"  {...panelProps(0)} />
-              <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Teachers  (33)"  {...panelProps(1)} />
-            </Tabs>
-            <TabPanel value={tabIndex} index={0}>
-              <div>
-                Students
-                {(students || []).map(s => <p>Hello</p>)}
-              </div>
-            </TabPanel>
-            <TabPanel value={tabIndex} index={1}>
-              <div>
-                teachers
-                {(teachers || []).map(s => <p>Hello</p>)}
-              </div>
-            </TabPanel>
-          </Box>
-        </Card>
-      </Container>
+        <Box sx={{ width: '100%' }}>
+          <Tabs
+            sx={{ borderBottom: '1px solid #e8e8e8', }}
+            value={tabIndex}
+            onChange={selectTab}
+            textColor="secondary"
+            indicatorColor="secondary">
+            <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label="Students (231)"  {...panelProps(0)} />
+            <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Teachers  (33)"  {...panelProps(1)} />
+          </Tabs>
+          <TabPanel value={tabIndex} index={0}>
+            <div>
+              Students
+              {(students || []).map(s => <p>Hello</p>)}
+            </div>
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1}>
+            <div>
+              teachers
+              {(teachers || []).map(s => <p>Hello</p>)}
+            </div>
+          </TabPanel>
+        </Box>
+      </Card>
     </>
   );
 }

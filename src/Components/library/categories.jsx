@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, Card, Container, TextField } from '@mui/material';
+import { Box, Button, Card, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
@@ -154,49 +154,43 @@ export default function Categories() {
 
   if (loading) {
     return (
-      <Container>
-        <Card>
-          <CustomLoader />
-        </Card>
-      </Container>
+      <Card>
+        <CustomLoader />
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <Container>
-        <Card>
-          <AlertFailed severity='error'>Oops! {error.message} </AlertFailed>
-        </Card>
-      </Container>
+      <Card>
+        <AlertFailed severity='error'>Oops! {error.message} </AlertFailed>
+      </Card>
     )
   }
 
   return (
     <>
-      <Container>
-        <div className="mb-3 justify-content-end d-flex">
-          <Button color="secondary" variant="contained" onClick={onNewCategory}>
-            <Add /> Add New Category
-          </Button>
-        </div>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
+        <Button color="secondary" variant="contained" onClick={onNewCategory}>
+          <Add /> Add New Category
+        </Button>
+      </Box>
 
-        <DataTable
-          title="Book Categories"
-          progressPending={loading}
-          defaultSortFieldId={1}
-          columns={cols}
-          onRowClicked={editCategory}
-          data={data.categories.map((row) => {
-            return {
-              id: row.id,
-              name: row.name,
-              description: row.description,
-              action: <DropdownMenu options={dropMenuOptions} row={row} />
-            };
-          })}
-        />
-      </Container>
+      <DataTable
+        title="Book Categories"
+        progressPending={loading}
+        defaultSortFieldId={1}
+        columns={cols}
+        onRowClicked={editCategory}
+        data={data.categories.map((row) => {
+          return {
+            id: row.id,
+            name: row.name,
+            description: row.description,
+            action: <DropdownMenu options={dropMenuOptions} row={row} />
+          };
+        })}
+      />
 
       <Modal isOpen={modal}>
         {loadingSelected ?

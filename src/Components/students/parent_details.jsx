@@ -1,12 +1,12 @@
+import { AssignmentInd, PeopleOutlined, Phone, Search, Wc, Work } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import { Alert, Avatar, Box, Button, Card, Divider, Paper, Stack, Tab, Tabs, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { Service } from '../../API/service';
-import { CustomLoader } from "../customs/monitors"
-import { AssignmentInd, PeopleOutlined, Phone, Search, Wc, Work } from "@mui/icons-material";
-import { panelProps, TabPanel } from "../customs/tabs";
 import { useHistory } from "react-router-dom";
+import { Service } from '../../API/service';
+import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
-import { LoadingButton } from "@mui/lab";
+import { panelProps, TabPanel } from "../customs/tabs";
 
 
 
@@ -102,6 +102,7 @@ const ParentDetails = (props) => {
                     required
                     value={idNumber}
                     placeholder="Enter ID Number"
+                    color="secondary"
                     fullWidth
                     onChange={e => setIDNumber(e.target.value)} />
                 </div>
@@ -124,11 +125,11 @@ const ParentDetails = (props) => {
 
       {parent &&
         <>
-          <div className="mb-3">
-            <Button color="secondary" onClick={onSearchNew}>
+          <Box sx={{ my: 3, display: 'flex', justifyContent: 'end' }}>
+            <Button color="secondary" variant="contained" className="no-transform" onClick={onSearchNew}>
               <Typography><i className="fa fa-search"></i>  Find another parent</Typography>
             </Button>
-          </div>
+          </Box>
 
           <Card>
             <Box sx={{ p: 3, display: 'flex' }} >
