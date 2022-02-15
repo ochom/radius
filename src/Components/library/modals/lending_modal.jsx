@@ -4,7 +4,7 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Avatar, Button, Divider, Grid, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "reactstrap";
-import { AlertFailed } from "../../customs/alerts";
+import { AlertFailed, AlertSuccess } from "../../customs/alerts";
 import { CustomLoader } from "../../customs/monitors";
 
 export const LEND_TO = {
@@ -59,22 +59,27 @@ export default function LendingModal({ lendTo, id, refetch }) {
   })
 
   const [lendStudent, { loading: lendingStudent, reset: resetLendingStudent }] = useMutation(LEND_STUDENT_MUTATION, {
-    onCompleted: (data) => {
-      console.log(data);
+    onCompleted: () => {
       toggleModal()
       refetch()
       resetLendingStudent()
+      AlertSuccess({ text: "Book lent to student successfully" })
     },
     onError: (err) => {
       AlertFailed({ text: err.message })
     }
   })
 
-  const [lendTeacher] = useMutation(LEND_TEACHER_MUTATION, {
+  const [lendTeacher, { loading: lendingTeacher, reset: resetLendingTeacher }] = useMutation(LEND_TEACHER_MUTATION, {
     onCompleted: () => {
       toggleModal()
       refetch()
+      resetLendingTeacher()
+      AlertSuccess({ text: "Book lent successfully" })
     },
+    onError: (err) => {
+      AlertFailed({ text: err.message })
+    }
   })
 
 
@@ -186,7 +191,7 @@ export default function LendingModal({ lendTo, id, refetch }) {
                   <Divider />
                   <Stack direction='row' spacing={3} sx={{ display: 'flex', justifyContent: 'end', mt: 2, pr: 3 }}>
                     <Button color="secondary" variant="outlined" type="button" onClick={toggleModal}>Cancel</Button>
-                    <LoadingButton color="secondary" variant="contained" type="submit" loading={lendingStudent}>Save</LoadingButton>
+                    <LoadingButton color="secondary" variant="contained" type="submit" loading={lendingStudent || lendingTeacher}>Save</LoadingButton>
                   </Stack>
                 </form>
               </ModalBody>
