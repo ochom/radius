@@ -1,12 +1,14 @@
 import {
   gql, useQuery
 } from "@apollo/client";
-import { Add, AddPhotoAlternate, Adjust, Apartment, Close, Event, Wc } from "@mui/icons-material";
+import { AddPhotoAlternate, Adjust, Apartment, Assignment, Close, Event, Wc } from "@mui/icons-material";
 import { Alert, Avatar, Button, Card, Divider, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import moment from "moment";
 import { useHistory, useParams } from "react-router-dom";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
+import LendingModal, { LEND_TO } from "./modals/lending_modal";
 
 
 const STUDENT_QUERY = gql`
@@ -24,6 +26,18 @@ const STUDENT_QUERY = gql`
         stream
       }
     }
+    books: getStudentBorrowedBooks(studentID: $id){
+      id
+      bookNumber
+      createdAt
+      returned
+      status
+      book{
+        id
+        title
+        cover
+      }
+    }
   }
 `
 
@@ -31,15 +45,26 @@ export default function StudentsLender() {
   let { uid } = useParams()
   let history = useHistory()
 
-  const { loading, error, data } = useQuery(STUDENT_QUERY, {
+
+  const { loading, error, data, refetch } = useQuery(STUDENT_QUERY, {
     variables: { id: uid },
   })
 
   if (loading) return <CustomLoader />
 
   if (error) {
-    return <Alert severity="error">Error :( {error.message} </Alert>
+    return <Alert severity="error">{error.message} </Alert>
   }
+
+
+  const cols = [
+    { name: "", selector: (row) => row.cover, width: '76px' },
+    { name: "Title", selector: (row) => row.title },
+    { name: "Number", selector: (row) => row.bookNumber },
+    { name: "Status", selector: (row) => row.status },
+    { name: "Borrowed", selector: (row) => row.createdAt },
+  ]
+
 
   return <>
     <Card>
@@ -69,9 +94,10 @@ export default function StudentsLender() {
           </Box>
 
           <Stack sx={{ ml: 5, mt: 3 }} direction="row" spacing={3}>
-            <Button variant="contained" color='secondary'>
-              <Add /> <Typography sx={{ ml: 1 }}>Add Book</Typography>
-            </Button>
+            <LendingModal
+              id={uid}
+              refetch={refetch}
+              lendTo={LEND_TO.STUDENT} />
 
             <Button variant="outlined" color='secondary' onClick={() => history.push("/library/issue")}>
               <Close /> <Typography sx={{ ml: 1 }}>Close</Typography>
@@ -81,7 +107,14 @@ export default function StudentsLender() {
       </Box>
       <Divider />
       <DataTable
-        title="Books borrowed" />
+        columns={cols}
+        data={data.books.map(row => ({
+          cover: <Avatar src={row.book.cover} variant='rounded'><Assignment /> </Avatar>,
+          title: row.book.title,
+          bookNumber: row.bookNumber,
+          status: row.status,
+          createdAt: moment(row.createdAt).format("DD/MM/yyyy hh:mm a"),
+        }))} />
     </Card>
   </>
 

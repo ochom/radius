@@ -122,8 +122,8 @@ function TopBar(props) {
 
 function PageBody({ children }) {
   return (
-    <Box className="page_body">
-      <Container sx={{ mt: 5 }}>{children}</Container>
+    <Box className="page_body" sx={{ position: 'absolute', mt: '3px', height: 'calc(100vh - 65px)', overflowY: 'auto' }}>
+      <Container sx={{ my: 5, top: 0 }}>{children}</Container>
     </Box>
   );
 }

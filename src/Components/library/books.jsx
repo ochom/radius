@@ -305,21 +305,19 @@ export default function Books() {
             <ModalHeader toggle={toggleModal}><i className="fa fa-plus-circle"></i> Add book</ModalHeader>
             <ModalBody>
               <form onSubmit={searchBook} method="post">
-                <div>
-                  <div className="mt-3">
-                    <TextField
-                      value={formData.barcode}
-                      label="Barcode"
-                      required
-                      autoFocus={true}
-                      color="secondary"
-                      fullWidth
-                      onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                    />
-                  </div>
-                  <div className="my-5">
-                    <Button color="secondary" variant="contained" type="submit">Continue</Button>
-                  </div>
+                <div className="mt-3">
+                  <TextField
+                    value={formData.barcode}
+                    label="Barcode"
+                    required
+                    autoFocus={true}
+                    color="secondary"
+                    fullWidth
+                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                  />
+                </div>
+                <div className="my-5">
+                  <Button color="secondary" variant="contained" type="submit">Continue</Button>
                 </div>
               </form>
             </ModalBody>
