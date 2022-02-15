@@ -228,24 +228,15 @@ export default function Borrowing() {
   const cols = [
     { name: "Reg.", selector: (row) => row.barcode, width: '80px' },
     { name: "Name", selector: (row) => row.title, },
-    { name: "Book", selector: (row) => row.category, },
+    { name: "Books", selector: (row) => row.category, },
     { name: "Status", selector: (row) => row.created, },
     { name: "Issued", selector: (row) => row.created, },
-    {
-      selector: row => row.action,
-      style: {
-        color: "grey"
-      },
-      allowOverflow: true,
-      button: true,
-      width: '56px',
-    },
   ]
 
-  const IssueButton = ({ person }) => {
+  const IssueButton = ({ person, sx }) => {
     return (
       <Button variant='contained' color='secondary' className='no-transform'
-        sx={{ my: 2 }} onClick={issueBook}>
+        sx={{ ...sx, my: 2 }} onClick={issueBook}>
         Issue Book to  {person}
       </Button>
     )
@@ -258,6 +249,10 @@ export default function Borrowing() {
       history.push(`/library/issue/teachers/${teacher.id}`)
 
     }
+  }
+
+  const openStudentLender = (row) => {
+    history.push(`/library/issue/students/${row.id}`)
   }
 
   if (loading) {
@@ -278,6 +273,10 @@ export default function Borrowing() {
 
   return (
     <>
+      <Stack direction='row' sx={{ display: 'flex', justifyContent: 'end' }}>
+        <IssueButton person="Student" />
+        <IssueButton person="Teacher" sx={{ ml: 3 }} />
+      </Stack>
       <Card>
         <Box sx={{ width: '100%', position: 'relative' }}>
           <Box
@@ -300,9 +299,9 @@ export default function Borrowing() {
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
             <DataTable
-              title={<IssueButton person="Student" />}
               progressPending={loading}
               columns={cols}
+              onRowClicked={openStudentLender}
               data={data.students.map((row) => {
                 return {
                   id: row.id,
@@ -311,14 +310,12 @@ export default function Borrowing() {
                   title: row.fullName,
                   category: row.category,
                   created: moment(row.createdAt).format("DD-MM-yyyy"),
-                  action: <DropdownMenu options={dropMenuOptions} row={row} />
                 };
               })}
             />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             <DataTable
-              title={<IssueButton person="Teacher" />}
               progressPending={loading}
               defaultSortFieldId={1}
               columns={cols}
