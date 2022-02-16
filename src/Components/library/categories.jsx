@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Card, TextField } from '@mui/material';
+import { Alert, Box, Button, Card, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
@@ -27,7 +27,10 @@ const QUERY = gql`query{
 export default function Categories() {
   const [modal, setModal] = useState(false);
 
-  const { loading, error, data, refetch } = useQuery(QUERY)
+  const { loading, error, data, refetch } = useQuery(QUERY, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'network-only'
+  })
   const [saving, setSaving] = useState(false);
 
   const [loadingSelected, setLoadingSelected] = useState(false)
@@ -163,7 +166,7 @@ export default function Categories() {
   if (error) {
     return (
       <Card>
-        <AlertFailed severity='error'>Oops! {error.message} </AlertFailed>
+        <Alert severity='error'>Oops! {error.message} </Alert>
       </Card>
     )
   }
