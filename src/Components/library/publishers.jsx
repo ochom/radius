@@ -1,11 +1,12 @@
 import { gql, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Button, Card, TextField } from '@mui/material';
-import React, { useState } from 'react';
+import { Box, Button, TextField } from '@mui/material';
+import { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
+import { PageErrorAlert } from '../customs/errors';
 import { DropdownMenu } from '../customs/menus';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
@@ -147,19 +148,11 @@ export default function Publishers() {
   ]
 
   if (loading) {
-    return (
-      <Card>
-        <CustomLoader />
-      </Card>
-    )
+    return <CustomLoader />
   }
 
   if (error) {
-    return (
-      <Card>
-        <Alert severity='error'>Oops! {error.message} </Alert>
-      </Card>
-    )
+    return <PageErrorAlert message={error.message} />
   }
 
   return (
