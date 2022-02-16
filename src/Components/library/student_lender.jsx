@@ -2,10 +2,11 @@ import {
   gql, useQuery
 } from "@apollo/client";
 import { AddPhotoAlternate, Adjust, Apartment, Assignment, Close, Event, Wc } from "@mui/icons-material";
-import { Alert, Avatar, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Card, Divider, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import moment from "moment";
 import { useHistory, useParams } from "react-router-dom";
+import { PageErrorAlert } from "../customs/errors";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 import LendingModal, { LEND_TO } from "./modals/lending_modal";
@@ -50,13 +51,6 @@ export default function StudentsLender() {
     variables: { id: uid },
   })
 
-  if (loading) return <CustomLoader />
-
-  if (error) {
-    return <Alert severity="error">{error.message} </Alert>
-  }
-
-
   const cols = [
     { name: "", selector: (row) => row.cover, width: '76px' },
     { name: "Title", selector: (row) => row.title },
@@ -65,6 +59,11 @@ export default function StudentsLender() {
     { name: "Borrowed", selector: (row) => row.createdAt },
   ]
 
+  if (loading) return <CustomLoader />
+
+  if (error) {
+    return <PageErrorAlert message={error.message} />
+  }
 
   return <>
     <Card>
