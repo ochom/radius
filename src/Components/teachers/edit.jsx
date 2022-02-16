@@ -120,7 +120,7 @@ const EditTeacher = () => {
     )
   }
   return (
-    <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
+    <Paper sx={{ px: 5, py: 2 }} className='col-md-10 mx-auto'>
       <div className="d-flex my-3">
         <Avatar src={formData.passport} alt={formData.fullName} sx={{ width: "4rem", height: "4rem" }}></Avatar>
         <div className="ms-4">
@@ -130,7 +130,7 @@ const EditTeacher = () => {
       </div>
       <form onSubmit={submitForm} method="post">
         <Box className="row">
-          <Box className="col-md-4" sx={{ mt: 3 }}>
+          <Box className="col-md-4" sx={{ mt: 4 }}>
             <FormControl fullWidth size='small'>
               <InputLabel id="teacher-title">Title</InputLabel>
               <Select
@@ -146,7 +146,7 @@ const EditTeacher = () => {
               </Select>
             </FormControl>
           </Box>
-          <Box className="col-md-8" sx={{ mt: 3 }}>
+          <Box className="col-md-8" sx={{ mt: 4 }}>
             <TextField type="text" label="Full name"
               required
               value={formData.fullName}
@@ -154,7 +154,7 @@ const EditTeacher = () => {
               size='small'
               onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
           </Box>
-          <Box className="col-md-6" sx={{ mt: 3 }}>
+          <Box className="col-md-6" sx={{ mt: 4 }}>
             <TextField
               type="text"
               label="Mobile"
@@ -164,7 +164,7 @@ const EditTeacher = () => {
               size='small'
               onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })} />
           </Box>
-          <Box className="col-md-6" sx={{ mt: 3 }}>
+          <Box className="col-md-6" sx={{ mt: 4 }}>
             <TextField
               type="email"
               label="Email"
@@ -174,7 +174,7 @@ const EditTeacher = () => {
               size='small'
               onChange={e => setFormData({ ...formData, email: e.target.value })} />
           </Box>
-          <Box className="col-md-6" sx={{ mt: 3 }}>
+          <Box className="col-md-6" sx={{ mt: 4 }}>
             <TextField
               type="text"
               label="ID Number"
@@ -184,7 +184,7 @@ const EditTeacher = () => {
               size='small'
               onChange={e => setFormData({ ...formData, idNumber: e.target.value })} />
           </Box>
-          <Box className="col-md-6" sx={{ mt: 3 }}>
+          <Box className="col-md-6" sx={{ mt: 4 }}>
             <LocalizationProvider dateAdapter={DateAdapter}>
               <MobileDatePicker
                 label="Date of birth"
@@ -196,7 +196,7 @@ const EditTeacher = () => {
               />
             </LocalizationProvider>
           </Box>
-          <Box className="col-md-4" sx={{ mt: 3 }}>
+          <Box className="col-md-4" sx={{ mt: 4 }}>
             <TextField
               type="text"
               label="Staff Number"
@@ -207,7 +207,7 @@ const EditTeacher = () => {
               fullWidth
               onChange={e => setFormData({ ...formData, serialNumber: e.target.value })} />
           </Box>
-          <Box className="col-md-4" sx={{ mt: 3 }}>
+          <Box className="col-md-4" sx={{ mt: 4 }}>
             <FormControl fullWidth
               size='small'>
               <InputLabel id="employer-label">Employer</InputLabel>
@@ -224,7 +224,7 @@ const EditTeacher = () => {
               </Select>
             </FormControl>
           </Box>
-          <Box className="col-md-4" sx={{ mt: 3 }}>
+          <Box className="col-md-4" sx={{ mt: 4 }}>
             <TextField
               type="text"
               label="Empl. Number"
@@ -235,7 +235,7 @@ const EditTeacher = () => {
               fullWidth
               onChange={e => setFormData({ ...formData, employmentNumber: e.target.value })} />
           </Box>
-          <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: 4 }}>
             <FormControl
               size='small'>
               <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
@@ -252,7 +252,7 @@ const EditTeacher = () => {
           </Box>
         </Box>
         <Divider />
-        <Stack spacing={3} sx={{ mt: 3 }} direction='row'>
+        <Stack spacing={3} sx={{ mt: 4 }} direction='row'>
           <LoadingButton
             type='submit'
             variant='contained'

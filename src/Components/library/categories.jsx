@@ -38,8 +38,6 @@ export default function Categories() {
 
   const toggleModal = () => setModal(!modal)
 
-
-
   const onNewCategory = () => {
     toggleModal();
     setSelectedCategoryID(null);
