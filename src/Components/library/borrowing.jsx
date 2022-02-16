@@ -151,7 +151,7 @@ export default function Borrowing() {
     { name: "Reg.", selector: (row) => row.number, width: '80px' },
     { name: "Name", selector: (row) => row.name, },
     { name: "Classroom", selector: (row) => row.meta },
-    { name: "Score", selector: (row) => row.total },
+    { name: "Rating", selector: (row) => row.total },
     { name: "Issued", selector: (row) => row.borrowed, },
   ]
 
@@ -161,7 +161,7 @@ export default function Borrowing() {
     { name: "#", selector: (row) => row.number, width: '80px' },
     { name: "Name", selector: (row) => row.name, },
     { name: "Email", selector: (row) => row.meta },
-    { name: "Score", selector: (row) => row.total },
+    { name: "Rating", selector: (row) => row.total },
     { name: "Issued", selector: (row) => row.borrowed, },
   ]
 

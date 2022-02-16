@@ -118,7 +118,7 @@ export default function StudentsLender() {
 
             <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
               <Stack direction="column">
-                <Typography variant="body2" color="text.secondary">Library Score</Typography>
+                <Typography variant="body2" color="text.secondary">Library Rating</Typography>
                 <Typography variant='h4'>{returnIndex}</Typography>
                 <Rating precision={0.5} max={5} value={returnIndex} />
               </Stack>
