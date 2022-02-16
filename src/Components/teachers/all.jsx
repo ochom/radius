@@ -1,7 +1,7 @@
+import { gql, useQuery } from "@apollo/client";
 import { Add, Edit, OpenInBrowser } from "@mui/icons-material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Service } from "../../API/service";
 import {
@@ -12,40 +12,28 @@ import {
 } from "../customs/alerts";
 import { UserAvatar } from "../customs/avatars";
 import { DropdownMenu } from "../customs/menus";
+import { CustomLoader } from "../customs/monitors";
+import { PageErrorAlert } from "../customs/errors";
 import { DataTable } from "../customs/table";
 
+const QUERY = gql`
+query{
+  teachers: getTeachers{
+    id
+    serialNumber
+    title
+    fullName
+    employer
+    gender
+    passport
+  }
+}
+`
 
 const AllTeacher = () => {
   const history = useHistory()
 
-  const [loading, setLoading] = useState(true);
-  const [teachers, setTeachers] = useState([]);
-
-
-  useEffect(() => {
-    getTeachers()
-  }, [])
-
-  const getTeachers = () => {
-    let query = {
-      query: `query{
-        teachers: getTeachers{
-          id
-          serialNumber
-          title
-          fullName
-          employer
-          gender
-          passport
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setTeachers(res?.teachers || [])
-      setLoading(false)
-    });
-  };
+  const { data, loading, error, refetch } = useQuery(QUERY)
 
 
   const deleteTeacher = (teacher) => {
@@ -68,7 +56,7 @@ const AllTeacher = () => {
             }
           })
           .finally(() => {
-            getTeachers();
+            refetch();
           });
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, teacher not deleted" })
@@ -111,6 +99,14 @@ const AllTeacher = () => {
     },
   ];
 
+  if (loading) {
+    return <CustomLoader />
+  }
+
+  if (error) {
+    return <PageErrorAlert message={error.message} />
+  }
+
   return (
     <>
       <Box sx={{ my: 3, display: 'flex', justifyContent: 'end' }}>
@@ -119,11 +115,11 @@ const AllTeacher = () => {
         </Button>
       </Box>
       <DataTable
-        title="Registered Employees & Teacher"
         defaultSortFieldId={2}
         progressPending={loading}
         onRowClicked={openProfile}
-        columns={cols} data={teachers.map((d) => {
+        columns={cols}
+        data={data.teachers.map((d) => {
           return {
             id: d.id,
             photo: <UserAvatar src={d.passport} alt={d.title} />,

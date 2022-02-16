@@ -168,7 +168,7 @@ const TeacherDetails = (props) => {
               </Stack>
             </Box>
 
-            <Box sx={{ ml: 5, mt: 3, display: 'flex' }}>
+            <Box sx={{ ml: 5, mt: 3 }}>
               <Button variant="outlined" color='secondary' onClick={() => { history.push(`/teachers/profile/${teacher.id}/edit`) }}>
                 <Edit /> <Typography sx={{ ml: 1 }}>Edit</Typography>
               </Button>
