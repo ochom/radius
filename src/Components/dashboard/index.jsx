@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { AccessTimeOutlined, LibraryBooksOutlined, PeopleOutline, PersonOutlined } from "@mui/icons-material";
-import { Alert, Avatar, Button, Card, Chip, Grid, List, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Card, Chip, Grid, List, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { PageBody } from "../customs";
 import { UserAvatar } from "../customs/avatars";
+import { PageErrorAlert } from "../customs/errors";
 import { CustomLoader } from "../customs/monitors";
 
 const QUERY = gql`query {
@@ -74,9 +75,7 @@ function Dashboard() {
   if (loading) {
     return (
       <PageBody>
-        <Card>
-          <CustomLoader />
-        </Card>
+        <CustomLoader />
       </PageBody>
     )
   }
@@ -84,9 +83,7 @@ function Dashboard() {
   if (error) {
     return (
       <PageBody>
-        <Card>
-          <Alert severity='error'>Oops! {error.message} </Alert>
-        </Card>
+        <PageErrorAlert message={error.message} />
       </PageBody>
     )
   }

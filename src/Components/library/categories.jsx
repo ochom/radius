@@ -1,11 +1,12 @@
 import { gql, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Button, Card, TextField } from '@mui/material';
-import React, { useState } from 'react';
+import { Box, Button, TextField } from '@mui/material';
+import { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
+import { PageErrorAlert } from '../customs/errors';
 import { DropdownMenu } from '../customs/menus';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
@@ -27,10 +28,7 @@ const QUERY = gql`query{
 export default function Categories() {
   const [modal, setModal] = useState(false);
 
-  const { loading, error, data, refetch } = useQuery(QUERY, {
-    fetchPolicy: 'network-only',
-    nextFetchPolicy: 'network-only'
-  })
+  const { loading, error, data, refetch } = useQuery(QUERY)
   const [saving, setSaving] = useState(false);
 
   const [loadingSelected, setLoadingSelected] = useState(false)
@@ -156,19 +154,11 @@ export default function Categories() {
   ]
 
   if (loading) {
-    return (
-      <Card>
-        <CustomLoader />
-      </Card>
-    )
+    return <CustomLoader />
   }
 
   if (error) {
-    return (
-      <Card>
-        <Alert severity='error'>Oops! {error.message} </Alert>
-      </Card>
-    )
+    return <PageErrorAlert message={error.message} />
   }
 
   return (
