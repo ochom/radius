@@ -236,7 +236,10 @@ export default function Borrowing() {
   const IssueButton = ({ person, sx }) => {
     return (
       <Button variant='contained' color='secondary' className='no-transform'
-        sx={{ ...sx, my: 2 }} onClick={issueBook}>
+        sx={{ ...sx, my: 2 }} onClick={() => {
+          setTabIndex(person === "Student" ? 0 : 1)
+          issueBook()
+        }}>
         Issue Book to  {person}
       </Button>
     )
@@ -277,6 +280,7 @@ export default function Borrowing() {
         <IssueButton person="Student" />
         <IssueButton person="Teacher" sx={{ ml: 3 }} />
       </Stack>
+
       <Card>
         <Box sx={{ width: '100%', position: 'relative' }}>
           <Box
@@ -359,7 +363,7 @@ export default function Borrowing() {
                       onChange={(e) => setLender(e.target.value)}
                     />
                   </Box>
-                  <Stack sx={{ mt: 3, mb: 2, px: 3 }} direction="row" justifyContent="space-between">
+                  <Stack sx={{ mt: 3, mb: 2, px: 3 }} spacing={3} direction="row-reverse" justifyContent="end">
                     <Button color="secondary" variant="contained" type="submit">Continue</Button>
                     <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
                   </Stack>
@@ -425,7 +429,7 @@ export default function Borrowing() {
                     </Stack>
                   }
                 </Box>
-                <Stack sx={{ mt: 3, mb: 2, px: 3 }} direction="row" justifyContent="space-between">
+                <Stack sx={{ mt: 3, mb: 2, px: 3 }} spacing={3} direction="row-reverse" justifyContent="end">
                   <Button color="secondary" variant="contained" onClick={openLendingProfile}>Continue</Button>
                   <Button color="secondary" variant="outlined" onClick={toggleModal}>Cancel</Button>
                 </Stack>
