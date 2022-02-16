@@ -1,45 +1,39 @@
 import { gql, useQuery } from '@apollo/client';
-import { Apartment, Approval, Assignment, Delete, Edit, Numbers, PeopleAlt, Person } from '@mui/icons-material';
-import { Alert, Avatar, Button, Card, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Apartment, Approval, Numbers, PeopleAlt, Person } from '@mui/icons-material';
+import { Alert, Avatar, Button, Card, Chip, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
-import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
-import { UserAvatar } from '../customs/avatars';
-import { DropdownMenu } from '../customs/menus';
+import { PageErrorAlert } from '../customs/errors';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
 import { panelProps, TabPanel } from '../customs/tabs';
 
-const initialFormData = {
-  barcode: "",
-  title: "",
-  author: "",
-  edition: "",
-  publisherID: "",
-  categoryID: "",
-  metaData: ""
-}
-
 const QUERY = gql`
-query{
-  students: getStudents{
-    id
-    fullName
-    admissionNumber
-    createdAt
-  }
-
-  teachers: getStudents{
-    id
-    fullName
-    admissionNumber
-    createdAt
+query lenders {
+  lenders: getLenders {
+    students {
+      id
+      name
+      number
+      meta
+      total
+      borrowed
+    }
+    teachers {
+      id
+      name
+      number
+      meta
+      total
+      borrowed
+    }
   }
 }
+
 `
 
 export default function Borrowing() {
@@ -54,88 +48,16 @@ export default function Borrowing() {
 
   const [lender, setLender] = useState("")
 
-  const { loading, error, data, refetch } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(QUERY, {
+    nextFetchPolicy: 'network-only',
+    fetchPolicy: 'network-only'
+  })
 
   const [student, setStudent] = useState(null)
   const [teacher, setTeacher] = useState(null)
 
-  const [formData, setFormData] = useState(initialFormData)
-
   const toggleModal = () => setModal(!modal)
 
-
-  const returnBook = row => {
-    setSearching(true)
-    let query = {
-      query: `query ($id: ID!){
-        book: getBook(id: $id){
-          id
-          barcode
-          title
-          author
-          edition
-          publisher{
-            id
-            name
-          }
-          category{
-            id
-            name
-          }
-          metaData
-        }
-      }`,
-      variables: {
-        id: row.id
-      }
-    }
-
-    new Service().getData(query).then(res => {
-      if (res) {
-        let data = res.book
-        setFormData({
-          ...formData,
-          barcode: data.barcode,
-          title: data.title,
-          author: data.author,
-          edition: data.edition,
-          categoryID: data.category.id,
-          publisherID: data.publisher.id,
-          metaData: data.metaData
-        })
-      }
-    }).finally(() => {
-      setSearching(false)
-      setSearched(true)
-    });
-    toggleModal();
-  };
-
-  const deleteBook = row => {
-    ConfirmAlert({ title: "Delete book!" }).then((res) => {
-      if (res.isConfirmed) {
-        let query = {
-          query: `mutation ($id: ID!){
-            deleteBook(id: $id)
-          }`,
-          variables: {
-            id: row.id
-          }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Book deleted successfully` });
-              refetch()
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
-      } else if (res.isDismissed) {
-        AlertWarning({ title: "Cancelled", text: "Request cancelled, book not deleted" })
-      }
-    });
-  };
 
   const selectTab = (event, newValue) => {
     setTabIndex(newValue);
@@ -223,20 +145,43 @@ export default function Borrowing() {
     })
   }
 
-  let dropMenuOptions = [{ "title": "Edit", action: returnBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
+  const studentsCol = [
+    { name: "Reg.", selector: (row) => row.number, width: '80px' },
+    { name: "Name", selector: (row) => row.name, },
+    { name: "Classroom", selector: (row) => row.meta },
+    {
+      name: "Books", selector: (row) => row.total, width: '80px',
+      style: {
+        display: 'flex',
+        justifyContent: 'center'
+      }
+    },
+    { name: "Issued", selector: (row) => row.borrowed, },
+  ]
 
-  const cols = [
-    { name: "Reg.", selector: (row) => row.barcode, width: '80px' },
-    { name: "Name", selector: (row) => row.title, },
-    { name: "Books", selector: (row) => row.category, },
-    { name: "Status", selector: (row) => row.created, },
-    { name: "Issued", selector: (row) => row.created, },
+
+
+  const teachersCol = [
+    { name: "#", selector: (row) => row.number, width: '80px' },
+    { name: "Name", selector: (row) => row.name, },
+    { name: "Email", selector: (row) => row.meta },
+    {
+      name: "Books", selector: (row) => row.total, width: '80px',
+      style: {
+        display: 'flex',
+        justifyContent: 'center'
+      }
+    },
+    { name: "Issued", selector: (row) => row.borrowed, },
   ]
 
   const IssueButton = ({ person, sx }) => {
     return (
       <Button variant='contained' color='secondary' className='no-transform'
-        sx={{ ...sx, my: 2 }} onClick={issueBook}>
+        sx={{ ...sx, my: 2 }} onClick={() => {
+          setTabIndex(person === "Student" ? 0 : 1)
+          issueBook()
+        }}>
         Issue Book to  {person}
       </Button>
     )
@@ -244,31 +189,26 @@ export default function Borrowing() {
 
   const openLendingProfile = () => {
     if (student) {
-      history.push(`/library/issue/students/${student.id}`)
+      openStudentLender({ id: student.id })
     } else if (teacher) {
-      history.push(`/library/issue/teachers/${teacher.id}`)
-
+      openStaffLender({ id: teacher.id })
     }
   }
 
-  const openStudentLender = (row) => {
-    history.push(`/library/issue/students/${row.id}`)
+  const openStudentLender = ({ id }) => {
+    history.push(`/library/issue/students/${id}`)
+  }
+
+  const openStaffLender = ({ id }) => {
+    history.push(`/library/issue/teachers/${id}`)
   }
 
   if (loading) {
-    return (
-      <Card>
-        <CustomLoader />
-      </Card>
-    )
+    return <CustomLoader />
   }
 
   if (error) {
-    return (
-      <Card>
-        <Alert severity='error'>Oops! {error.message} </Alert>
-      </Card>
-    )
+    return <PageErrorAlert message={error.message} />
   }
 
   return (
@@ -277,6 +217,7 @@ export default function Borrowing() {
         <IssueButton person="Student" />
         <IssueButton person="Teacher" sx={{ ml: 3 }} />
       </Stack>
+
       <Card>
         <Box sx={{ width: '100%', position: 'relative' }}>
           <Box
@@ -294,40 +235,37 @@ export default function Borrowing() {
             onChange={selectTab}
             textColor="secondary"
             indicatorColor="secondary">
-            <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label="Students (231)"  {...panelProps(0)} />
-            <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label="Teachers  (33)"  {...panelProps(1)} />
+            <Tab icon={<PeopleAlt sx={{ fontSize: 20 }} />} iconPosition="start" label={`Students (${data.lenders.students.length})`}  {...panelProps(0)} />
+            <Tab icon={<Person sx={{ fontSize: 20 }} />} iconPosition="start" label={`Teachers (${data.lenders.teachers.length})`}  {...panelProps(1)} />
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
             <DataTable
-              progressPending={loading}
-              columns={cols}
               onRowClicked={openStudentLender}
-              data={data.students.map((row) => {
+              columns={studentsCol}
+              data={data.lenders.students.map((row) => {
                 return {
                   id: row.id,
-                  cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
-                  barcode: row.admissionNumber,
-                  title: row.fullName,
-                  category: row.category,
-                  created: moment(row.createdAt).format("DD-MM-yyyy"),
+                  number: row.number,
+                  name: row.name,
+                  meta: row.meta,
+                  total: <Chip variant="outlined" color="secondary" label={row.total} />,
+                  borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}
             />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
             <DataTable
-              progressPending={loading}
-              defaultSortFieldId={1}
-              columns={cols}
-              data={data.teachers.map((row) => {
+              onRowClicked={openStaffLender}
+              columns={teachersCol}
+              data={data.lenders.teachers.map((row) => {
                 return {
                   id: row.id,
-                  cover: <UserAvatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></UserAvatar>,
-                  barcode: row.admissionNumber,
-                  title: row.fullName,
-                  category: row.category,
-                  created: moment(row.createdAt).format("DD-MM-yyyy"),
-                  action: <DropdownMenu options={dropMenuOptions} row={row} />
+                  number: row.number,
+                  name: row.name,
+                  meta: row.meta,
+                  total: <Chip variant="outlined" color="secondary" label={row.total} />,
+                  borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}
             />
@@ -359,7 +297,7 @@ export default function Borrowing() {
                       onChange={(e) => setLender(e.target.value)}
                     />
                   </Box>
-                  <Stack sx={{ mt: 3, mb: 2, px: 3 }} direction="row" justifyContent="space-between">
+                  <Stack sx={{ mt: 3, mb: 2, px: 3 }} spacing={3} direction="row-reverse" justifyContent="end">
                     <Button color="secondary" variant="contained" type="submit">Continue</Button>
                     <Button color="secondary" variant="outlined" type='button' onClick={toggleModal}>Cancel</Button>
                   </Stack>
@@ -425,7 +363,7 @@ export default function Borrowing() {
                     </Stack>
                   }
                 </Box>
-                <Stack sx={{ mt: 3, mb: 2, px: 3 }} direction="row" justifyContent="space-between">
+                <Stack sx={{ mt: 3, mb: 2, px: 3 }} spacing={3} direction="row-reverse" justifyContent="end">
                   <Button color="secondary" variant="contained" onClick={openLendingProfile}>Continue</Button>
                   <Button color="secondary" variant="outlined" onClick={toggleModal}>Cancel</Button>
                 </Stack>

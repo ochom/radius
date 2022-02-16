@@ -46,6 +46,7 @@ export default function LendingModal({ lendTo, id, refetch }) {
   const newLending = () => {
     setBarcode("")
     setBookNumber("")
+    setSearchedBarcode("")
     setBook(null)
     toggleModal()
   }
@@ -152,9 +153,9 @@ export default function LendingModal({ lendTo, id, refetch }) {
                   fullWidth
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
-                  sx={{ mt: 4 }}
                 />
                 {error && <Alert severity="error" sx={{ my: 2 }}>{error.message}</Alert>}
+                <Divider sx={{ mt: 3 }} />
                 <Stack direction='row' spacing={3} sx={{ display: 'flex', justifyContent: 'end', mt: 2, pr: 3 }}>
                   <Button color="secondary" variant="outlined" type="button" onClick={toggleModal}>Cancel</Button>
                   <LoadingButton color="secondary" variant="contained" type="submit"

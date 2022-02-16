@@ -1,17 +1,17 @@
-import { Save } from '@mui/icons-material';
+import { Close, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
+import LoadingButton from '@mui/lab/LoadingButton';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import { Alert, Avatar, Button, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, TextField } from "@mui/material";
-import { useState, useEffect } from "react";
-import {
-  AlertFailed,
-  AlertSuccess,
-} from "../customs/alerts";
-import LoadingButton from '@mui/lab/LoadingButton';
+import { Alert, Avatar, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, Stack, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useHistory, useParams } from 'react-router-dom';
 import { Service } from '../../API/service';
 import { Employers, Gender, Titles } from '../../app/constants';
-import { useHistory, useParams } from 'react-router-dom';
+import {
+  AlertFailed,
+  AlertSuccess
+} from "../customs/alerts";
 import { CustomLoader } from '../customs/monitors';
 
 
@@ -129,9 +129,9 @@ const EditTeacher = () => {
         </div>
       </div>
       <form onSubmit={submitForm} method="post">
-        <div className="row">
-          <div className="col-md-4 mt-3">
-            <FormControl fullWidth>
+        <Box className="row">
+          <Box className="col-md-4" sx={{ mt: 3 }}>
+            <FormControl fullWidth size='small'>
               <InputLabel id="teacher-title">Title</InputLabel>
               <Select
                 labelId="teacher-title"
@@ -145,64 +145,71 @@ const EditTeacher = () => {
                 {Titles.map(k => <MenuItem value={k} key={k}>{k}</MenuItem>)}
               </Select>
             </FormControl>
-          </div>
-          <div className="col-md-8 mt-3">
+          </Box>
+          <Box className="col-md-8" sx={{ mt: 3 }}>
             <TextField type="text" label="Full name"
               required
               value={formData.fullName}
               fullWidth
+              size='small'
               onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
-          </div>
-          <div className="col-md-5 mt-5">
+          </Box>
+          <Box className="col-md-6" sx={{ mt: 3 }}>
             <TextField
               type="text"
               label="Mobile"
               required
               value={formData.phoneNumber}
               fullWidth
+              size='small'
               onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })} />
-          </div>
-          <div className="col-md-7 mt-5">
+          </Box>
+          <Box className="col-md-6" sx={{ mt: 3 }}>
             <TextField
               type="email"
               label="Email"
               required
               value={formData.email}
               fullWidth
+              size='small'
               onChange={e => setFormData({ ...formData, email: e.target.value })} />
-          </div>
-          <div className="col-md-6 mt-5">
+          </Box>
+          <Box className="col-md-6" sx={{ mt: 3 }}>
             <TextField
               type="text"
               label="ID Number"
               required
               value={formData.idNumber}
               fullWidth
+              size='small'
               onChange={e => setFormData({ ...formData, idNumber: e.target.value })} />
-          </div>
-          <div className="col-md-6 mt-5">
+          </Box>
+          <Box className="col-md-6" sx={{ mt: 3 }}>
             <LocalizationProvider dateAdapter={DateAdapter}>
               <MobileDatePicker
                 label="Date of birth"
                 inputFormat="DD/MM/yyyy"
                 value={formData.dateOfBirth}
                 onChange={val => setFormData({ ...formData, dateOfBirth: val })}
-                renderInput={(params) => <TextField fullWidth {...params} />}
+                renderInput={(params) => <TextField fullWidth {...params}
+                  size='small' />}
               />
             </LocalizationProvider>
-          </div>
-          <div className="col-md-4 mt-5">
+          </Box>
+          <Box className="col-md-4" sx={{ mt: 3 }}>
             <TextField
               type="text"
               label="Staff Number"
               required
+              size='small'
               value={formData.serialNumber}
               placeholder="e.g 001"
               fullWidth
               onChange={e => setFormData({ ...formData, serialNumber: e.target.value })} />
-          </div>
-          <div className="col-md-4  mt-5">
-            <FormControl fullWidth>
+          </Box>
+          <Box className="col-md-4" sx={{ mt: 3 }}>
+            <FormControl fullWidth
+              size='small'>
               <InputLabel id="employer-label">Employer</InputLabel>
               <Select
                 labelId="employer-label"
@@ -216,19 +223,21 @@ const EditTeacher = () => {
                 {Employers.map(k => <MenuItem value={k} key={k}>{k}</MenuItem>)}
               </Select>
             </FormControl>
-          </div>
-          <div className="col-md-4 mt-5">
+          </Box>
+          <Box className="col-md-4" sx={{ mt: 3 }}>
             <TextField
               type="text"
-              label="TSC/BOM Number"
+              label="Empl. Number"
               required
+              size='small'
               value={formData.employmentNumber}
               placeholder="e.g T.S.C Number"
               fullWidth
               onChange={e => setFormData({ ...formData, employmentNumber: e.target.value })} />
-          </div>
-          <div className="col-md-6 mt-5">
-            <FormControl>
+          </Box>
+          <Box sx={{ mt: 3 }}>
+            <FormControl
+              size='small'>
               <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
               <RadioGroup
                 row
@@ -240,25 +249,20 @@ const EditTeacher = () => {
                 {Gender.map(g => <FormControlLabel value={g} key={g} control={<Radio color='secondary' />} label={g} />)}
               </RadioGroup>
             </FormControl>
-          </div>
-        </div>
-        <div className="col-12 d-flex justify-content-start mt-5">
+          </Box>
+        </Box>
+        <Divider />
+        <Stack spacing={3} sx={{ mt: 3 }} direction='row'>
           <LoadingButton
             type='submit'
             variant='contained'
             color='secondary'
-            size='large'
             loading={saving}
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
 
-          <Button
-            size='large'
-            variant='outlined'
-            color='secondary'
-            sx={{ ml: 4 }}
-            onClick={openProfile}>Cancel</Button>
-        </div>
+          <Button variant='outlined' color='secondary' type='button' onClick={openProfile}><Close sx={{ mr: 1 }} /> Cancel</Button>
+        </Stack>
       </form>
     </Paper>
   );

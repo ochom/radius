@@ -1,10 +1,10 @@
-
+import { gql, useQuery } from "@apollo/client";
 import { Add, Delete, Edit, Save } from "@mui/icons-material";
 import { LoadingButton, LocalizationProvider, MobileDatePicker } from "@mui/lab";
 import DateAdapter from '@mui/lab/AdapterMoment';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { Service } from "../../API/service";
 import {
@@ -13,10 +13,27 @@ import {
   AlertWarning,
   ConfirmAlert
 } from "../customs/alerts";
+import { PageErrorAlert } from "../customs/errors";
 import { DropdownMenu } from "../customs/menus";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 
+
+
+
+const FETCH_QUERY = gql`
+  query{
+    sessions:getSessions{
+      id
+      academicYear
+      curriculum
+      system
+      name
+      startDate
+      endDate
+    }
+  }
+`
 
 const initialFormData = {
   curriculum: "",
@@ -30,40 +47,18 @@ const initialFormData = {
 
 
 export default function Sessions() {
+  const { data, loading, error, refetch } = useQuery(FETCH_QUERY)
+
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(true)
   const [loadingSelected, setLoadingSelected] = useState(false)
-  const [totalRows, setTotalRows] = useState(0);
 
   const [saving, setSaving] = useState(false);
   const [selectedSessionID, setSelectedSessionID] = useState(null);
 
-  const [data, setData] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
 
-  useEffect(() => {
-    setLoading(true)
-    let query = {
-      query: `query{
-        sessions:getSessions{
-          id
-          academicYear
-          curriculum
-          system
-          name
-          startDate
-          endDate
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setData(res?.sessions || [])
-      setLoading(false)
-    });
-  }, [totalRows]);
 
   const onNewSession = () => {
     toggleModal();
@@ -95,7 +90,7 @@ export default function Sessions() {
     new Service().createOrUpdate(query).then((res) => {
       if (res.status === 200) {
         AlertSuccess({ text: `Session saved successfully` });
-        setTotalRows(totalRows + 1)
+        refetch()
         toggleModal();
       } else {
         AlertFailed({ text: res.message });
@@ -158,7 +153,7 @@ export default function Sessions() {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Session deleted successfully` });
-              setTotalRows(totalRows - 1)
+              refetch()
             } else {
               AlertFailed({ text: res.message });
             }
@@ -190,6 +185,14 @@ export default function Sessions() {
     },
   ]
 
+  if (loading) {
+    return <CustomLoader />
+  }
+
+  if (error) {
+    return <PageErrorAlert message={error.message} />
+  }
+
   return (
     <>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
@@ -199,12 +202,10 @@ export default function Sessions() {
       </Box>
 
       <DataTable
-        title="Sessions list"
-        progressPending={loading}
         columns={cols}
         onRowClicked={editSession}
         data={
-          data.map((session) => {
+          data.sessions.map((session) => {
             return {
               id: session.id,
               academicYear: session.academicYear,

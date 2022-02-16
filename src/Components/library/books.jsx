@@ -3,8 +3,7 @@ import { Add, Assignment, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Avatar, Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import moment from 'moment';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 import { Card, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
@@ -49,7 +48,6 @@ const QUERY = gql`query{
 }`
 
 export default function Books() {
-  const history = useHistory();
   const { loading, error, data, refetch } = useQuery(QUERY)
 
   const [modal, setModal] = useState(false);
@@ -221,9 +219,6 @@ export default function Books() {
     });
   }
 
-  const openBook = (row) => {
-    history.push(`/library/books/${row.id}`)
-  }
 
   let dropMenuOptions = [{ "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
 
@@ -276,7 +271,7 @@ export default function Books() {
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
-        onRowClicked={openBook}
+        onRowClicked={editBook}
         data={data.books.map((row) => {
           return {
             id: row.id,

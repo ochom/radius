@@ -1,8 +1,8 @@
-
+import { gql, useQuery } from "@apollo/client";
 import { Add, Delete, Edit, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { Service } from "../../API/service";
 import {
@@ -11,12 +11,32 @@ import {
   AlertWarning,
   ConfirmAlert
 } from "../customs/alerts";
+import { PageErrorAlert } from "../customs/errors";
 import { DropdownMenu } from "../customs/menus";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 
 
-
+const FETCH_QUERY = gql`
+  query classrooms{
+    classrooms: getClassrooms{
+      id
+      curriculum
+      level
+      stream
+      classTeacher{
+        id
+        title
+        fullName
+      }
+    }
+    teachers: getTeachers{
+      id
+      title
+      fullName
+    }
+  }
+`
 
 const initialFormData = {
   curriculum: "",
@@ -31,49 +51,17 @@ const levels = {
 }
 
 export default function Classrooms() {
+  const { data, loading, error, refetch } = useQuery(FETCH_QUERY)
+
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false);
-  const [totalRows, setTotalRows] = useState(0);
   const [loadingSelected, setLoadingSelected] = useState(false)
   const [selectedClassroomID, setSelectedClassroomID] = useState(null);
 
 
-  const [classrooms, setClassrooms] = useState([]);
-  const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState(initialFormData)
 
   const toggleModal = () => setModal(!modal)
-
-  useEffect(() => {
-    setLoading(true)
-    let query = {
-      query: `query classrooms{
-        classrooms: getClassrooms{
-          id
-          curriculum
-          level
-          stream
-          classTeacher{
-            id
-            title
-            fullName
-          }
-        }
-        teachers: getTeachers{
-          id
-          title
-          fullName
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setClassrooms(res?.classrooms || [])
-      setTeachers(res?.teachers || [])
-      setLoading(false)
-    });
-  }, [totalRows]);
 
 
   const onNewClass = () => {
@@ -108,7 +96,7 @@ export default function Classrooms() {
       if (res.status === 200) {
         AlertSuccess({ text: `Classroom saved successfully` });
         toggleModal();
-        setTotalRows(totalRows + 1)
+        refetch()
       } else {
         AlertFailed({ text: res.message });
       }
@@ -170,7 +158,7 @@ export default function Classrooms() {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Classroom deleted successfully` });
-              setTotalRows(totalRows - 1)
+              refetch()
             } else {
               AlertFailed({ text: res.message });
             }
@@ -199,6 +187,15 @@ export default function Classrooms() {
     },
   ]
 
+
+  if (loading) {
+    return <CustomLoader />
+  }
+
+  if (error) {
+    return <PageErrorAlert message={error.message} />
+  }
+
   return (
     <>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
@@ -208,13 +205,11 @@ export default function Classrooms() {
       </Box>
 
       <DataTable
-        title="Classrooms list"
-        progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
         onRowClicked={editClassroom}
         data={
-          classrooms.map((cl) => {
+          data.classrooms.map((cl) => {
             return {
               id: cl.id,
               curriculum: cl.curriculum,
@@ -297,7 +292,7 @@ export default function Classrooms() {
                       value={formData.classTeacherID}
                       onChange={e => setFormData({ ...formData, classTeacherID: e.target.value })}
                     >
-                      {teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.title} {l.fullName}</MenuItem>)}
+                      {data.teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.title} {l.fullName}</MenuItem>)}
                     </Select>
                   </FormControl>
                 </div>
