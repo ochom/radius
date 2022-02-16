@@ -2,14 +2,16 @@ import {
   gql, useQuery
 } from "@apollo/client";
 import { AddPhotoAlternate, Adjust, Apartment, Assignment, Close, Event, Wc } from "@mui/icons-material";
-import { Avatar, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Card, Chip, Divider, Rating, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import moment from "moment";
+import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { PageErrorAlert } from "../customs/errors";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 import LendingModal, { LEND_TO } from "./modals/lending_modal";
+import ReturningModal from "./modals/return_modal";
 
 
 const STUDENT_QUERY = gql`
@@ -32,6 +34,7 @@ const STUDENT_QUERY = gql`
       bookNumber
       createdAt
       returned
+      dueDate
       status
       book{
         id
@@ -46,18 +49,39 @@ export default function StudentsLender() {
   let { uid } = useParams()
   let history = useHistory()
 
+  const [returnIndex, setReturnIndex] = useState(0.0)
+  const [selectedRow, setSelectedRow] = useState(null)
+  const [returnModal, setReturnModal] = useState(null)
 
   const { loading, error, data, refetch } = useQuery(STUDENT_QUERY, {
     variables: { id: uid },
   })
 
+  useEffect(() => {
+    if (!error && !loading) {
+      let returned = data.books.filter(b => b.status === 'returned').length
+      let borrowed = data.books.length
+      if (returned) {
+        setReturnIndex((returned * 5.0 / borrowed).toFixed(1))
+      }
+    }
+  }, [error, loading, data])
+
   const cols = [
     { name: "", selector: (row) => row.cover, width: '76px' },
     { name: "Title", selector: (row) => row.title },
     { name: "Number", selector: (row) => row.bookNumber },
-    { name: "Status", selector: (row) => row.status },
     { name: "Borrowed", selector: (row) => row.createdAt },
+    { name: "Returned", selector: (row) => row.returned },
+    { name: "Status", selector: (row) => row.status, width: '120px' },
   ]
+
+  const toggleReturnModal = () => setReturnModal(!returnBook)
+
+  const returnBook = ({ id, title, bookNumber }) => {
+    setSelectedRow({ id, title, bookNumber })
+    setReturnModal(true)
+  }
 
   if (loading) return <CustomLoader />
 
@@ -66,6 +90,7 @@ export default function StudentsLender() {
   }
 
   return <>
+    {selectedRow && <ReturningModal book={selectedRow} modal={returnModal} toggleModal={toggleReturnModal} refetch={refetch} />}
     <Card>
       <Box sx={{ p: 3, display: 'flex' }} >
         <Stack>
@@ -90,6 +115,14 @@ export default function StudentsLender() {
                 <Adjust sx={{ fontSize: "1.2rem" }} color={data.student.active ? "success" : "disabled"} />  {data.student.active ? "Active" : "Not active"}
               </Typography>
             </Stack>
+
+            <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
+              <Stack direction="column">
+                <Typography variant="body2" color="text.secondary">Library Score</Typography>
+                <Typography variant='h4'>{returnIndex}</Typography>
+                <Rating precision={0.5} max={5} value={returnIndex} />
+              </Stack>
+            </Stack>
           </Box>
 
           <Stack sx={{ ml: 5, mt: 3 }} direction="row" spacing={3}>
@@ -107,12 +140,16 @@ export default function StudentsLender() {
       <Divider />
       <DataTable
         columns={cols}
+        onRowClicked={returnBook}
         data={data.books.map(row => ({
+          id: row.id,
           cover: <Avatar src={row.book.cover} variant='rounded'><Assignment /> </Avatar>,
           title: row.book.title,
           bookNumber: row.bookNumber,
-          status: row.status,
-          createdAt: moment(row.createdAt).format("DD/MM/yyyy hh:mm a"),
+          createdAt: moment(row.createdAt).format("DD/MM/yyyy"),
+          returned: row.dueDate < new Date() ? <Chip label={row.returned ? moment(row.returned).format("DD/MM/yyyy") : "overdue"} color='error' variant="outlined" /> :
+            <Chip variant="outlined" color='success' label={row.returned ? moment(row.returned).format("DD/MM/yyyy") : "reading"} />,
+          status: <Chip color={row.status === 'returned' ? 'secondary' : 'default'} label={row.status} />,
         }))} />
     </Card>
   </>

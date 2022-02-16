@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
 import { Apartment, Approval, Numbers, PeopleAlt, Person } from '@mui/icons-material';
-import { Alert, Avatar, Button, Card, Chip, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Button, Card, Divider, List, ListItem, ListItemAvatar, ListItemText, Rating, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
 import { useState } from 'react';
@@ -21,6 +21,7 @@ query lenders {
       number
       meta
       total
+      returned
       borrowed
     }
     teachers {
@@ -29,6 +30,7 @@ query lenders {
       number
       meta
       total
+      returned
       borrowed
     }
   }
@@ -149,13 +151,7 @@ export default function Borrowing() {
     { name: "Reg.", selector: (row) => row.number, width: '80px' },
     { name: "Name", selector: (row) => row.name, },
     { name: "Classroom", selector: (row) => row.meta },
-    {
-      name: "Books", selector: (row) => row.total, width: '80px',
-      style: {
-        display: 'flex',
-        justifyContent: 'center'
-      }
-    },
+    { name: "Score", selector: (row) => row.total },
     { name: "Issued", selector: (row) => row.borrowed, },
   ]
 
@@ -165,13 +161,7 @@ export default function Borrowing() {
     { name: "#", selector: (row) => row.number, width: '80px' },
     { name: "Name", selector: (row) => row.name, },
     { name: "Email", selector: (row) => row.meta },
-    {
-      name: "Books", selector: (row) => row.total, width: '80px',
-      style: {
-        display: 'flex',
-        justifyContent: 'center'
-      }
-    },
+    { name: "Score", selector: (row) => row.total },
     { name: "Issued", selector: (row) => row.borrowed, },
   ]
 
@@ -248,7 +238,7 @@ export default function Borrowing() {
                   number: row.number,
                   name: row.name,
                   meta: row.meta,
-                  total: <Chip variant="outlined" color="secondary" label={row.total} />,
+                  total: <Rating precision={0.5} value={(row.returned * 5.0 / row.total).toFixed(1)} readOnly />,
                   borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}
@@ -264,7 +254,7 @@ export default function Borrowing() {
                   number: row.number,
                   name: row.name,
                   meta: row.meta,
-                  total: <Chip variant="outlined" color="secondary" label={row.total} />,
+                  total: <Rating precision={0.5} value={(row.returned * 5.0 / row.total).toFixed(1)} readOnly />,
                   borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}

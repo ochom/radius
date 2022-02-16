@@ -68,6 +68,7 @@ export default function LendingModal({ lendTo, id, refetch }) {
     },
     onError: (err) => {
       AlertFailed({ text: err.message })
+      resetLendingStudent()
     }
   })
 
@@ -80,6 +81,7 @@ export default function LendingModal({ lendTo, id, refetch }) {
     },
     onError: (err) => {
       AlertFailed({ text: err.message })
+      resetLendingTeacher()
     }
   })
 
@@ -175,8 +177,8 @@ export default function LendingModal({ lendTo, id, refetch }) {
                       </Avatar>
                     </Grid>
                     <Grid item sm={8}>
-                      <Typography variant="h4">{book.title}</Typography>
-                      <Typography variant="h6" color='gray'>{book.barcode}</Typography>
+                      <Typography variant="h5">{book.title}</Typography>
+                      <Typography variant="h6" color='gray'>code: {book.barcode}</Typography>
                       <TextField
                         label="Book Number"
                         required
