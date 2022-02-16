@@ -171,6 +171,8 @@ const ParentDetails = (props) => {
                   progressPending={searching}
                   columns={cols}
                   onRowClicked={openProfile}
+                  paginationPerPage={3}
+                  paginationRowsPerPageOptions={[3, 5]}
                   data={
                     (parent?.children || []).map(child => {
                       return {

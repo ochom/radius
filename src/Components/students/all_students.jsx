@@ -1,7 +1,8 @@
+import { gql, useQuery } from "@apollo/client";
 import { Edit, OpenInBrowser } from "@mui/icons-material";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Button, TextField, Typography } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Service } from "../../API/service";
 import {
@@ -11,45 +12,41 @@ import {
   ConfirmAlert
 } from "../customs/alerts";
 import { UserAvatar } from "../customs/avatars";
+import { PageErrorAlert } from "../customs/errors";
 import { DropdownMenu } from "../customs/menus";
-import { DataTable } from "../customs/table";
+import { CustomLoader } from "../customs/monitors";
+import { SearchableTable } from "../customs/table";
+
+const FETCH_QUERY = gql`
+  query students{
+    students: getStudents{
+      id
+      fullName
+      admissionNumber
+      gender
+      passport
+      classroom{
+        level
+        stream
+      }
+    }
+  }
+`
 
 const AllStudent = () => {
-  const [loading, setLoading] = useState(true);
-
   const [students, setStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
-  const [totalRows, setTotalRows] = useState(0);
+
+  const { loading, error, refetch } = useQuery(FETCH_QUERY, {
+    onCompleted: (res) => {
+      if (res) {
+        setStudents(res.students)
+        setAllStudents(res.students)
+      }
+    },
+  })
 
   let history = useHistory();
-
-
-
-  useEffect(() => {
-    let query = {
-      query: `query students{
-        students: getStudents{
-          id
-          fullName
-          admissionNumber
-          gender
-          passport
-          classroom{
-            level
-            stream
-          }
-        }
-      }`,
-      variables: {}
-    }
-    new Service().getData(query).then((res) => {
-      setAllStudents(res?.students || [])
-      setStudents(res?.students || [])
-      setTotalRows(res?.students ? res.students.length : 0)
-      setLoading(false)
-    });
-  }, [totalRows])
-
 
   const deleteStudent = (student) => {
     ConfirmAlert({ title: "Delete student!" }).then((res) => {
@@ -66,7 +63,7 @@ const AllStudent = () => {
           .then((res) => {
             if (res.status === 200) {
               AlertSuccess({ text: `Student deleted successfully` });
-              setTotalRows(totalRows - 1)
+              refetch()
             } else {
               AlertFailed({ text: res.message });
             }
@@ -126,20 +123,13 @@ const AllStudent = () => {
     }
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const subHeader = useMemo(() => {
-    return (
-      <div className="d-flex justify-content-end px-3">
-        <TextField
-          label="Search"
-          size="small"
-          placeholder="Search Reg or Name"
-          onChange={searchStudent}
-        />
-      </div>
-    )
-  })
+  if (loading) {
+    return <CustomLoader />
+  }
 
+  if (error) {
+    return <PageErrorAlert message={error.message} />
+  }
 
   return (
     <>
@@ -149,13 +139,9 @@ const AllStudent = () => {
         </Button>
       </Box>
 
-      <DataTable
-        title="All students"
-        progressPending={loading}
+      <SearchableTable
+        handleSearch={searchStudent}
         columns={cols}
-        subHeader
-        subHeaderComponent={subHeader}
-        persistTableHead
         onRowClicked={openProfile}
         data={students.map((d) => {
           return {
