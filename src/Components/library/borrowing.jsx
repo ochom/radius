@@ -1,9 +1,9 @@
 import { gql, useQuery } from '@apollo/client';
 import { Apartment, Approval, Numbers, PeopleAlt, Person } from '@mui/icons-material';
-import { Alert, Avatar, Button, Card, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Button, Card, Chip, Divider, List, ListItem, ListItemAvatar, ListItemText, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
@@ -48,16 +48,13 @@ export default function Borrowing() {
 
   const [lender, setLender] = useState("")
 
-  const { loading, error, data, refetch } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(QUERY, {
+    nextFetchPolicy: 'network-only',
+    fetchPolicy: 'network-only'
+  })
 
   const [student, setStudent] = useState(null)
   const [teacher, setTeacher] = useState(null)
-
-  useEffect(() => {
-    refetch()
-  }, [refetch])
-
-
 
   const toggleModal = () => setModal(!modal)
 
@@ -152,7 +149,13 @@ export default function Borrowing() {
     { name: "Reg.", selector: (row) => row.number, width: '80px' },
     { name: "Name", selector: (row) => row.name, },
     { name: "Classroom", selector: (row) => row.meta },
-    { name: "Books", selector: (row) => row.total, },
+    {
+      name: "Books", selector: (row) => row.total, width: '80px',
+      style: {
+        display: 'flex',
+        justifyContent: 'center'
+      }
+    },
     { name: "Issued", selector: (row) => row.borrowed, },
   ]
 
@@ -162,7 +165,13 @@ export default function Borrowing() {
     { name: "#", selector: (row) => row.number, width: '80px' },
     { name: "Name", selector: (row) => row.name, },
     { name: "Email", selector: (row) => row.meta },
-    { name: "Books", selector: (row) => row.total, },
+    {
+      name: "Books", selector: (row) => row.total, width: '80px',
+      style: {
+        display: 'flex',
+        justifyContent: 'center'
+      }
+    },
     { name: "Issued", selector: (row) => row.borrowed, },
   ]
 
@@ -239,7 +248,7 @@ export default function Borrowing() {
                   number: row.number,
                   name: row.name,
                   meta: row.meta,
-                  total: row.total,
+                  total: <Chip variant="outlined" color="secondary" label={row.total} />,
                   borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}
@@ -255,7 +264,7 @@ export default function Borrowing() {
                   number: row.number,
                   name: row.name,
                   meta: row.meta,
-                  total: row.total,
+                  total: <Chip variant="outlined" color="secondary" label={row.total} />,
                   borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}
