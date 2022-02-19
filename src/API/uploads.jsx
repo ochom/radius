@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AuthHeaders, URLS } from "./config";
+import { AuthHeaders, URLS } from "../app/config";
 
 export class UploadService {
   uploadStudentPassPort = async (data, onUploadProgress) => {

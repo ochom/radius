@@ -1,9 +1,8 @@
 import Axios from "axios";
-import { AuthHeaders, http, URLS } from "./config";
-import { GraphResponse, Response } from "../app/models";
+import { AuthHeaders, http, URLS } from "../app/config";
 
 export class Service {
-  getData = async (query: any) => {
+  getData = async (query) => {
     let headers = AuthHeaders();
     return Axios({
       method: "POST",
@@ -19,7 +18,7 @@ export class Service {
       });
   };
 
-  createOrUpdate = async (data: any) => {
+  createOrUpdate = async (data) => {
     let headers = AuthHeaders();
     return Axios({
       method: "POST",
@@ -28,9 +27,9 @@ export class Service {
       data: data,
     })
       .then((res) => {
-        let data: GraphResponse = res.data;
+        let data = res.data;
 
-        var response: Response;
+        var response = {};
         if (data.errors) {
           response = {
             message: data.errors[0].message,
@@ -45,8 +44,8 @@ export class Service {
         return response;
       })
       .catch((err) => {
-        let data: GraphResponse = err.response.data;
-        var response: Response;
+        let data = err.response.data;
+        var response = {};
         if (data.errors) {
           response = {
             message: data.errors[0].message,
@@ -60,7 +59,7 @@ export class Service {
       });
   };
 
-  uploadStudentPassPort = async (query: any) => {
+  uploadStudentPassPort = async (query) => {
     let authHeaders = AuthHeaders();
     let headers = { "Content-Type": "multipart", ...authHeaders };
 
@@ -71,9 +70,9 @@ export class Service {
       data: query,
     })
       .then((res) => {
-        let data: GraphResponse = res.data;
+        let data = res.data;
 
-        var response: Response;
+        var response;
         if (data.errors) {
           response = {
             message: data.errors[0]?.message,
@@ -88,14 +87,14 @@ export class Service {
         return response;
       })
       .catch((err) => {
-        let response: Response = {
+        let response = {
           message: err.response?.data || err,
         };
         return response;
       });
   };
 
-  delete = async (query: any) => {
+  delete = async (query) => {
     let headers = AuthHeaders();
     return Axios({
       method: "POST",
@@ -104,9 +103,9 @@ export class Service {
       data: query,
     })
       .then((res) => {
-        let data: GraphResponse = res.data;
+        let data = res.data;
 
-        var response: Response;
+        var response;
         if (data.errors) {
           response = {
             message: data.errors[0]?.message,
@@ -121,7 +120,7 @@ export class Service {
         return response;
       })
       .catch((err) => {
-        let response: Response = {
+        let response = {
           message: err.response?.data || err,
         };
         return response;

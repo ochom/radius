@@ -7,7 +7,6 @@ export const defaultSnackStatus = {
   severity: "success"
 }
 
-
 export const AlertSuccess = (props) => {
   Swal.fire({
     icon: "success",

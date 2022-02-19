@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { URLS } from "./config";
+import { URLS } from "../app/config";
 
 export const loadUser = async (token) => {
   let headers = {

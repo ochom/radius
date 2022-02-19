@@ -1,4 +1,7 @@
-export const API_ROOT = process.env.REACT_APP_API_ROUTE;
+export const API_ROOT =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:8000"
+    : "https://radius-backend.herokuapp.com";
 
 let VERSION_ROOT = API_ROOT + "/api/v1/";
 

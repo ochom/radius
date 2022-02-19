@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { loadUser } from "./API/auth";
+import { API_ROOT } from "./app/config";
 import Academics from "./Components/academics";
 import Activity from "./Components/activity";
 import Auth from "./Components/auth";
@@ -55,7 +56,7 @@ function App(props) {
 
 
   const client = new ApolloClient({
-    uri: `${process.env.REACT_APP_API_ROUTE}/query`,
+    uri: `${API_ROOT}/query`,
     headers: {
       Authorization: user ? `Bearer ${user.token}` : ""
     },
