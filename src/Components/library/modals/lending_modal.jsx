@@ -14,9 +14,9 @@ export const LEND_TO = {
 
 const BOOK_QUERY = gql`
 query ($data:String!){
-  book: getBookByBarcode(barcode: $data){
+  book: getBookByISBN(isbn: $data){
     id
-    barcode
+    isbn
     title
     cover
   }
@@ -37,16 +37,16 @@ const LEND_TEACHER_MUTATION = gql`
 
 export default function LendingModal({ lendTo, id, refetch }) {
   const [bookNumber, setBookNumber] = useState("")
-  const [barcode, setBarcode] = useState("")
-  const [searchedBarcode, setSearchedBarcode] = useState("")
+  const [isbn, setISBN] = useState("")
+  const [searchedISBN, setSearchedISBN] = useState("")
   const [book, setBook] = useState(null)
   const [modal, setModal] = useState(false)
   const toggleModal = () => setModal(!modal)
 
   const newLending = () => {
-    setBarcode("")
+    setISBN("")
     setBookNumber("")
-    setSearchedBarcode("")
+    setSearchedISBN("")
     setBook(null)
     toggleModal()
   }
@@ -114,14 +114,14 @@ export default function LendingModal({ lendTo, id, refetch }) {
   const searchBook = (e) => {
     e.preventDefault()
 
-    // prevent searching if barcode has not changed
-    if (barcode !== searchedBarcode) {
+    // prevent searching if isbn has not changed
+    if (isbn !== searchedISBN) {
       getBook({
         variables: {
-          data: barcode
+          data: isbn
         }
       })
-      setSearchedBarcode(barcode)
+      setSearchedISBN(isbn)
     }
   }
 
@@ -148,13 +148,13 @@ export default function LendingModal({ lendTo, id, refetch }) {
               <ModalHeader toggle={toggleModal}>Find Book</ModalHeader>
               <ModalBody>
                 <TextField
-                  label="Enter Book Barcode"
+                  label="Enter Book ISBN"
                   required
                   autoFocus={true}
                   color="secondary"
                   fullWidth
-                  value={barcode}
-                  onChange={(e) => setBarcode(e.target.value)}
+                  value={isbn}
+                  onChange={(e) => setISBN(e.target.value)}
                 />
                 {error && <Alert severity="error" sx={{ my: 2 }}>{error.message}</Alert>}
                 <Divider sx={{ mt: 3 }} />
@@ -178,7 +178,7 @@ export default function LendingModal({ lendTo, id, refetch }) {
                     </Grid>
                     <Grid item sm={8}>
                       <Typography variant="h5">{book.title}</Typography>
-                      <Typography variant="h6" color='gray'>code: {book.barcode}</Typography>
+                      <Typography variant="h6" color='gray'>code: {book.isbn}</Typography>
                       <TextField
                         label="Book Number"
                         required

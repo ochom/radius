@@ -233,12 +233,13 @@ export default function Borrowing() {
               onRowClicked={openStudentLender}
               columns={studentsCol}
               data={data.lenders.students.map((row) => {
+                let rating = parseFloat((row.returned * 5.0 / row.total).toFixed(1))
                 return {
                   id: row.id,
                   number: row.number,
                   name: row.name,
                   meta: row.meta,
-                  total: <Rating precision={0.5} value={(row.returned * 5.0 / row.total).toFixed(1)} readOnly />,
+                  total: <Rating precision={0.5} value={rating} readOnly />,
                   borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}
@@ -249,12 +250,13 @@ export default function Borrowing() {
               onRowClicked={openStaffLender}
               columns={teachersCol}
               data={data.lenders.teachers.map((row) => {
+                let rating = parseFloat((row.returned * 5.0 / row.total).toFixed(1))
                 return {
                   id: row.id,
                   number: row.number,
                   name: row.name,
                   meta: row.meta,
-                  total: <Rating precision={0.5} value={(row.returned * 5.0 / row.total).toFixed(1)} readOnly />,
+                  total: <Rating precision={0.5} value={rating} readOnly />,
                   borrowed: moment(row.borrowed).format("DD-MM-yyyy"),
                 };
               })}

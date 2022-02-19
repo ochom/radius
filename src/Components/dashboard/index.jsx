@@ -17,6 +17,7 @@ const QUERY = gql`query {
     totalStudents
     totalSessions
     totalClassrooms
+    totalBooks
     recentStudents{
       id
       fullName
@@ -128,7 +129,7 @@ function Dashboard() {
               <Grid container>
                 <Grid item sm={8}>
                   <Typography variant="h4" color="secondary"
-                    className="count">0</Typography>
+                    className="count">{data.content.totalBooks}</Typography>
                   <Typography className="label">Books</Typography>
                 </Grid>
                 <Grid item>

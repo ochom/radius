@@ -1,11 +1,9 @@
-import { gql, useQuery } from '@apollo/client';
-import { Add, Assignment, Delete, Edit, Save } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Avatar, Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { Add, Assignment, Delete, Edit } from '@mui/icons-material';
+import { Avatar, Box, Button } from '@mui/material';
 import moment from 'moment';
 import { useState } from 'react';
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import { Service } from '../../API/service';
+import { useHistory } from 'react-router-dom';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
 import { PageErrorAlert } from '../customs/errors';
 import { DropdownMenu } from '../customs/menus';
@@ -13,7 +11,7 @@ import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
 
 const initialFormData = {
-  barcode: "",
+  isbn: "",
   title: "",
   author: "",
   edition: "",
@@ -22,10 +20,10 @@ const initialFormData = {
   metaData: ""
 }
 
-const QUERY = gql`query{
+const GET_ALL_QUERY = gql`query{
   books: getBooks{
     id
-    barcode
+    isbn
     title
     cover
     publisher{
@@ -48,176 +46,111 @@ const QUERY = gql`query{
   }
 }`
 
+
+const GET_BOOK_QUERY = gql`
+  query ($id: ID!){
+    book: getBook(id: $id){
+      id
+      isbn
+      title
+      author
+      edition
+      publisher{
+        id
+        name
+      }
+      category{
+        id
+        name
+      }
+      metaData
+    }
+  }
+`
+
+
+
+const CREATE_MUTATION = gql`
+  mutation ($data: NewBook!){
+    createBook(input: $data)
+  }
+`
+
+const UPDATE_MUTATION = gql`
+  mutation ($id: ID!, $data: NewBook!){
+    updateBook(id: $id, input: $data)
+  }
+`
+
+
+const DELETE_MUTATION = gql`
+  mutation deleteBook($id: ID!){
+    deleteBook(id: $id)
+  }
+`
+
 export default function Books() {
-  const { loading, error, data, refetch } = useQuery(QUERY)
+
+  const history = useHistory()
+
+  const { loading, error, data, refetch } = useQuery(GET_ALL_QUERY)
+
+
+  const [createCommand, { loading: creating, reset: resetCreate }] = useMutation(CREATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Book saved successfully` });
+      toggleModal();
+      refetch();
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
+
+  const [updateCommand, { loading: updating, reset: resetUpdate }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Book updated successfully` });
+      toggleModal();
+      refetch();
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
+
+  const [deleteCommand] = useMutation(DELETE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Book deleted successfully` });
+      refetch();
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
   const [modal, setModal] = useState(false);
 
-  const [searching, setSearching] = useState(false)
-  const [searched, setSearched] = useState(false)
-  const [selectedBookID, setSelectedBookID] = useState(null);
-
-  const [saving, setSaving] = useState(false);
-
-
-  const [formData, setFormData] = useState(initialFormData)
-
-  const toggleModal = () => setModal(!modal)
-
-
-
-  const onNewBook = () => {
-    setFormData(initialFormData)
-    setSelectedBookID(null);
-    setSearched(false)
-    toggleModal();
-  };
-
-  const submitForm = (e) => {
-    e.preventDefault();
-    setSaving(true)
-    let query = selectedBookID
-      ? {
-        query: `mutation ($id: ID!, $data: NewBook!){
-        updateBook(id: $id, input: $data)
-     }`,
-        variables: {
-          id: selectedBookID,
-          data: formData
-        }
-      } :
-      {
-        query: `mutation ($data: NewBook!){
-        createBook(input: $data)
-      }`,
-        variables: {
-          data: formData
-        }
-      }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Book saved successfully` });
-        toggleModal();
-        refetch();
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
-  };
-
-  const editBook = row => {
-    setSelectedBookID(row.id);
-    setSearching(true)
-    let query = {
-      query: `query ($id: ID!){
-        book: getBook(id: $id){
-          id
-          barcode
-          title
-          author
-          edition
-          publisher{
-            id
-            name
-          }
-          category{
-            id
-            name
-          }
-          metaData
-        }
-      }`,
-      variables: {
-        id: row.id
-      }
-    }
-
-    new Service().getData(query).then(res => {
-      if (res) {
-        let data = res.book
-        setFormData({
-          ...formData,
-          barcode: data.barcode,
-          title: data.title,
-          author: data.author,
-          edition: data.edition,
-          categoryID: data.category.id,
-          publisherID: data.publisher.id,
-          metaData: data.metaData
-        })
-      }
-    }).finally(() => {
-      setSearching(false)
-      setSearched(true)
-    });
-    toggleModal();
-  };
 
   const deleteBook = row => {
     ConfirmAlert({ title: "Delete book!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation ($id: ID!){
-            deleteBook(id: $id)
-          }`,
+        deleteCommand({
           variables: {
             id: row.id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Book deleted successfully` });
-              refetch();
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, book not deleted" })
       }
     });
   };
 
+  const onNewBook = () => {
+    history.push("/library/books/new")
+  }
 
-  const searchBook = (e) => {
-    e.preventDefault()
-    setSearching(true)
-    let query = {
-      query: `query ($data: String!){
-        book: getBookByBarcode(barcode: $data){
-          id
-          barcode
-          title
-          author
-          edition
-          publisher{
-            id
-            name
-          }
-          category{
-            id
-            name
-          }
-          metaData
-        }
-      }`,
-      variables: {
-        data: formData.barcode
-      }
-    }
-    new Service().getData(query).then((res) => {
-      if (res?.book) {
-        AlertSuccess({ text: `Book already registered` });
-        toggleModal();
-      }
-    }).finally(() => {
-      setSearching(false)
-      setSearched(true)
-    });
+  const editBook = ({ id }) => {
+    history.push(`/library/books/edit/${id}`)
   }
 
 
@@ -228,7 +161,7 @@ export default function Books() {
       name: "", selector: (row) => row.cover,
       width: '80px',
     },
-    { name: "Barcode", selector: (row) => row.barcode, sortable: true },
+    { name: "ISBN", selector: (row) => row.isbn, sortable: true },
     { name: "Title", selector: (row) => row.title, sortable: true },
     { name: "Category", selector: (row) => row.category, sortable: true },
     { name: "Publisher", selector: (row) => row.publisher, sortable: true },
@@ -269,7 +202,7 @@ export default function Books() {
           return {
             id: row.id,
             cover: <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>,
-            barcode: row.barcode,
+            isbn: row.isbn,
             title: row.title,
             category: row.category.name,
             publisher: row.publisher.name,
@@ -278,148 +211,6 @@ export default function Books() {
           };
         })}
       />
-
-      <Modal isOpen={modal}>
-        {searching &&
-          <ModalBody>
-            <CustomLoader />
-          </ModalBody>
-        }
-
-
-        {/* New book ID modal */}
-        {(!searching && !searched && !selectedBookID) &&
-          <>
-            <ModalHeader toggle={toggleModal}><i className="fa fa-plus-circle"></i> Add book</ModalHeader>
-            <ModalBody>
-              <form onSubmit={searchBook} method="post">
-                <div className="mt-3">
-                  <TextField
-                    value={formData.barcode}
-                    label="Barcode"
-                    required
-                    autoFocus={true}
-                    color="secondary"
-                    fullWidth
-                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                  />
-                </div>
-                <div className="my-5">
-                  <Button color="secondary" variant="contained" type="submit">Continue</Button>
-                </div>
-              </form>
-            </ModalBody>
-          </>
-        }
-
-
-        {/* New book details modal */}
-        {(!searching && (searched || (searched && selectedBookID))) &&
-          <form onSubmit={submitForm} method="post">
-            <ModalHeader toggle={toggleModal}>
-              <span>
-                {selectedBookID ? "Edit book details" : "Create a new book"}
-              </span>
-            </ModalHeader>
-            <ModalBody>
-              <div className="row px-3">
-                <div className="mt-3">
-                  <TextField
-                    label="Barcode"
-                    color="secondary"
-                    required
-                    aria-readonly
-                    fullWidth
-                    value={formData.barcode}
-                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Book title"
-                    color="secondary"
-                    required
-                    fullWidth
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <FormControl fullWidth color='secondary'>
-                    <InputLabel id="category-label">Book Category</InputLabel>
-                    <Select
-                      labelId="category-label"
-                      id="category"
-                      label="Book Category"
-                      required
-                      value={formData.categoryID}
-                      onChange={e => setFormData({ ...formData, categoryID: e.target.value })}
-                    >
-                      {data.categories.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Edition"
-                    color="secondary"
-                    fullWidth
-                    value={formData.edition}
-                    onChange={(e) => setFormData({ ...formData, edition: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Author"
-                    color="secondary"
-                    fullWidth
-                    value={formData.author}
-                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <FormControl fullWidth color='secondary'>
-                    <InputLabel id="publisher-label">Publisher</InputLabel>
-                    <Select
-                      labelId="publisher-label"
-                      id="publisher"
-                      label="Publisher"
-                      required
-                      value={formData.publisherID}
-                      onChange={e => setFormData({ ...formData, publisherID: e.target.value })}
-                    >
-                      {data.publishers.map(k => <MenuItem value={k.id} key={k.id}>{k.name}</MenuItem>)}
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="mt-3">
-                  <TextField
-                    label="Other"
-                    color="secondary"
-                    multiline
-                    rows={4}
-                    fullWidth
-                    value={formData.metaData}
-                    onChange={(e) => setFormData({ ...formData, metaData: e.target.value })}
-                  />
-                </div>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <div className="col-12 d-flex justify-content-start ps-4">
-                <LoadingButton
-                  type='submit'
-                  variant='contained'
-                  color='secondary'
-                  size='large'
-                  loading={saving}
-                  loadingPosition="start"
-                  startIcon={<Save />}>Save</LoadingButton>
-              </div>
-            </ModalFooter>
-          </form>
-        }
-      </Modal>
     </>
   );
 }

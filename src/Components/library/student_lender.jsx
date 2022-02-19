@@ -120,7 +120,7 @@ export default function StudentsLender() {
               <Stack direction="column">
                 <Typography variant="body2" color="text.secondary">Library Rating</Typography>
                 <Typography variant='h4'>{returnIndex}</Typography>
-                <Rating precision={0.5} max={5} value={returnIndex} />
+                <Rating precision={0.5} max={5} value={parseFloat(returnIndex)} />
               </Stack>
             </Stack>
           </Box>
