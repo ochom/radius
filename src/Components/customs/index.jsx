@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from "react-router-dom";
 import { logout } from '../../reducers/auth-reducer';
 import profile from "../../static/profile.jpg";
+import Footer from './footers';
 
 
 function SubMenu({ titleIcon, titleName, items }) {
@@ -237,6 +238,7 @@ const DefaultPageLayout = (props) => {
       <div className="home_content">
         <TopBar user={user} toggleSideNav={toggleSideNav} />
         {children}
+        <Footer />
       </div>
     </React.Fragment>
   );
