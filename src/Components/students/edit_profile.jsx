@@ -1,10 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
-import { Edit, Save } from '@mui/icons-material';
+import { Close, Edit, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LoadingButton from '@mui/lab/LoadingButton';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import { Alert, Box, Button, Card, Divider, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from "@mui/material";
+import { Alert, Box, Button, Card, Divider, FormControl, InputLabel, MenuItem, Paper, Select, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useHistory, useParams } from 'react-router-dom';
 import { Service } from '../../API/service';
@@ -259,7 +259,7 @@ const EditStudent = (props) => {
             variant='outlined'
             color='secondary'
             sx={{ ml: 4 }}
-            onClick={openProfile}>Cancel</Button>
+            onClick={openProfile}><Close /> <Typography sx={{ ml: 1 }}>Cancel</Typography></Button>
         </Box>
       </form>
     </Paper>

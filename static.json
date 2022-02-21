@@ -1,0 +1,4 @@
+{
+  "root": "./dist",
+  "description": "This is a static file for serving with heroku"
+}

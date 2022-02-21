@@ -1,4 +1,4 @@
-import { AddPhotoAlternate, Adjust, Apartment, Assessment, Edit, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
+import { AddPhotoAlternate, Adjust, Apartment, Assessment, Edit, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, People, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -171,11 +171,14 @@ const StudentDetails = (props) => {
               </Stack>
             </Box>
 
-            <Box sx={{ ml: 5, mt: 3, display: 'flex' }}>
-              <Button variant="outlined" color='secondary' onClick={() => { history.push(`/students/profile/${student.id}/edit`) }}>
+            <Stack spacing={3} sx={{ ml: 5, mt: 3 }} direction='row'>
+              <Button variant="contained" color='secondary' onClick={() => { history.push(`/students/profile/${student.id}/edit`) }}>
                 <Edit /> <Typography sx={{ ml: 1 }}>Edit</Typography>
               </Button>
-            </Box>
+              <Button variant="outlined" color='secondary' onClick={() => { history.push(`/students`) }}>
+                <People /> <Typography sx={{ ml: 1 }}>Back</Typography>
+              </Button>
+            </Stack>
           </Box>
         </Box>
         <Divider />
