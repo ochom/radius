@@ -8,13 +8,15 @@ import Reports from "./reports"
 import Publishers from "./publishers"
 import StudentsLender from "./student_lender"
 import TeachersLender from "./teachers_lender"
+import NewBook from "./new_book"
+import EditBook from "./edit_book"
 
 const menuItems = [
-  { title: "Dashboard", href: "/library", icon: "bx bxs-right-arrow", exact: true },
+  { title: "Issue/Return", href: "/library/issue", icon: "bx bxs-right-arrow" },
   { title: "Book Categories", href: "/library/categories", icon: "bx bxs-right-arrow" },
   { title: "Publishers", href: "/library/publishers", icon: "bx bxs-right-arrow" },
-  { title: "Books", href: "/library/books", icon: "bx bxs-right-arrow" },
-  { title: "Issue/Return", href: "/library/issue", icon: "bx bxs-right-arrow" },
+  { title: "Books", href: "/library/books", icon: "bx bxs-right-arrow", exact: true },
+  { title: "Add New Book", href: "/library/books/new", icon: "bx bx-plus-medical" },
   { title: "Reports", href: "/library/reports", icon: "bx bxs-right-arrow" },
 ]
 
@@ -28,9 +30,11 @@ function Library() {
           path="/library"
           render={({ match: { url } }) => (
             <>
-              <Route path={url} component={Dashboard} exact />
+              <Route path={url} component={Borrowing} exact />
               <Route path={`${url}/categories`} component={Categories} />
               <Route path={`${url}/books`} component={Books} exact />
+              <Route path={`${url}/books/new`} component={NewBook} exact />
+              <Route path={`${url}/books/edit/:uid`} component={EditBook} exact />
               <Route path={`${url}/issue`} component={Borrowing} exact />
               <Route path={`${url}/issue/students/:uid`} component={StudentsLender} />
               <Route path={`${url}/issue/teachers/:uid`} component={TeachersLender} />

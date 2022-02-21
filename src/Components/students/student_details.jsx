@@ -160,7 +160,7 @@ const StudentDetails = (props) => {
 
               <Stack spacing={3} sx={{ ml: { md: 5, lg: 20 } }}>
                 <Stack direction="column">
-                  <Typography variant="body2" color="text.secondary">Academics </Typography>
+                  <Typography variant="body2" color="text.secondary">Examination </Typography>
                   <Rating precision={0.5} name="read-only" value={4.5} readOnly size="large" icon={<School />} emptyIcon={<SchoolOutlined />} />
                 </Stack>
 
@@ -202,19 +202,19 @@ const StudentDetails = (props) => {
           <TabPanel value={tabIndex} index={1}>
             <StudentParents studentID={uid} />
           </TabPanel>
-          <TabPanel value={tabIndex} index={2} children={tabIndex}>
+          <TabPanel value={tabIndex} index={2}>
             <Box>
               <Button variant="contained" color="secondary">Add Subject</Button>
             </Box>
           </TabPanel>
-          <TabPanel value={tabIndex} index={3} children={tabIndex}>Exams</TabPanel>
-          <TabPanel value={tabIndex} index={4} children={tabIndex}>Invoices</TabPanel>
-          <TabPanel value={tabIndex} index={5} children={tabIndex}>
+          <TabPanel value={tabIndex} index={3}>Exams</TabPanel>
+          <TabPanel value={tabIndex} index={4}>Invoices</TabPanel>
+          <TabPanel value={tabIndex} index={5}>
             <Box>
               <Button variant="contained" color="secondary">Create Award</Button>
             </Box>
           </TabPanel>
-          <TabPanel value={tabIndex} index={6} children={tabIndex}>
+          <TabPanel value={tabIndex} index={6}>
             <Box>
               <Button variant="contained" color="secondary">Add Case</Button>
             </Box>

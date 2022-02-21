@@ -1,4 +1,5 @@
 import { PageBody, SubMenu } from "../customs"
+import { PageConstruction } from "../customs/empty-page"
 
 const menuItems = [
   { title: "School Profile", href: "/settings", icon: "bx bxs-right-arrow", exact: true },
@@ -11,10 +12,12 @@ const menuItems = [
 
 function Settings() {
   return (
-    <div>
+    <>
       <SubMenu titleName="Settings" titleIcon="bx bx-cog" items={menuItems} />
-      <PageBody children={"hello settings"} />
-    </div>
+      <PageBody>
+        <PageConstruction feature='Settings' />
+      </PageBody>
+    </>
   )
 }
 

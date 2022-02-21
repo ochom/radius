@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { Assignment } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Avatar, Button, Divider, Grid, Stack, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Divider, Grid, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import { AlertFailed, AlertSuccess, AlertWarning } from "../../customs/alerts";
@@ -52,7 +52,7 @@ export default function ReturningModal({ book, modal, toggleModal, refetch }) {
   return (
     <>
       <Modal isOpen={modal}>
-        <ModalHeader toggle={toggleModal}>Issue Book</ModalHeader>
+        <ModalHeader toggle={toggleModal}>Return Book</ModalHeader>
         <ModalBody>
           <form onSubmit={submit}>
             <Grid container sx={{ p: 2 }}>
@@ -63,7 +63,10 @@ export default function ReturningModal({ book, modal, toggleModal, refetch }) {
               </Grid>
               <Grid item sm={8}>
                 <Typography variant="h5">{book.title}</Typography>
-                <Typography sx={{ mt: 2 }}>Type here: <b>{book.bookNumber}</b></Typography>
+                <Box sx={{ display: 'flex', mt: 2 }}>
+                  <Typography sx={{ alignSelf: 'center', mr: 1 }}>Verify:</Typography>
+                  <Typography variant="h6"><b>{book.bookNumber}</b></Typography>
+                </Box>
                 <TextField
                   label="Book Number"
                   required

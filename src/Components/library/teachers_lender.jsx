@@ -7,7 +7,7 @@ import { Box } from "@mui/system";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { PageErrorAlert } from "../customs/errors";
+import { PageErrorAlert } from "../customs/empty-page";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 import LendingModal, { LEND_TO } from "./modals/lending_modal";
@@ -45,7 +45,7 @@ export default function StudentsLender() {
   let { uid } = useParams()
   let history = useHistory()
 
-  const [returnIndex, setReturnIndex] = useState(0.0)
+  const [returnIndex, setReturnIndex] = useState(0)
   const [selectedRow, setSelectedRow] = useState(null)
   const [returnModal, setReturnModal] = useState(null)
 
@@ -118,7 +118,7 @@ export default function StudentsLender() {
               <Stack direction="column">
                 <Typography variant="body2" color="text.secondary">Library Rating</Typography>
                 <Typography variant='h4'>{returnIndex}</Typography>
-                <Rating precision={0.5} max={5} value={returnIndex} />
+                <Rating precision={0.5} max={5} value={parseFloat(returnIndex)} />
               </Stack>
             </Stack>
           </Box>

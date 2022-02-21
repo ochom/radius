@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { PageBody } from "../customs";
 import { UserAvatar } from "../customs/avatars";
-import { PageErrorAlert } from "../customs/errors";
+import { PageErrorAlert } from "../customs/empty-page";
 import { CustomLoader } from "../customs/monitors";
 
 const QUERY = gql`query {
@@ -17,6 +17,7 @@ const QUERY = gql`query {
     totalStudents
     totalSessions
     totalClassrooms
+    totalBooks
     recentStudents{
       id
       fullName
@@ -128,7 +129,7 @@ function Dashboard() {
               <Grid container>
                 <Grid item sm={8}>
                   <Typography variant="h4" color="secondary"
-                    className="count">0</Typography>
+                    className="count">{data.content.totalBooks}</Typography>
                   <Typography className="label">Books</Typography>
                 </Grid>
                 <Grid item>

@@ -1,10 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { Edit, OpenInBrowser } from "@mui/icons-material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
@@ -12,7 +11,7 @@ import {
   ConfirmAlert
 } from "../customs/alerts";
 import { UserAvatar } from "../customs/avatars";
-import { PageErrorAlert } from "../customs/errors";
+import { PageErrorAlert } from "../customs/empty-page";
 import { DropdownMenu } from "../customs/menus";
 import { CustomLoader } from "../customs/monitors";
 import { SearchableTable } from "../customs/table";
@@ -33,7 +32,15 @@ const FETCH_QUERY = gql`
   }
 `
 
+
+const DELETE_MUTATION = gql`
+ mutation deleteStudent($id: ID!){
+    deleteStudent(id: $id)
+  }
+`
+
 const AllStudent = () => {
+  let history = useHistory();
   const [students, setStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
 
@@ -46,34 +53,30 @@ const AllStudent = () => {
     },
   })
 
-  let history = useHistory();
+  const [deleteStudent] = useMutation(DELETE_MUTATION, {
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    },
+    onCompleted: () => {
+      AlertSuccess({ text: `Student deleted successfully` });
+      refetch()
+    }
+  })
 
-  const deleteStudent = (student) => {
+
+  const handleDelete = (student) => {
     ConfirmAlert({ title: "Delete student!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation deleteStudent($id: ID!){
-            deleteStudent(id: $id)
-          }`,
+        deleteStudent({
           variables: {
             id: student.id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Student deleted successfully` });
-              refetch()
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, student not deleted" })
       }
     });
   };
-
 
 
   const editDetails = row => {
@@ -92,7 +95,7 @@ const AllStudent = () => {
   let dropMenuOptions = [
     { "title": "Open", action: openProfile, icon: <OpenInBrowser fontSize="small" color="secondary" /> },
     { "title": "Edit", action: editDetails, icon: <Edit fontSize="small" color="success" /> },
-    { "title": "Delete", action: deleteStudent, icon: <DeleteIcon fontSize="small" color="error" /> }
+    { "title": "Delete", action: handleDelete, icon: <DeleteIcon fontSize="small" color="error" /> }
   ]
 
   const cols = [

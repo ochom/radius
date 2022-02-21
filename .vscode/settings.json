@@ -1,3 +1,12 @@
 {
-  "cSpell.words": ["appbar", "NEMIS", "Sidenav", "Swal", "sweetalert", "topbar"]
+  "cSpell.words": [
+    "appbar",
+    "browserslist",
+    "NEMIS",
+    "Sidenav",
+    "Swal",
+    "sweetalert",
+    "topbar",
+    "vite"
+  ]
 }

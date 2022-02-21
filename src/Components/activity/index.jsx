@@ -1,4 +1,5 @@
-import { SubMenu } from "../customs"
+import { PageBody, SubMenu } from "../customs"
+import { PageConstruction } from "../customs/empty-page"
 
 const menuItems = [
   { title: "Dashboard", href: "/activity", icon: "bx bxs-right-arrow", exact: true },
@@ -7,12 +8,13 @@ const menuItems = [
   { title: "Games", href: "/activity/borrows-teacher", icon: "bx bxs-right-arrow" },
 ]
 
-function Activity() {
+export default function Activity() {
   return (
-    <div>
+    <>
       <SubMenu titleName="Activity" titleIcon="bx bx-trophy" items={menuItems} />
-    </div>
+      <PageBody>
+        <PageConstruction feature='Activities' />
+      </PageBody>
+    </>
   )
 }
-
-export default Activity

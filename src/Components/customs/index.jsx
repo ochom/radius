@@ -151,10 +151,10 @@ const menuItems = [
     tooltip: "Students",
   },
   {
-    href: "/academics",
+    href: "/examination",
     icon: "bx bxs-graduation",
-    title: "Academics",
-    tooltip: "Academics",
+    title: "Examination",
+    tooltip: "Examination",
   },
   {
     href: "/finance",
@@ -175,10 +175,10 @@ const menuItems = [
     tooltip: "Activity",
   },
   {
-    href: "/accommodation",
+    href: "/welfare",
     icon: "bx bxs-hotel",
-    title: "Accommodation",
-    tooltip: "Boarding",
+    title: "Welfare",
+    tooltip: "Welfare",
   },
   {
     href: "/settings",
