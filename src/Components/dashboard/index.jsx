@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { AccessTimeOutlined, LibraryBooksOutlined, PeopleOutline, PersonOutlined } from "@mui/icons-material";
-import { Avatar, Button, Card, Chip, Grid, List, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Card, Chip, Container, Grid, List, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
@@ -91,114 +91,116 @@ function Dashboard() {
 
   return (
     <PageBody>
-      <Box className="dashboard">
-        <Typography sx={{ my: 2, mx: 5 }}>
-          Hi <b>{user.firstName}</b>, good {hour}!
-        </Typography>
-        <Grid container spacing={3} className="card-widgets">
-          <Grid item sm={6} lg={3}>
-            <Card className="card" sx={{ p: 4 }}>
-              <Grid container>
-                <Grid item sm={8}>
-                  <Typography variant="h4" color="secondary"
-                    className="count">{data.content.totalStudents}</Typography>
-                  <Typography className="label">Students</Typography>
+      <Container>
+        <Box className="dashboard">
+          <Typography sx={{ my: 2, mx: 5 }}>
+            Hi <b>{user.firstName}</b>, good {hour}!
+          </Typography>
+          <Grid container spacing={3} className="card-widgets">
+            <Grid item sm={6} lg={3}>
+              <Card className="card" sx={{ p: 4 }}>
+                <Grid container>
+                  <Grid item sm={8}>
+                    <Typography variant="h4" color="secondary"
+                      className="count">{data.content.totalStudents}</Typography>
+                    <Typography className="label">Students</Typography>
+                  </Grid>
+                  <Grid item>
+                    <PeopleOutline className="icon" />
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <PeopleOutline className="icon" />
+              </Card>
+            </Grid>
+            <Grid item sm={6} lg={3}>
+              <Card className="card" sx={{ p: 4 }}>
+                <Grid container>
+                  <Grid item sm={8}>
+                    <Typography variant="h4" color="secondary"
+                      className="count">{data.content.totalTeachers}</Typography>
+                    <Typography className="label">Teachers</Typography>
+                  </Grid>
+                  <Grid item>
+                    <PersonOutlined className="icon" />
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Card>
+              </Card>
+            </Grid>
+            <Grid item sm={6} lg={3}>
+              <Card className="card" sx={{ p: 4 }}>
+                <Grid container>
+                  <Grid item sm={8}>
+                    <Typography variant="h4" color="secondary"
+                      className="count">{data.content.totalBooks}</Typography>
+                    <Typography className="label">Books</Typography>
+                  </Grid>
+                  <Grid item>
+                    <LibraryBooksOutlined className="icon" />
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
+            <Grid item sm={6} lg={3}>
+              <Card className="card" sx={{ p: 4 }}>
+                <Grid container>
+                  <Grid item sm={8}>
+                    <Typography variant="h4" color="secondary"
+                      className="count">{data.content.totalSessions}</Typography>
+                    <Typography className="label">Sessions</Typography>
+                  </Grid>
+                  <Grid item sm={4}>
+                    <AccessTimeOutlined className="icon" />
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
           </Grid>
-          <Grid item sm={6} lg={3}>
-            <Card className="card" sx={{ p: 4 }}>
-              <Grid container>
-                <Grid item sm={8}>
-                  <Typography variant="h4" color="secondary"
-                    className="count">{data.content.totalTeachers}</Typography>
-                  <Typography className="label">Teachers</Typography>
-                </Grid>
-                <Grid item>
-                  <PersonOutlined className="icon" />
-                </Grid>
-              </Grid>
-            </Card>
-          </Grid>
-          <Grid item sm={6} lg={3}>
-            <Card className="card" sx={{ p: 4 }}>
-              <Grid container>
-                <Grid item sm={8}>
-                  <Typography variant="h4" color="secondary"
-                    className="count">{data.content.totalBooks}</Typography>
-                  <Typography className="label">Books</Typography>
-                </Grid>
-                <Grid item>
-                  <LibraryBooksOutlined className="icon" />
-                </Grid>
-              </Grid>
-            </Card>
-          </Grid>
-          <Grid item sm={6} lg={3}>
-            <Card className="card" sx={{ p: 4 }}>
-              <Grid container>
-                <Grid item sm={8}>
-                  <Typography variant="h4" color="secondary"
-                    className="count">{data.content.totalSessions}</Typography>
-                  <Typography className="label">Sessions</Typography>
-                </Grid>
-                <Grid item sm={4}>
-                  <AccessTimeOutlined className="icon" />
-                </Grid>
-              </Grid>
-            </Card>
-          </Grid>
-        </Grid>
 
-        <Grid container sx={{ my: 3 }} spacing={3}>
-          <Grid item sm={12} lg={8}>
-            <Box className="recent-students">
-              <Stack direction="row" justifyContent="space-between" sx={{ px: 5 }}>
-                <Typography color="secondary" variant="h5" sx={{ my: 2 }}>
-                  Recent Students
-                </Typography>
-                <Box sx={{ my: 2 }}>
-                  <Button variant="contained" color="secondary"
-                    onClick={viewStudents}>View All</Button>
-                </Box>
-              </Stack>
-              <DataTable
-                columns={studentCols}
-                data={data.content.recentStudents.map(row => ({
-                  id: row.id,
-                  photo: <UserAvatar src={row.passport} alt={row.fullName} />,
-                  serialNumber: row.admissionNumber,
-                  name: row.fullName,
-                  level: `${row.classroom.level} ${row.classroom.stream}`,
-                  status: row.active ? <Chip label="Active" color="secondary" size="small" /> : <Chip label="Inactive" color="default" size="small" />
-                }))} />
-            </Box>
+          <Grid container sx={{ my: 3 }} spacing={3}>
+            <Grid item sm={12} lg={8}>
+              <Box className="recent-students">
+                <Stack direction="row" justifyContent="space-between" sx={{ px: 5 }}>
+                  <Typography color="secondary" variant="h5" sx={{ my: 2 }}>
+                    Recent Students
+                  </Typography>
+                  <Box sx={{ my: 2 }}>
+                    <Button variant="contained" color="secondary"
+                      onClick={viewStudents}>View All</Button>
+                  </Box>
+                </Stack>
+                <DataTable
+                  columns={studentCols}
+                  data={data.content.recentStudents.map(row => ({
+                    id: row.id,
+                    photo: <UserAvatar src={row.passport} alt={row.fullName} />,
+                    serialNumber: row.admissionNumber,
+                    name: row.fullName,
+                    level: `${row.classroom.level} ${row.classroom.stream}`,
+                    status: row.active ? <Chip label="Active" color="secondary" size="small" /> : <Chip label="Inactive" color="default" size="small" />
+                  }))} />
+              </Box>
+            </Grid>
+            <Grid item sm={12} lg={4}>
+              <Box className="top-teachers">
+                <Stack>
+                  <Typography color="secondary" variant="h5" sx={{ mt: 2, mx: 3 }}>
+                    Top Teachers
+                  </Typography>
+                  <List sx={{ width: '100%' }}>
+                    {data.content.topTeachers.map(t =>
+                      <ListItem key={t.id} alignItems="flex-start">
+                        <ListItemAvatar>
+                          <Avatar src={t.passport} alt={t.fullName} />
+                        </ListItemAvatar>
+                        <ListItemText primary={t.fullName} secondary={t.email} />
+                      </ListItem>
+                    )}
+                  </List>
+                </Stack>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item sm={12} lg={4}>
-            <Box className="top-teachers">
-              <Stack>
-                <Typography color="secondary" variant="h5" sx={{ mt: 2, mx: 3 }}>
-                  Top Teachers
-                </Typography>
-                <List sx={{ width: '100%' }}>
-                  {data.content.topTeachers.map(t =>
-                    <ListItem key={t.id} alignItems="flex-start">
-                      <ListItemAvatar>
-                        <Avatar src={t.passport} alt={t.fullName} />
-                      </ListItemAvatar>
-                      <ListItemText primary={t.fullName} secondary={t.email} />
-                    </ListItem>
-                  )}
-                </List>
-              </Stack>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box >
+        </Box >
+      </Container>
     </PageBody >
   )
 }
