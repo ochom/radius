@@ -1,5 +1,5 @@
 import { Alert, Snackbar } from "@mui/material";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2/dist/sweetalert2.all.js'
 
 export const defaultSnackStatus = {
   open: false,

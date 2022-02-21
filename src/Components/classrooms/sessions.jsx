@@ -13,7 +13,7 @@ import {
   AlertWarning,
   ConfirmAlert
 } from "../customs/alerts";
-import { PageErrorAlert } from "../customs/errors";
+import { PageErrorAlert } from "../customs/empty-page";
 import { DropdownMenu } from "../customs/menus";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";

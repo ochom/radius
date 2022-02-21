@@ -308,3 +308,16 @@ body {
     background-image: url(./static/working-on-it.svg);
   }
 }
+
+.module-building {
+  margin-top: 50px;
+  align-items: center;
+  .svg {
+    height: 30rem;
+    width: 30rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(./static/programming.svg);
+  }
+}

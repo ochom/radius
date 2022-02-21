@@ -5,7 +5,7 @@ import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, S
 import { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { AlertFailed, AlertSuccess } from '../customs/alerts';
-import { PageErrorAlert } from '../customs/errors';
+import { PageErrorAlert } from '../customs/empty-page';
 import { CustomLoader } from '../customs/monitors';
 
 const initialFormData = {

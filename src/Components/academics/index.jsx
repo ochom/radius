@@ -1,21 +1,25 @@
-import { SubMenu } from "../customs"
+import { PageBody, SubMenu } from "../customs"
+import { PageConstruction } from "../customs/empty-page"
 
 const menuItems = [
-    { title: "Exams", href: "/academics", icon: "bx bxs-right-arrow", exact: true },
-    { title: "Exam Type", href: "/academics/exam-types", icon: "bx bxs-right-arrow" },
-    { title: "Subject Groups", href: "/academics/subject-groups", icon: "bx bxs-right-arrow" },
-    { title: "Subjects", href: "/academics/subjects", icon: "bx bxs-right-arrow" },
-    { title: "Grades", href: "/academics/grades", icon: "bx bxs-right-arrow" },
-    { title: "Subject Grading", href: "/academics/grades", icon: "bx bxs-right-arrow" },
-    { title: "Exam Grading", href: "/academics/grades", icon: "bx bxs-right-arrow" },
+    { title: "Exams", href: "/examination", icon: "bx bxs-right-arrow", exact: true },
+    { title: "Exam Type", href: "/examination/exam-types", icon: "bx bxs-right-arrow" },
+    { title: "Subject Groups", href: "/examination/subject-groups", icon: "bx bxs-right-arrow" },
+    { title: "Subjects", href: "/examination/subjects", icon: "bx bxs-right-arrow" },
+    { title: "Grades", href: "/examination/grades", icon: "bx bxs-right-arrow" },
+    { title: "Subject Grading", href: "/examination/grades", icon: "bx bxs-right-arrow" },
+    { title: "Exam Grading", href: "/examination/grades", icon: "bx bxs-right-arrow" },
 ]
 
-function Academics() {
+function Examination() {
     return (
-        <div>
-            <SubMenu titleName="Academics" titleIcon="bx bxs-graduation" items={menuItems} />
-        </div>
+        <>
+            <SubMenu titleName="Examination" titleIcon="bx bxs-graduation" items={menuItems} />
+            <PageBody>
+                <PageConstruction feature='Examination' />
+            </PageBody>
+        </>
     )
 }
 
-export default Academics
+export default Examination

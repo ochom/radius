@@ -11,7 +11,7 @@ import {
   ConfirmAlert
 } from "../customs/alerts";
 import { UserAvatar } from "../customs/avatars";
-import { PageErrorAlert } from "../customs/errors";
+import { PageErrorAlert } from "../customs/empty-page";
 import { DropdownMenu } from "../customs/menus";
 import { CustomLoader } from "../customs/monitors";
 import { SearchableTable } from "../customs/table";

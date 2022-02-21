@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { Service } from '../../API/service';
-import { PageErrorAlert } from '../customs/errors';
+import { PageErrorAlert } from '../customs/empty-page';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
 import { panelProps, TabPanel } from '../customs/tabs';

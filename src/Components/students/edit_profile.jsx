@@ -13,7 +13,7 @@ import {
   AlertFailed,
   AlertSuccess
 } from "../customs/alerts";
-import { PageErrorAlert } from '../customs/errors';
+import { PageErrorAlert } from '../customs/empty-page';
 import { CustomLoader } from '../customs/monitors';
 
 

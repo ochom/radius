@@ -13,7 +13,7 @@ import {
 import { UserAvatar } from "../customs/avatars";
 import { DropdownMenu } from "../customs/menus";
 import { CustomLoader } from "../customs/monitors";
-import { PageErrorAlert } from "../customs/errors";
+import { PageErrorAlert } from "../customs/empty-page";
 import { DataTable } from "../customs/table";
 
 const QUERY = gql`

@@ -160,7 +160,7 @@ const StudentDetails = (props) => {
 
               <Stack spacing={3} sx={{ ml: { md: 5, lg: 20 } }}>
                 <Stack direction="column">
-                  <Typography variant="body2" color="text.secondary">Academics </Typography>
+                  <Typography variant="body2" color="text.secondary">Examination </Typography>
                   <Rating precision={0.5} name="read-only" value={4.5} readOnly size="large" icon={<School />} emptyIcon={<SchoolOutlined />} />
                 </Stack>
 

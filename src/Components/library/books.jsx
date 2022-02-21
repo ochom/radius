@@ -5,7 +5,7 @@ import moment from 'moment';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
-import { PageErrorAlert } from '../customs/errors';
+import { PageErrorAlert } from '../customs/empty-page';
 import { DropdownMenu } from '../customs/menus';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
@@ -36,52 +36,7 @@ const GET_ALL_QUERY = gql`query{
     }
     createdAt
   }
-  categories: getBookCategories{
-    id
-    name
-  }
-  publishers: getPublishers{
-    id
-    name
-  }
 }`
-
-
-const GET_BOOK_QUERY = gql`
-  query ($id: ID!){
-    book: getBook(id: $id){
-      id
-      isbn
-      title
-      author
-      edition
-      publisher{
-        id
-        name
-      }
-      category{
-        id
-        name
-      }
-      metaData
-    }
-  }
-`
-
-
-
-const CREATE_MUTATION = gql`
-  mutation ($data: NewBook!){
-    createBook(input: $data)
-  }
-`
-
-const UPDATE_MUTATION = gql`
-  mutation ($id: ID!, $data: NewBook!){
-    updateBook(id: $id, input: $data)
-  }
-`
-
 
 const DELETE_MUTATION = gql`
   mutation deleteBook($id: ID!){
@@ -93,30 +48,11 @@ export default function Books() {
 
   const history = useHistory()
 
-  const { loading, error, data, refetch } = useQuery(GET_ALL_QUERY)
-
-
-  const [createCommand, { loading: creating, reset: resetCreate }] = useMutation(CREATE_MUTATION, {
-    onCompleted: () => {
-      AlertSuccess({ text: `Book saved successfully` });
-      toggleModal();
-      refetch();
-    },
-    onError: (err) => {
-      AlertFailed({ text: err.message });
-    }
+  const { loading, error, data, refetch } = useQuery(GET_ALL_QUERY, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'network-only'
   })
 
-  const [updateCommand, { loading: updating, reset: resetUpdate }] = useMutation(UPDATE_MUTATION, {
-    onCompleted: () => {
-      AlertSuccess({ text: `Book updated successfully` });
-      toggleModal();
-      refetch();
-    },
-    onError: (err) => {
-      AlertFailed({ text: err.message });
-    }
-  })
 
   const [deleteCommand] = useMutation(DELETE_MUTATION, {
     onCompleted: () => {
@@ -128,15 +64,12 @@ export default function Books() {
     }
   })
 
-  const [modal, setModal] = useState(false);
-
-
-  const deleteBook = row => {
+  const deleteBook = ({ id }) => {
     ConfirmAlert({ title: "Delete book!" }).then((res) => {
       if (res.isConfirmed) {
         deleteCommand({
           variables: {
-            id: row.id
+            id: id
           }
         })
       } else if (res.isDismissed) {

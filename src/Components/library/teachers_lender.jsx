@@ -7,7 +7,7 @@ import { Box } from "@mui/system";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { PageErrorAlert } from "../customs/errors";
+import { PageErrorAlert } from "../customs/empty-page";
 import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 import LendingModal, { LEND_TO } from "./modals/lending_modal";

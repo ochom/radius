@@ -1,4 +1,5 @@
 import { PageBody, SubMenu } from "../customs"
+import { PageConstruction } from "../customs/empty-page";
 
 const menuItems = [
   { title: "Compose", href: "/sms", icon: "bx bx-plus-medical", exact: true },
@@ -13,7 +14,9 @@ const SMS = () => {
   return (
     <>
       <SubMenu titleName="SMS" titleIcon="bx bx-chat" items={menuItems} />
-      <PageBody children={"hello world"} />
+      <PageBody>
+        <PageConstruction feature='SMS' />
+      </PageBody>
     </>
   );
 };
