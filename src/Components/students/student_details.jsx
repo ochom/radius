@@ -3,7 +3,7 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { Service } from '../../API/service';
+
 import { UploadService } from "../../API/uploads";
 import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
 import { photo } from "../customs/avatars";

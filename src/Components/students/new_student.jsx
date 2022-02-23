@@ -5,7 +5,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { Alert, Box, Button, Divider, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Service } from '../../API/service';
+
 import { Gender } from '../../app/constants';
 import {
   AlertFailed,

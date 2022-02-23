@@ -7,7 +7,6 @@ import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { Alert, Box, Button, Card, Divider, FormControl, InputLabel, MenuItem, Paper, Select, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useHistory, useParams } from 'react-router-dom';
-import { Service } from '../../API/service';
 import { Gender } from '../../app/constants';
 import {
   AlertFailed,
@@ -15,6 +14,7 @@ import {
 } from "../customs/alerts";
 import { PageErrorAlert } from '../customs/empty-page';
 import { CustomLoader } from '../customs/monitors';
+
 
 
 const FETCH_QUERY = gql`

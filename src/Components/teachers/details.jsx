@@ -1,6 +1,6 @@
 import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
-import { Service } from '../../API/service';
+
 import { CustomLoader } from "../customs/monitors"
 import { AddPhotoAlternate, Assignment, Edit, Event, Phone, School, Wc } from "@mui/icons-material";
 import { panelProps, TabPanel } from "../customs/tabs";

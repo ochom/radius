@@ -1,10 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Add, Delete, Edit, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
@@ -37,6 +36,39 @@ const FETCH_QUERY = gql`
     }
   }
 `
+const FETCH_ONE_QUERY = gql`
+  query ($id: ID!){
+    classroom: getClassroom(id: $id){
+      id
+      curriculum
+      level
+      stream
+      classTeacher{
+        id
+        title
+        fullName
+      }
+    }
+  }
+`
+
+const CREATE_MUTATION = gql`
+  mutation ($data: NewClassroom!){
+    createClassroom(input: $data)
+  }
+`
+
+const UPDATE_MUTATION = gql`
+  mutation ($id: ID!, $data: NewClassroom!){
+    updateClassroom(id: $id, input: $data)
+  }
+`
+
+const DELETE_MUTATION = gql`
+  mutation ($id: ID!){
+    deleteClassroom(id: $id)
+  }
+`
 
 const initialFormData = {
   curriculum: "",
@@ -51,118 +83,106 @@ const levels = {
 }
 
 export default function Classrooms() {
+  const [modal, setModal] = useState(false);
+  const [formData, setFormData] = useState(initialFormData)
+  const [selectedClassroom, setSelectedClassroom] = useState(null)
+
   const { data, loading, error, refetch } = useQuery(FETCH_QUERY)
 
-  const [modal, setModal] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [loadingSelected, setLoadingSelected] = useState(false)
-  const [selectedClassroomID, setSelectedClassroomID] = useState(null);
+  const [fetchOne, { loading: loadingSelected, error: selectedError }] = useLazyQuery(FETCH_ONE_QUERY, {
+    onCompleted: (res) => {
+      if (res.classroom) {
+        let classroom = res.classroom
+        setSelectedClassroom(classroom)
+        setFormData({
+          curriculum: classroom.curriculum,
+          level: classroom.level,
+          stream: classroom.stream,
+          classTeacherID: classroom.classTeacher.id
+        })
+      }
+    }
+  })
 
+  const [addNew, { loading: creating, reset: resetCreating }] = useMutation(CREATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Classroom saved successfully` });
+      toggleModal();
+      refetch()
+      resetCreating()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetCreating()
+    }
+  })
 
-  const [formData, setFormData] = useState(initialFormData)
+  const [updateData, { loading: updating, reset: resetUpdate }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Classroom updated successfully` });
+      toggleModal();
+      refetch()
+      resetUpdate()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetUpdate()
+    }
+  })
+
+  const [deleteData] = useMutation(DELETE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Classroom deleted successfully` });
+      refetch()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
   const toggleModal = () => setModal(!modal)
 
-
   const onNewClass = () => {
-    toggleModal();
-    setSelectedClassroomID(null);
+    setSelectedClassroom(null)
     setFormData(initialFormData)
+    toggleModal();
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    setSaving(true)
-    let query = selectedClassroomID
-      ? {
-        query: `mutation ($id: ID!, $data: NewClassroom!){
-        updateClassroom(id: $id, input: $data)
-     }`,
+    if (selectedClassroom) {
+      updateData({
         variables: {
-          id: selectedClassroomID,
+          id: selectedClassroom.id,
           data: formData
         }
-      } :
-      {
-        query: `mutation ($data: NewClassroom!){
-        createClassroom(input: $data)
-      }`,
+      })
+    } else {
+      addNew({
         variables: {
           data: formData
         }
-      }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Classroom saved successfully` });
-        toggleModal();
-        refetch()
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+      })
+    }
   };
 
-  const editClassroom = row => {
-    setSelectedClassroomID(row.id);
-    setLoadingSelected(true)
-    let query = {
-      query: `query ($id: ID!){
-        classroom: getClassroom(id: $id){
-          id
-          curriculum
-          level
-          stream
-          classTeacher{
-            id
-            title
-            fullName
-          }
-        }
-      }`,
+  const editClassroom = ({ id }) => {
+    fetchOne({
       variables: {
-        id: row.id
+        id: id
       }
-    }
-
-    new Service().getData(query).then(res => {
-      if (res) {
-        let data = res.classroom
-        setFormData({
-          curriculum: data.curriculum,
-          level: data.level,
-          stream: data.stream,
-          classTeacherID: data.classTeacher.id,
-        })
-      }
-    }).finally(() => {
-      setLoadingSelected(false)
-    });
+    })
     toggleModal();
   };
 
-  const deleteClassroom = row => {
+  const deleteClassroom = ({ id }) => {
     ConfirmAlert({ title: "Delete classroom!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation ($id: ID!){
-            deleteClassroom(id: $id)
-          }`,
+        deleteData({
           variables: {
-            id: row.id
+            id: id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Classroom deleted successfully` });
-              refetch()
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, classroom not deleted" })
       }
@@ -228,13 +248,11 @@ export default function Classrooms() {
           :
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
-              <span>
-                <i className={`fa fa-${selectedClassroomID ? "edit" : "plus-circle"}`}></i> {selectedClassroomID ? "Edit classroom details" : "Create a new classroom"}
-              </span>
+              {selectedClassroom ? "Edit classroom details" : "Create a new classroom"}
             </ModalHeader>
             <ModalBody>
-              <div className="row px-3">
-                <div className="mt-3">
+              <Box className="row px-3">
+                <Box className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="curriculum-label">Curriculum</InputLabel>
                     <Select
@@ -251,8 +269,8 @@ export default function Classrooms() {
                       <MenuItem value="2-6-6-3">2-6-6-3</MenuItem>
                     </Select>
                   </FormControl>
-                </div>
-                <div className="mt-4">
+                </Box>
+                <Box className="mt-4">
                   <FormControl fullWidth>
                     <InputLabel id="curriculum-label">Level</InputLabel>
                     <Select
@@ -268,8 +286,8 @@ export default function Classrooms() {
                       {(levels[formData.curriculum] || []).map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
                     </Select>
                   </FormControl>
-                </div>
-                <div className="mt-4">
+                </Box>
+                <Box className="mt-4">
                   <TextField
                     label="Stream"
                     color="secondary"
@@ -278,8 +296,8 @@ export default function Classrooms() {
                     value={formData.stream}
                     onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
                   />
-                </div>
-                <div className="mt-4">
+                </Box>
+                <Box className="mt-4">
                   <FormControl fullWidth>
                     <InputLabel id="teacher-label">Class Teacher</InputLabel>
                     <Select
@@ -295,20 +313,21 @@ export default function Classrooms() {
                       {data.teachers.map(l => <MenuItem key={l.id} value={l.id}>{l.title} {l.fullName}</MenuItem>)}
                     </Select>
                   </FormControl>
-                </div>
-              </div>
+                </Box>
+              </Box>
             </ModalBody>
             <ModalFooter>
-              <div className="col-12 d-flex justify-content-start ps-4">
+              <Stack direction='row' spacing={3} justifyContent='left'>
                 <LoadingButton
                   type='submit'
                   variant='contained'
                   color='secondary'
                   size='large'
-                  loading={saving}
+                  loading={creating || updating}
                   loadingPosition="start"
                   startIcon={<Save />}>Save</LoadingButton>
-              </div>
+                <Button onClick={toggleModal} variant='outlined' color='secondary'>Cancel</Button>
+              </Stack>
             </ModalFooter>
           </form>
         }

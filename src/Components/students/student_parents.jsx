@@ -12,7 +12,6 @@ import {
 } from "../customs/alerts";
 import { DropdownMenu } from "../customs/menus";
 import { DataTable } from "../customs/table";
-import { Service } from "../../API/service";
 import { Gender, Relationship } from "../../app/constants";
 import { CustomLoader } from "../customs/monitors";
 
