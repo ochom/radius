@@ -17,7 +17,7 @@ import { CustomLoader } from '../customs/monitors';
 
 
 
-const FETCH_QUERY = gql`
+const FETCH_ALL_QUERY = gql`
   query loadData($id: ID!){
     classrooms: getClassrooms{
       id
@@ -63,7 +63,7 @@ const EditStudent = (props) => {
   const [classrooms, setClassrooms] = useState([]);
 
 
-  const { loading, error, refetch } = useQuery(FETCH_QUERY, {
+  const { loading, error, refetch } = useQuery(FETCH_ALL_QUERY, {
     variables: {
       id: uid
     },

@@ -18,7 +18,7 @@ import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 
 
-const FETCH_QUERY = gql`
+const FETCH_ALL_QUERY = gql`
   query{
     sessions:getSessions{
       id
@@ -82,7 +82,7 @@ export default function Sessions() {
   const [formData, setFormData] = useState(initialFormData)
 
 
-  const { data, loading, error, refetch } = useQuery(FETCH_QUERY)
+  const { data, loading, error, refetch } = useQuery(FETCH_ALL_QUERY)
 
   const [fetchOne, { loading: loadingSelected, error: selectedError }] = useLazyQuery(FETCH_ONE_QUERY, {
     onCompleted: (res) => {
