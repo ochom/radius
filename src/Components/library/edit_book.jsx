@@ -45,15 +45,13 @@ const GET_BOOK_QUERY = gql`
       id
       name
     }
-  }
-`
+  }`
 
 
 const UPDATE_MUTATION = gql`
   mutation ($id: ID!, $data: NewBook!){
     updateBook(id: $id, input: $data)
-  }
-`
+  }`
 
 
 export default function EditBook() {

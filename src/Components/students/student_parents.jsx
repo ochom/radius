@@ -1,19 +1,62 @@
-import React, { useState, useEffect } from "react";
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { Delete, Edit, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from "@mui/material";
+import { Button, FormControl, Stack, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Box } from "@mui/material";
+import { useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
+import { Gender, Relationship } from "../../app/constants";
 import {
   AlertFailed,
   AlertSuccess,
   AlertWarning,
-  ConfirmAlert,
+  ConfirmAlert
 } from "../customs/alerts";
+import { PageErrorAlert } from "../customs/empty-page";
 import { DropdownMenu } from "../customs/menus";
-import { DataTable } from "../customs/table";
-import { Gender, Relationship } from "../../app/constants";
 import { CustomLoader } from "../customs/monitors";
+import { DataTable } from "../customs/table";
+
+const FETCH_ALL_QUERY = gql`
+query ($studentID: ID!){
+  parents: getStudentParents(studentID: $studentID){
+    id
+    fullName
+    gender
+    idNumber
+    mobile
+    email
+    occupation
+    relationship
+  }
+}`
+
+const SEARCH_QUERY = gql`
+query ($idNumber: ID!){
+  parent: getParentByIDNumber(id: $idNumber){
+    id
+    fullName
+    gender
+    idNumber
+    mobile
+    email
+    occupation
+  }
+}`
+
+const CREATE_MUTATION = gql`
+mutation ($data: NewParent!){
+  createParent(input: $data)
+}`
+
+const UPDATE_MUTATION = gql`
+mutation ($data: OldParent!){
+  updateParent(input: $data)
+}`
+
+const DELETE_MUTATION = gql`
+mutation ($studentID: ID!, $parentID: ID!){
+  deleteParent(studentID: $studentID, parentID: $parentID)
+}`
 
 const initForm = {
   fullName: "",
@@ -27,166 +70,127 @@ const initForm = {
 
 const StudentParents = (props) => {
   const { studentID } = props
-
+  const [searchedIDNumber, setSearchedIDNumber] = useState("")
   const [modal, setModal] = useState(false);
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false);
-
-  const [selectedParentID, setSelectedParentID] = useState(null);
+  const [selectedParent, setSelectedParent] = useState(null);
   const [searchedParent, setSearchedParent] = useState(null);
-  const [searchingParent, setSearchingParent] = useState(false);
-
-  const [totalRows, setTotalRows] = useState(0);
-  const [parents, setParents] = useState([]);
-
   const [formData, setFormData] = useState(initForm);
 
 
-  useEffect(() => {
-    setLoading(true)
-    let query = {
-      query: `query ($studentID: ID!){
-        parents: getParents(studentID: $studentID){
-          id
-          fullName
-          gender
-          idNumber
-          mobile
-          email
-          occupation
-          children {
-            id
-            fullName
-            classroom
-            admissionNumber
-            relationship
-          }
-        }
-      }`,
-      variables: {
-        studentID
-      }
-    }
-    new Service().getData(query).then((res) => {
-      setParents(res?.parents || [])
-      setLoading(false)
-    });
-  }, [studentID, totalRows]);
+  const { data, loading, error, refetch } = useQuery(FETCH_ALL_QUERY, {
+    variables: {
+      studentID
+    },
+  })
 
+
+  const [searchData, { loading: searching, error: searchError }] = useLazyQuery(SEARCH_QUERY, {
+    onCompleted: (res) => {
+      if (res.parent) {
+        setSelectedParent(res.parent)
+        setFormData({
+          fullName: res.parent.fullName,
+          gender: res.parent.gender,
+          email: res.parent.email,
+          mobile: res.parent.mobile,
+          occupation: res.parent.occupation,
+          idNumber: res.parent.idNumber,
+        })
+      }
+      setSearchedParent(true)
+    },
+    onError: () => {
+      setSearchedParent(true)
+    }
+  })
+
+  const [addNew, { loading: creating, reset: resetCreating }] = useMutation(CREATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Parent saved successfully` });
+      toggleModal();
+      refetch()
+      resetCreating()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetCreating()
+    }
+  })
+
+  const [updateData, { loading: updating, reset: resetUpdate }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Parent updated successfully` });
+      toggleModal();
+      refetch()
+      resetUpdate()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetUpdate()
+    }
+  })
+
+  const [deleteData] = useMutation(DELETE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Parent deleted successfully` });
+      refetch()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
   const toggleModal = () => setModal(!modal)
 
   const onNewParent = () => {
     setFormData(initForm)
+    setSearchedIDNumber("")
     setSearchedParent(false)
-    setSearchingParent(false)
-    setSelectedParentID(null);
+    setSelectedParent(null);
     toggleModal();
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    setSaving(true)
-    let query = selectedParentID
-      ? {
-        query: `mutation ($data: OldParent!){
-        updateParent(input: $data)
-      }`,
+    if (selectedParent) {
+      updateData({
         variables: {
-          data: { ...formData, studentID, id: selectedParentID }
+          data: { ...formData, studentID, id: selectedParent.id }
         }
-      } :
-      {
-        query: `mutation ($data: NewParent!){
-        createParent(input: $data)
-      }`,
+      })
+    } else {
+      addNew({
         variables: {
           data: { ...formData, studentID }
         }
-      }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Parent saved successfully` });
-        toggleModal();
-        setTotalRows(totalRows + 1)
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+      })
+    }
   };
 
 
-  const editParent = row => {
-    setSearchingParent(true)
-    setSearchedParent(false)
-    setSelectedParentID(row.id);
+  const editParent = ({ parent }) => {
+    setSelectedParent(parent)
+    setFormData({
+      fullName: parent.fullName,
+      gender: parent.gender,
+      email: parent.email,
+      mobile: parent.mobile,
+      occupation: parent.occupation,
+      idNumber: parent.idNumber,
+      relationship: parent.relationship,
+    })
     toggleModal();
-    let query = {
-      query: `query ($parentID: ID!){
-        parent: getParentByID( id: $parentID){
-          id
-          fullName
-          gender
-          idNumber
-          mobile
-          email
-          occupation
-          children{
-            id
-            fullName
-            relationship
-          }
-        }
-      }`,
-      variables: {
-        studentID,
-        parentID: row.id
-      }
-    }
-    new Service().getData(query).then(res => {
-      if (res) {
-        let data = res.parent
-        setFormData({
-          ...formData,
-          fullName: data.fullName,
-          gender: data.gender,
-          email: data.email,
-          mobile: data.mobile,
-          occupation: data.occupation,
-          idNumber: data.idNumber,
-          relationship: data.children?.filter(c => c.id === studentID)[0]?.relationship,
-        })
-      }
-    }).finally(() => {
-      setSearchingParent(false)
-      setSearchedParent(true)
-    });
   };
 
   const deleteParent = (parent) => {
     ConfirmAlert({ title: "Delete parent!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation ($studentID: ID!, $parentID: ID!){
-            deleteParent(studentID: $studentID, parentID: $parentID)
-          }`,
+        deleteData({
           variables: {
             studentID,
             parentID: parent.id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess("Parent deleted successfully");
-              setTotalRows(totalRows - 1)
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, parent not deleted" })
       }
@@ -195,38 +199,22 @@ const StudentParents = (props) => {
 
   const searchParent = (e) => {
     e.preventDefault()
-    setSearchingParent(true)
-    let query = {
-      query: `query ($data: ID!){
-        parent: getParentByIDNumber(id: $data){
-          id
-          fullName
-          gender
-          idNumber
-          mobile
-          email
-          occupation
+    if (searchedIDNumber !== formData.idNumber) {
+      searchData({
+        variables: {
+          idNumber: formData.idNumber
         }
-      }`,
-      variables: {
-        data: formData.idNumber
-      }
+      })
+      setSearchedIDNumber(formData.idNumber)
     }
-    new Service().getData(query).then((res) => {
-      if (res.parent) {
-        setFormData({
-          ...formData,
-          fullName: res?.parent.fullName,
-          gender: res?.parent.gender,
-          email: res?.parent.email,
-          mobile: res?.parent.mobile,
-          occupation: res?.parent.occupation,
-          idNumber: res?.parent.idNumber,
-        })
-      }
-      setSearchingParent(false)
-      setSearchedParent(true)
-    });
+  }
+
+  if (loading) {
+    return <CustomLoader />
+  }
+
+  if (error) {
+    return <PageErrorAlert message={error.message} />
   }
 
   let dropMenuOptions = [{ "title": "Edit", action: editParent, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteParent, icon: <Delete fontSize="small" color="red" /> }]
@@ -265,62 +253,57 @@ const StudentParents = (props) => {
         columns={cols}
         onRowClicked={editParent}
         data={
-          parents.map(parent => {
-            return {
-              id: parent.id,
-              fullName: parent.fullName,
-              relationship: parent.children?.filter(c => c.id === studentID)[0]?.relationship,
-              mobile: parent.mobile,
-              email: parent.email,
-              occupation: parent.occupation,
-              action: <DropdownMenu options={dropMenuOptions} row={parent} />
-            };
-          })} />
-
+          data.parents.map(parent => ({
+            parent,
+            id: parent.id,
+            fullName: parent.fullName,
+            relationship: parent.relationship,
+            mobile: parent.mobile,
+            email: parent.email,
+            occupation: parent.occupation,
+            action: <DropdownMenu options={dropMenuOptions} row={parent} />
+          }))
+        } />
 
       <Modal isOpen={modal}>
         {/* searching parent modal */}
-        {searchingParent &&
-          <>
-            <ModalHeader toggle={toggleModal}>Searching parent ...</ModalHeader>
-            <ModalBody>
-              <CustomLoader />
-            </ModalBody>
-          </>
+        {searching &&
+          <ModalBody>
+            <CustomLoader />
+          </ModalBody>
         }
 
         {/* New parent ID modal */}
-        {(!searchingParent && !searchedParent && !selectedParentID) &&
-          <>
-            <ModalHeader toggle={toggleModal}><i className="fa fa-plus-circle"></i> Add parent</ModalHeader>
+        {(!searching && !searchedParent && !selectedParent) &&
+          <form onSubmit={searchParent} method="post">
+            <ModalHeader toggle={toggleModal}>Add parent</ModalHeader>
             <ModalBody>
-              <form onSubmit={searchParent} method="post">
-                <div>
-                  <div className="mt-3">
-                    <TextField
-                      value={formData.idNumber}
-                      label="Parent's ID Number"
-                      required
-                      color="secondary"
-                      fullWidth
-                      onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
-                    />
-                  </div>
-                  <div className="my-5">
-                    <Button color="secondary" variant="contained" type="submit">Continue</Button>
-                  </div>
-                </div>
-              </form>
+              <Box sx={{ mt: 3 }}>
+                <TextField
+                  value={formData.idNumber}
+                  label="Parent's ID Number"
+                  required
+                  color="secondary"
+                  fullWidth
+                  onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
+                />
+              </Box>
             </ModalBody>
-          </>
+            <ModalFooter>
+              <Stack spacing={3} direction='row'>
+                <Button color="secondary" variant="outlined" onClick={toggleModal}>Cancel</Button>
+                <Button color="secondary" variant="contained" type="submit">Continue</Button>
+              </Stack>
+            </ModalFooter>
+          </form>
         }
 
         {/* New parent details modal */}
-        {(searchedParent || (searchedParent && selectedParentID)) &&
+        {(searchedParent || selectedParent) &&
           <>
             <form onSubmit={submitForm} method="post">
               <ModalHeader toggle={toggleModal}>
-                {selectedParentID ? "Edit details" : "Add parent"}
+                {selectedParent ? "Edit details" : "Add parent"}
               </ModalHeader>
               <ModalBody>
                 <div className="row px-3">
@@ -407,16 +390,17 @@ const StudentParents = (props) => {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <div className="col-12 d-flex justify-content-start ps-4">
+                <Stack direction='row' spacing={3}>
                   <LoadingButton
                     type='submit'
                     variant='contained'
                     color='secondary'
                     size='large'
-                    loading={saving}
+                    loading={creating || updating}
                     loadingPosition="start"
                     startIcon={<Save />}>Save</LoadingButton>
-                </div>
+                  <Button onClick={toggleModal} variant='outlined' color='secondary'>Cancel</Button>
+                </Stack>
               </ModalFooter>
             </form>
           </>

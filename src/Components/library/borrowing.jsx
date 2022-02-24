@@ -34,7 +34,6 @@ query lenders {
     }
   }
 }
-
 `
 
 export default function Borrowing() {

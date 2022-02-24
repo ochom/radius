@@ -1,7 +1,7 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, Stack, TextField } from '@mui/material';
 import { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
@@ -10,121 +10,143 @@ import { DropdownMenu } from '../customs/menus';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
 
-const initialFormData = {
-  name: ""
-}
 
-const QUERY = gql`query{
+
+const FETCH_ALL_QUERY = gql`
+query{
   publishers: getPublishers{
     id
     name
   }
 }`
 
+const FETCH_ONE_QUERY = gql`
+query ($id: ID!){
+  publisher: getPublisher(id: $id){
+    id
+    name
+  }
+}`
+
+const CREATE_MUTATION = gql`
+mutation ($data: NewParent!){
+  createParent(input: $data)
+}`
+
+const UPDATE_MUTATION = gql`
+mutation ($id: ID!, $data: NewPublisher!){
+  updatePublisher(id: $id, input: $data)
+}`
+
+const DELETE_MUTATION = gql`
+mutation ($studentID: ID!, $parentID: ID!){
+  deleteParent(studentID: $studentID, parentID: $parentID)
+}`
+
+const initialFormData = {
+  name: ""
+}
+
 export default function Publishers() {
   const [modal, setModal] = useState(false);
-  const { loading, error, data, refetch } = useQuery(QUERY)
-
-  const [saving, setSaving] = useState(false);
-  const [loadingSelected, setLoadingSelected] = useState(false)
-  const [selectedPublisherID, setSelectedPublisherID] = useState(null);
-
-
+  const [selectedPublisher, setSelectedPublisher] = useState(null);
   const [formData, setFormData] = useState(initialFormData)
+
+  const { loading, error, data, refetch } = useQuery(FETCH_ALL_QUERY)
+
+  const [fetchOne, { loading: loadingSelected, error: selectedError }] = useLazyQuery(FETCH_ONE_QUERY, {
+    onCompleted: (res) => {
+      if (res.publisher) {
+        let publisher = res.publisher
+        setSelectedPublisher(publisher)
+        setFormData({
+          name: publisher.name,
+          description: publisher.description
+        })
+      }
+    }
+  })
+
+  const [addNew, { loading: creating, reset: resetCreating }] = useMutation(CREATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Publisher saved successfully` });
+      toggleModal();
+      refetch()
+      resetCreating()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetCreating()
+    }
+  })
+
+  const [updateData, { loading: updating, reset: resetUpdate }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Publisher updated successfully` });
+      toggleModal();
+      refetch()
+      resetUpdate()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetUpdate()
+    }
+  })
+
+  const [deleteData] = useMutation(DELETE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Publisher deleted successfully` });
+      refetch()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
   const toggleModal = () => setModal(!modal)
 
-
-
   const onNewPublisher = () => {
-    toggleModal();
-    setSelectedPublisherID(null);
+    setSelectedPublisher(null);
     setFormData(initialFormData)
+    toggleModal();
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    setSaving(true)
-    let query = selectedPublisherID
-      ? {
-        query: `mutation ($id: ID!, $data: NewPublisher!){
-        updatePublisher(id: $id, input: $data)
-     }`,
+    if (selectedPublisher) {
+      updateData({
         variables: {
-          id: selectedPublisherID,
+          id: selectedPublisher.id,
           data: formData
         }
-      } :
-      {
-        query: `mutation ($data: NewPublisher!){
-        createPublisher(input: $data)
-      }`,
+      })
+    } else {
+      addNew({
         variables: {
           data: formData
         }
-      }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Publisher saved successfully` });
-        toggleModal();
-        refetch();
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+      })
+    }
   };
 
-  const editPublisher = row => {
-    setSelectedPublisherID(row.id);
-    setLoadingSelected(true)
-    let query = {
-      query: `query ($id: ID!){
-        publisher: getPublisher(id: $id){
-          id
-          name
-        }
-      }`,
+  const editPublisher = ({ id }) => {
+    fetchOne({
       variables: {
-        id: row.id
+        id: id
       }
-    }
-
-    new Service().getData(query).then(res => {
-      if (res) {
-        let data = res.publisher
-        setFormData({
-          name: data.name
-        })
-      }
-    }).finally(() => {
-      setLoadingSelected(false)
-    });
+    })
     toggleModal();
   };
 
-  const deletePublisher = row => {
+
+  const deletePublisher = ({ id }) => {
     ConfirmAlert({ title: "Delete publisher!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation ($id: ID!){
-            deletePublisher(id: $id)
-          }`,
+        deleteData({
           variables: {
-            id: row.id
+            id: id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Publisher deleted successfully` });
-              refetch();
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, publisher not deleted" })
       }
@@ -163,7 +185,7 @@ export default function Publishers() {
       </Box>
 
       <DataTable
-        title="Book Publishers"
+        title=" Publishers"
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
@@ -185,13 +207,11 @@ export default function Publishers() {
           :
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
-              <span>
-                <i className={`fa fa-${selectedPublisherID ? "edit" : "plus-circle"}`}></i> {selectedPublisherID ? "Edit publisher details" : "Create a new publisher"}
-              </span>
+              {selectedPublisher ? "Edit publisher details" : "Create a new publisher"}
             </ModalHeader>
             <ModalBody>
-              <div className="row px-3">
-                <div className="mt-3">
+              <Box className="row px-3">
+                <Box className="mt-3">
                   <TextField
                     label="Publisher name"
                     color="secondary"
@@ -200,20 +220,21 @@ export default function Publishers() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
-                </div>
-              </div>
+                </Box>
+              </Box>
             </ModalBody>
             <ModalFooter>
-              <div className="col-12 d-flex justify-content-start ps-4">
+              <Stack direction='row' spacing={3}>
                 <LoadingButton
                   type='submit'
                   variant='contained'
                   color='secondary'
                   size='large'
-                  loading={saving}
+                  loading={creating || updating}
                   loadingPosition="start"
                   startIcon={<Save />}>Save</LoadingButton>
-              </div>
+                <Button onClick={toggleModal} variant='outlined' color='secondary'>Cancel</Button>
+              </Stack>
             </ModalFooter>
           </form>
         }

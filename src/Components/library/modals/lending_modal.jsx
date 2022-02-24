@@ -20,20 +20,17 @@ query ($data:String!){
     title
     cover
   }
-}
-`
+}`
 
 const LEND_STUDENT_MUTATION = gql`
   mutation($data:LendStudent!){
     lendToStudent(input: $data)
-  }
-`
+  }`
 
 const LEND_TEACHER_MUTATION = gql`
   mutation($data:LendTeacher!){
     lendToTeacher(input: $data)
-  }
-`
+  }`
 
 export default function LendingModal({ lendTo, id, refetch }) {
   const [bookNumber, setBookNumber] = useState("")

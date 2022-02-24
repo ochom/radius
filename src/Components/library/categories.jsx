@@ -18,8 +18,7 @@ query{
     name
     description
   }
-}
-`
+}`
 
 const FETCH_ONE_QUERY = gql`
 query ($id: ID!){
@@ -28,24 +27,20 @@ query ($id: ID!){
     name
     description
   }
-}
-`
+}`
 
 const CREATE_MUTATION = gql`
 mutation ($data: NewBookCategory!){
   createBookCategory(input: $data)
-}
-`
+}`
 const UPDATE_MUTATION = gql`
 mutation ($id: ID!, $data: NewBookCategory!){
   updateBookCategory(id: $id, input: $data)
-}
-`
+}`
 const DELETE_MUTATION = gql`
 mutation ($id: ID!){
   deleteBookCategory(id: $id)
-}
-`
+}`
 const initialFormData = {
   name: "",
   description: "",

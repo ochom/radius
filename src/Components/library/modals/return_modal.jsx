@@ -11,8 +11,7 @@ import { AlertFailed, AlertSuccess, AlertWarning } from "../../customs/alerts";
 const RETURN_MUTATION = gql`
   mutation($id:ID!){
     returnBook(borrowID: $id)
-  }
-`
+  }`
 
 export default function ReturningModal({ book, modal, toggleModal, refetch }) {
   const [bookNumber, setBookNumber] = useState("")

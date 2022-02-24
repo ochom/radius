@@ -34,8 +34,7 @@ const FETCH_ALL_QUERY = gql`
       title
       fullName
     }
-  }
-`
+  }`
 const FETCH_ONE_QUERY = gql`
   query ($id: ID!){
     classroom: getClassroom(id: $id){
@@ -49,26 +48,22 @@ const FETCH_ONE_QUERY = gql`
         fullName
       }
     }
-  }
-`
+  }`
 
 const CREATE_MUTATION = gql`
   mutation ($data: NewClassroom!){
     createClassroom(input: $data)
-  }
-`
+  }`
 
 const UPDATE_MUTATION = gql`
   mutation ($id: ID!, $data: NewClassroom!){
     updateClassroom(id: $id, input: $data)
-  }
-`
+  }`
 
 const DELETE_MUTATION = gql`
   mutation ($id: ID!){
     deleteClassroom(id: $id)
-  }
-`
+  }`
 
 const initialFormData = {
   curriculum: "",

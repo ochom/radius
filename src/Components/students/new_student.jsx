@@ -1,16 +1,33 @@
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { Group, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LoadingButton from '@mui/lab/LoadingButton';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import { Alert, Box, Button, Divider, FormControl, InputLabel, MenuItem, Paper, Select, TextField } from "@mui/material";
+import { Alert, Box, Button, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-
+import { useHistory } from 'react-router-dom';
 import { Gender } from '../../app/constants';
 import {
   AlertFailed,
   AlertSuccess
 } from "../customs/alerts";
+import { PageErrorAlert } from '../customs/empty-page';
+import { CustomLoader } from '../customs/monitors';
+
+const FETCH_ALL_QUERY = gql`
+query classrooms{
+  classrooms: getClassrooms{
+    id
+    level
+    stream
+  }
+}`
+
+const CREATE_MUTATION = gql`
+mutation ($data: NewStudent!){
+  createStudent(input: $data)
+}`
 
 
 const initialFormData = {
@@ -25,61 +42,35 @@ const initialFormData = {
 }
 
 const NewStudent = () => {
-  const [saving, setSaving] = useState(false);
+  const history = useHistory()
   const [saved, setSaved] = useState(false);
-
   const [formData, setFormData] = useState(initialFormData)
 
-  const [classrooms, setClassrooms] = useState([]);
+  const { data, loading, error } = useQuery(FETCH_ALL_QUERY)
 
-  const getClassrooms = () => {
-    let query = {
-      query: `query classrooms{
-        classrooms: getClassrooms{
-          id
-          level
-          stream
-        }
-      }`,
-      variables: {}
+  const [addNew, { loading: creating, reset }] = useMutation(CREATE_MUTATION, {
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    },
+    onCompleted: () => {
+      AlertSuccess({ text: `Student saved successfully` });
+      setSaved(true)
     }
-    new Service().getData(query).then((res) => {
-      setClassrooms(res?.classrooms.sort((a, b) => parseInt(a.level) - parseInt(b.level)) || [])
-    });
-  };
-
-  useEffect(() => {
-    getClassrooms()
-  }, []);
+  })
 
   const submitForm = e => {
     e.preventDefault();
-    setSaving(true)
-    let query =
-    {
-      query: `mutation ($data: NewStudent!){
-        createStudent(input: $data)
-      }`,
+    addNew({
       variables: {
         data: formData
       }
-    }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Student saved successfully` });
-        setSaved(true)
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+    })
   };
 
   const onNewStudent = () => {
-    setSaved(false)
+    reset()
     setFormData(initialFormData)
+    setSaved(false)
   }
 
   if (saved) {
@@ -95,6 +86,14 @@ const NewStudent = () => {
         </div>
       </Paper>
     )
+  }
+
+  if (loading) {
+    return <CustomLoader />
+  }
+
+  if (error) {
+    return <PageErrorAlert message={error.message} />
   }
 
   return (
@@ -183,7 +182,7 @@ const NewStudent = () => {
                 fullWidth
                 onChange={e => setFormData({ ...formData, classID: e.target.value })}
               >
-                {classrooms.map(r => <MenuItem key={r.id} value={r.id}>{r.level} {r.stream}</MenuItem>)}
+                {data.classrooms.map(r => <MenuItem key={r.id} value={r.id}>{r.level} {r.stream}</MenuItem>)}
               </Select>
             </FormControl>
           </Box>
@@ -200,17 +199,17 @@ const NewStudent = () => {
               onChange={e => setFormData({ ...formData, homeAddress: e.target.value })} />
           </div>
         </Box>
-        <Divider />
-        <Box sx={{ mt: 4 }}>
+        <Stack direction='row' spacing={3} sx={{ mt: 4 }}>
           <LoadingButton
             type='submit'
             variant='contained'
             color='secondary'
             size='large'
-            loading={saving}
+            loading={creating}
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
-        </Box>
+          <Button onClick={() => history.push("/students")} variant='outlined' color='secondary'>Cancel</Button>
+        </Stack>
       </form>
     </Paper>
   );

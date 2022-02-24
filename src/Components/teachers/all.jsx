@@ -27,8 +27,7 @@ query{
     gender
     passport
   }
-}
-`
+}`
 
 const AllTeacher = () => {
   const history = useHistory()

@@ -29,8 +29,7 @@ const FETCH_ALL_QUERY = gql`
       startDate
       endDate
     }
-  }
-`
+  }`
 
 const FETCH_ONE_QUERY = gql`
   query ($id: ID!){
@@ -43,26 +42,22 @@ const FETCH_ONE_QUERY = gql`
       startDate
       endDate
     }
-  }
-`
+  }`
 
 const CREATE_MUTATION = gql`
   mutation ($data: NewSession!){
     createSession(input: $data)
-  }
-`
+  }`
 
 const UPDATE_MUTATION = gql`
   mutation ($id: ID!, $data: NewSession!){
     updateSession(id: $id, input: $data)
-  }
-`
+  }`
 
 const DELETE_MUTATION = gql`
   mutation ($id: ID!){
     deleteSession(id: $id)
-  }
-`
+  }`
 
 const initialFormData = {
   curriculum: "",

@@ -29,15 +29,13 @@ const FETCH_ALL_QUERY = gql`
         stream
       }
     }
-  }
-`
+  }`
 
 
 const DELETE_MUTATION = gql`
  mutation deleteStudent($id: ID!){
     deleteStudent(id: $id)
-  }
-`
+  }`
 
 const AllStudent = () => {
   let history = useHistory();
@@ -45,6 +43,7 @@ const AllStudent = () => {
   const [allStudents, setAllStudents] = useState([]);
 
   const { loading, error, refetch } = useQuery(FETCH_ALL_QUERY, {
+    fetchPolicy: 'network-only',
     onCompleted: (res) => {
       if (res) {
         setStudents(res.students)
