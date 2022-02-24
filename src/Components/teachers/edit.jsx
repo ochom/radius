@@ -1,19 +1,39 @@
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { Close, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LoadingButton from '@mui/lab/LoadingButton';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import { Alert, Avatar, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, Stack, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Alert, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, Stack, TextField, Typography } from "@mui/material";
+import { useState } from "react";
 import { useHistory, useParams } from 'react-router-dom';
-
 import { Employers, Gender, Titles } from '../../app/constants';
 import {
   AlertFailed,
   AlertSuccess
 } from "../customs/alerts";
+import { PageErrorAlert } from '../customs/empty-page';
 import { CustomLoader } from '../customs/monitors';
 
+const FETCH_ONE_QUERY = gql`query($id: ID!){
+  teacher: getTeacher(id:$id){
+    title
+    fullName
+    gender
+    dateOfBirth
+    idNumber
+    email
+    phoneNumber
+    serialNumber
+    employer
+    employmentNumber
+    passport
+  }
+}`
+
+const UPDATE_MUTATION = gql`mutation ($id: ID!, $data: NewTeacher!){
+  updateTeacher(id: $id, input: $data)
+}`
 
 const initialFormData = {
   title: "",
@@ -31,66 +51,50 @@ const initialFormData = {
 const EditTeacher = () => {
   const history = useHistory()
   const { uid } = useParams()
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState(initialFormData)
 
-
-  useEffect(() => {
-    let query = {
-      query: `query($id: ID!){
-        teacher: getTeacher(id:$id){
-          title
-          fullName
-          gender
-          dateOfBirth
-          idNumber
-          email
-          phoneNumber
-          serialNumber
-          employer
-          employmentNumber
-          passport
-        }
-      }`,
-      variables: {
-        id: uid
-      }
+  const { loading, error } = useQuery(FETCH_ONE_QUERY, {
+    variables: {
+      id: uid
+    },
+    onCompleted: (res) => {
+      let teacher = res.teacher
+      setFormData({
+        title: teacher.title,
+        fullName: teacher.fullName,
+        dateOfBirth: teacher.dateOfBirth,
+        gender: teacher.gender,
+        idNumber: teacher.idNumber,
+        phoneNumber: teacher.phoneNumber,
+        email: teacher.email,
+        serialNumber: teacher.serialNumber,
+        employer: teacher.employer,
+        employmentNumber: teacher.employmentNumber
+      })
     }
-    new Service().getData(query).then((res) => {
-      setFormData({ ...initialFormData, ...res?.teacher })
-      setLoading(false)
-    });
-  }, [uid]);
+  })
 
+  const [updateData, { loading: updating, reset }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Teacher details updated successfully` });
+      reset()
+      setSaved(true)
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
   const submitForm = e => {
     e.preventDefault();
-    setSaving(true)
     delete formData['passport']
-    let query =
-    {
-      query: `mutation ($id: ID!, $data: NewTeacher!){
-        updateTeacher(id: $id, input: $data)
-      }`,
+    updateData({
       variables: {
         id: uid,
         data: formData
       }
-    }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Teacher saved successfully` });
-        setSaved(true)
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+    })
   };
 
 
@@ -98,12 +102,9 @@ const EditTeacher = () => {
     history.push(`/teachers/profile/${uid}`)
   }
 
-  if (loading) {
-    return (
-      <Paper sx={{ px: 5, py: 2 }} className='col-md-8 mx-auto'>
-        <CustomLoader />
-      </Paper>)
-  }
+  if (loading) return <CustomLoader />
+
+  if (error) return <PageErrorAlert message={error.message} />
 
   if (saved) {
     return (
@@ -120,18 +121,14 @@ const EditTeacher = () => {
     )
   }
   return (
-    <Paper sx={{ px: 5, py: 2 }} className='col-md-10 mx-auto'>
-      <div className="d-flex my-3">
-        <Avatar src={formData.passport} alt={formData.fullName} sx={{ width: "4rem", height: "4rem" }}></Avatar>
-        <div className="ms-4">
-          <h3 className='p-0 m-0'>Edit Teacher</h3>
-          <p className='text-secondary m-0'>Edit the employee profile.</p>
-        </div>
-      </div>
+    <Paper sx={{ px: 5, pt: 2, pb: 5 }} className='col-md-10 mx-auto'>
+      <Box>
+        <Typography variant='h5'>Update Teacher Details</Typography>
+      </Box>
       <form onSubmit={submitForm} method="post">
         <Box className="row">
           <Box className="col-md-4" sx={{ mt: 4 }}>
-            <FormControl fullWidth size='small'>
+            <FormControl fullWidth >
               <InputLabel id="teacher-title">Title</InputLabel>
               <Select
                 labelId="teacher-title"
@@ -151,7 +148,6 @@ const EditTeacher = () => {
               required
               value={formData.fullName}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -161,7 +157,6 @@ const EditTeacher = () => {
               required
               value={formData.phoneNumber}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -171,7 +166,6 @@ const EditTeacher = () => {
               required
               value={formData.email}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, email: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -181,7 +175,6 @@ const EditTeacher = () => {
               required
               value={formData.idNumber}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, idNumber: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -192,7 +185,7 @@ const EditTeacher = () => {
                 value={formData.dateOfBirth}
                 onChange={val => setFormData({ ...formData, dateOfBirth: val })}
                 renderInput={(params) => <TextField fullWidth {...params}
-                  size='small' />}
+                />}
               />
             </LocalizationProvider>
           </Box>
@@ -201,7 +194,6 @@ const EditTeacher = () => {
               type="text"
               label="Staff Number"
               required
-              size='small'
               value={formData.serialNumber}
               placeholder="e.g 001"
               fullWidth
@@ -209,7 +201,7 @@ const EditTeacher = () => {
           </Box>
           <Box className="col-md-4" sx={{ mt: 4 }}>
             <FormControl fullWidth
-              size='small'>
+            >
               <InputLabel id="employer-label">Employer</InputLabel>
               <Select
                 labelId="employer-label"
@@ -229,7 +221,6 @@ const EditTeacher = () => {
               type="text"
               label="Empl. Number"
               required
-              size='small'
               value={formData.employmentNumber}
               placeholder="e.g T.S.C Number"
               fullWidth
@@ -237,7 +228,7 @@ const EditTeacher = () => {
           </Box>
           <Box sx={{ mt: 4 }}>
             <FormControl
-              size='small'>
+            >
               <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
               <RadioGroup
                 row
@@ -257,7 +248,7 @@ const EditTeacher = () => {
             type='submit'
             variant='contained'
             color='secondary'
-            loading={saving}
+            loading={updating}
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
 

@@ -11,7 +11,7 @@ import { UserAvatar } from "../customs/avatars";
 import { PageErrorAlert } from "../customs/empty-page";
 import { CustomLoader } from "../customs/monitors";
 
-const QUERY = gql`query {
+const FETCH_ALL_QUERY = gql`query {
   content: loadDashboard{
     totalTeachers
     totalStudents
@@ -43,7 +43,7 @@ const QUERY = gql`query {
 function Dashboard() {
   let history = useHistory()
   const user = useSelector(state => state.auth.user)
-  const { loading, error, data } = useQuery(QUERY)
+  const { loading, error, data } = useQuery(FETCH_ALL_QUERY)
 
   const [hour, setHour] = useState(null);
 

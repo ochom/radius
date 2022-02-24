@@ -1,17 +1,22 @@
-import { Edit, Save } from '@mui/icons-material';
+import { gql, useMutation } from '@apollo/client';
+import { Close, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
+import LoadingButton from '@mui/lab/LoadingButton';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import { Alert, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, TextField } from "@mui/material";
+import { Alert, Box, Button, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import { useHistory } from 'react-router-dom';
+import { Employers, Gender, Titles } from '../../app/constants';
 import {
   AlertFailed,
-  AlertSuccess,
+  AlertSuccess
 } from "../customs/alerts";
-import LoadingButton from '@mui/lab/LoadingButton';
 
-import { Employers, Gender, Titles } from '../../app/constants';
-
+const CREATE_MUTATION = gql`
+mutation($data: NewTeacher!){
+  createTeacher(input: $data)
+}`
 
 const initialFormData = {
   title: "",
@@ -27,39 +32,33 @@ const initialFormData = {
 }
 
 const NewTeacher = () => {
-  const [saving, setSaving] = useState(false);
+  const history = useHistory()
   const [saved, setSaved] = useState(false);
-
   const [formData, setFormData] = useState(initialFormData)
+
+  const [addNew, { loading: creating, reset }] = useMutation(CREATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Teacher saved successfully` });
+      setSaved(true)
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
 
   const submitForm = e => {
     e.preventDefault();
-    setSaving(true)
-    let query =
-    {
-      query: `mutation($data: NewTeacher!){
-        createTeacher(input: $data)
-      }`,
+    addNew({
       variables: {
         data: formData
       }
-    }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Teacher saved successfully` });
-        setSaved(true)
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+    })
   };
 
   const onNewTeacher = () => {
     setSaved(false)
+    reset()
     setFormData(initialFormData)
   }
 
@@ -79,20 +78,14 @@ const NewTeacher = () => {
   }
 
   return (
-    <Paper sx={{ px: 5, py: 2 }} className='col-md-10 mx-auto'>
-      <div className="d-flex my-3">
-        <Button variant='outlined' color='secondary'>
-          <Edit />
-        </Button>
-        <div className="ms-4">
-          <h3 className='p-0 m-0'>Create Teacher</h3>
-          <p className='text-secondary m-0'>create employee profile.</p>
-        </div>
-      </div>
+    <Paper sx={{ px: 5, pt: 2, pb: 5 }} className='col-md-10 mx-auto'>
+      <Box>
+        <Typography variant='h5'>Register a new Teacher</Typography>
+      </Box>
       <form onSubmit={submitForm} method="post">
         <Box className="row">
           <Box className="col-md-4" sx={{ mt: 4 }}>
-            <FormControl fullWidth size='small'>
+            <FormControl fullWidth >
               <InputLabel id="teacher-title">Title</InputLabel>
               <Select
                 labelId="teacher-title"
@@ -112,7 +105,6 @@ const NewTeacher = () => {
               required
               value={formData.fullName}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -122,7 +114,6 @@ const NewTeacher = () => {
               required
               value={formData.phoneNumber}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -132,7 +123,6 @@ const NewTeacher = () => {
               required
               value={formData.email}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, email: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -142,7 +132,6 @@ const NewTeacher = () => {
               required
               value={formData.idNumber}
               fullWidth
-              size='small'
               onChange={e => setFormData({ ...formData, idNumber: e.target.value })} />
           </Box>
           <Box className="col-md-6" sx={{ mt: 4 }}>
@@ -153,7 +142,7 @@ const NewTeacher = () => {
                 value={formData.dateOfBirth}
                 onChange={val => setFormData({ ...formData, dateOfBirth: val })}
                 renderInput={(params) => <TextField fullWidth {...params}
-                  size='small' />}
+                />}
               />
             </LocalizationProvider>
           </Box>
@@ -162,15 +151,13 @@ const NewTeacher = () => {
               type="text"
               label="Staff Number"
               required
-              size='small'
               value={formData.serialNumber}
               placeholder="e.g 001"
               fullWidth
               onChange={e => setFormData({ ...formData, serialNumber: e.target.value })} />
           </Box>
           <Box className="col-md-4" sx={{ mt: 4 }}>
-            <FormControl fullWidth
-              size='small'>
+            <FormControl fullWidth>
               <InputLabel id="employer-label">Employer</InputLabel>
               <Select
                 labelId="employer-label"
@@ -190,7 +177,6 @@ const NewTeacher = () => {
               type="text"
               label="Empl. Number"
               required
-              size='small'
               value={formData.employmentNumber}
               placeholder="e.g T.S.C Number"
               fullWidth
@@ -198,7 +184,7 @@ const NewTeacher = () => {
           </Box>
           <Box sx={{ mt: 4 }}>
             <FormControl
-              size='small'>
+            >
               <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
               <RadioGroup
                 row
@@ -213,16 +199,19 @@ const NewTeacher = () => {
           </Box>
         </Box>
         <Divider />
-        <Box sx={{ mt: 4 }}>
+        <Stack sx={{ mt: 4 }} direction='row' spacing={3}>
           <LoadingButton
             type='submit'
             variant='contained'
             color='secondary'
-            loading={saving}
+            loading={creating}
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
-
-        </Box>
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={() => history.push("/teachers")}><Close sx={{ mr: 1 }} /> Cancel</Button>
+        </Stack>
       </form>
     </Paper>
   );

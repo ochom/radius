@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { Add, Edit, OpenInBrowser } from "@mui/icons-material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button } from "@mui/material";
@@ -16,7 +16,7 @@ import { CustomLoader } from "../customs/monitors";
 import { PageErrorAlert } from "../customs/empty-page";
 import { DataTable } from "../customs/table";
 
-const QUERY = gql`
+const FETCH_ALL_QUERY = gql`
 query{
   teachers: getTeachers{
     id
@@ -29,34 +29,36 @@ query{
   }
 }`
 
+const DELETE_MUTATION = gql`
+mutation deleteTeacher($id: ID!){
+  deleteTeacher(id: $id)
+}`
+
 const AllTeacher = () => {
   const history = useHistory()
 
-  const { data, loading, error, refetch } = useQuery(QUERY)
+  const { data, loading, error, refetch } = useQuery(FETCH_ALL_QUERY, {
+    fetchPolicy: 'network-only'
+  })
 
+  const [deleteData] = useMutation(DELETE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Teacher deleted successfully` });
+      refetch()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
   const deleteTeacher = (teacher) => {
     ConfirmAlert({ title: "Delete teacher!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation deleteTeacher($id: ID!){
-            deleteTeacher(id: $id)
-          }`,
+        deleteData({
           variables: {
             id: teacher.id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Teacher deleted successfully` });
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
-          .finally(() => {
-            refetch();
-          });
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, teacher not deleted" })
       }

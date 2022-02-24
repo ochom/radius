@@ -11,7 +11,7 @@ import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
 import { panelProps, TabPanel } from '../customs/tabs';
 
-const QUERY = gql`
+const FETCH_ALL_QUERY = gql`
 query lenders {
   lenders: getLenders {
     students {
@@ -48,7 +48,7 @@ export default function Borrowing() {
 
   const [lender, setLender] = useState("")
 
-  const { loading, error, data } = useQuery(QUERY, {
+  const { loading, error, data } = useQuery(FETCH_ALL_QUERY, {
     nextFetchPolicy: 'network-only',
     fetchPolicy: 'network-only'
   })
