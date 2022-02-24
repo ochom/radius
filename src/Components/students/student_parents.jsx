@@ -95,6 +95,7 @@ const StudentParents = (props) => {
           mobile: res.parent.mobile,
           occupation: res.parent.occupation,
           idNumber: res.parent.idNumber,
+          relationship: ""
         })
       }
       setSearchedParent(true)
@@ -300,112 +301,109 @@ const StudentParents = (props) => {
 
         {/* New parent details modal */}
         {(searchedParent || selectedParent) &&
-          <>
-            <form onSubmit={submitForm} method="post">
-              <ModalHeader toggle={toggleModal}>
-                {selectedParent ? "Edit details" : "Add parent"}
-              </ModalHeader>
-              <ModalBody>
-                <div className="row px-3">
-                  <div className="mt-3">
-                    <TextField
-                      value={formData.fullName}
-                      label="Parent name"
-                      required
-                      color="secondary"
-                      fullWidth
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    />
-                  </div>
-                  <div className="mt-3">
-                    <FormControl>
-                      <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
-                      <RadioGroup
-                        row
-                        aria-labelledby="gender-radio-buttons-group-label"
-                        name="gender-radio-buttons-group"
-                        value={formData.gender}
-                        onChange={e => setFormData({ ...formData, gender: e.target.value })}
-                      >
-                        {Gender.map(g => <FormControlLabel value={g} key={g} control={<Radio color='secondary' required />} label={g} />)}
-                      </RadioGroup>
-                    </FormControl>
-                  </div>
-                  <div className="mt-3">
-                    <FormControl fullWidth>
-                      <InputLabel id="relationship-label">Relationship</InputLabel>
-                      <Select
-                        labelId="relationship-label"
-                        id="relationship"
-                        label="Relationship"
-                        value={formData.relationship}
-                        required
-                        fullWidth
-                        onChange={e => setFormData({ ...formData, relationship: e.target.value })}
-                      >
-                        {Relationship[formData.gender].map(k => <MenuItem value={k} key={k}>{k}</MenuItem>)}
-                      </Select>
-                    </FormControl>
-                  </div>
-                  <div className="col-6 mt-3">
-                    <TextField
-                      value={formData.mobile}
-                      label="Phone number"
-                      required
-                      color="secondary"
-                      fullWidth
-                      onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                    />
-                  </div>
-                  <div className="col-6 mt-3">
-                    <TextField
-                      value={formData.idNumber}
-                      label="ID Number"
-                      required
-                      color="secondary"
-                      fullWidth
-                      onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
-                    />
-                  </div>
-                  <div className="mt-3">
-                    <TextField
-                      type="email"
-                      value={formData.email}
-                      label="Email"
-                      color="secondary"
-                      fullWidth
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="mt-3">
-                    <TextField
-                      value={formData.occupation}
-                      label="Occupation"
-                      required
-                      color="secondary"
-                      fullWidth
-                      onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-                    />
-                  </div>
+          <form onSubmit={submitForm} method="post">
+            <ModalHeader toggle={toggleModal}>
+              {selectedParent ? "Edit details" : "Add parent"}
+            </ModalHeader>
+            <ModalBody>
+              <div className="row px-3">
+                <div className="mt-3">
+                  <TextField
+                    value={formData.fullName}
+                    label="Parent name"
+                    required
+                    color="secondary"
+                    fullWidth
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  />
                 </div>
-              </ModalBody>
-              <ModalFooter>
-                <Stack direction='row' spacing={3}>
-                  <LoadingButton
-                    type='submit'
-                    variant='contained'
-                    color='secondary'
-                    size='large'
-                    loading={creating || updating}
-                    loadingPosition="start"
-                    startIcon={<Save />}>Save</LoadingButton>
-                  <Button onClick={toggleModal} variant='outlined' color='secondary'>Cancel</Button>
-                </Stack>
-              </ModalFooter>
-            </form>
-          </>
+                <div className="mt-3">
+                  <FormControl>
+                    <FormLabel id="gender-radio-buttons-group-label">Gender</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="gender-radio-buttons-group-label"
+                      name="gender-radio-buttons-group"
+                      value={formData.gender}
+                      onChange={e => setFormData({ ...formData, gender: e.target.value })}
+                    >
+                      {Gender.map(g => <FormControlLabel value={g} key={g} control={<Radio color='secondary' required />} label={g} />)}
+                    </RadioGroup>
+                  </FormControl>
+                </div>
+                <div className="mt-3">
+                  <FormControl fullWidth>
+                    <InputLabel id="relationship-label">Relationship</InputLabel>
+                    <Select
+                      labelId="relationship-label"
+                      id="relationship"
+                      label="Relationship"
+                      value={formData.relationship}
+                      required
+                      fullWidth
+                      onChange={e => setFormData({ ...formData, relationship: e.target.value })}
+                    >
+                      {Relationship[formData.gender].map(k => <MenuItem value={k} key={k}>{k}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="col-6 mt-3">
+                  <TextField
+                    value={formData.mobile}
+                    label="Phone number"
+                    required
+                    color="secondary"
+                    fullWidth
+                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                  />
+                </div>
+                <div className="col-6 mt-3">
+                  <TextField
+                    value={formData.idNumber}
+                    label="ID Number"
+                    required
+                    color="secondary"
+                    fullWidth
+                    onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    type="email"
+                    value={formData.email}
+                    label="Email"
+                    color="secondary"
+                    fullWidth
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    value={formData.occupation}
+                    label="Occupation"
+                    required
+                    color="secondary"
+                    fullWidth
+                    onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                  />
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Stack direction='row' spacing={3}>
+                <LoadingButton
+                  type='submit'
+                  variant='contained'
+                  color='secondary'
+                  size='large'
+                  loading={creating || updating}
+                  loadingPosition="start"
+                  startIcon={<Save />}>Save</LoadingButton>
+                <Button onClick={toggleModal} variant='outlined' color='secondary'>Cancel</Button>
+              </Stack>
+            </ModalFooter>
+          </form>
         }
-
       </Modal>
     </>
   );
