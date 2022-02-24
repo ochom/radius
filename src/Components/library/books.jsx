@@ -41,8 +41,7 @@ const GET_ALL_QUERY = gql`query{
 const DELETE_MUTATION = gql`
   mutation deleteBook($id: ID!){
     deleteBook(id: $id)
-  }
-`
+  }`
 
 export default function Books() {
 

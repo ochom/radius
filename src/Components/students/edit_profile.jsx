@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useMutation } from '@apollo/client';
 import { Close, Edit, Save } from '@mui/icons-material';
 import DateAdapter from '@mui/lab/AdapterMoment';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -7,7 +7,6 @@ import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { Alert, Box, Button, Card, Divider, FormControl, InputLabel, MenuItem, Paper, Select, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useHistory, useParams } from 'react-router-dom';
-import { Service } from '../../API/service';
 import { Gender } from '../../app/constants';
 import {
   AlertFailed,
@@ -17,7 +16,8 @@ import { PageErrorAlert } from '../customs/empty-page';
 import { CustomLoader } from '../customs/monitors';
 
 
-const FETCH_QUERY = gql`
+
+const FETCH_ALL_QUERY = gql`
   query loadData($id: ID!){
     classrooms: getClassrooms{
       id
@@ -36,9 +36,12 @@ const FETCH_QUERY = gql`
         id
       }
     }
-  }
-`
+  }`
 
+const UPDATE_MUTATION = gql`
+mutation ($id:ID!, $data: NewStudent!){
+  student: updateStudent(id: $id, input: $data)
+}`
 
 const initialFormData = {
   fullName: "",
@@ -55,7 +58,6 @@ const EditStudent = (props) => {
   const { uid } = useParams()
   const history = useHistory()
 
-  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const [formData, setFormData] = useState(initialFormData)
@@ -63,7 +65,7 @@ const EditStudent = (props) => {
   const [classrooms, setClassrooms] = useState([]);
 
 
-  const { loading, error, refetch } = useQuery(FETCH_QUERY, {
+  const { loading, error, refetch } = useQuery(FETCH_ALL_QUERY, {
     variables: {
       id: uid
     },
@@ -85,31 +87,25 @@ const EditStudent = (props) => {
     }
   })
 
+  const [updateData, { loading: updating }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Student details updated` });
+      setSaved(true)
+      refetch()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
+
   const submitForm = e => {
     e.preventDefault();
-    setSaving(true)
-    let query =
-    {
-      query: `mutation ($id:ID!, $data: NewStudent!){
-        student: updateStudent(id: $id, input: $data)
-      }`,
+    updateData({
       variables: {
         id: uid,
         data: formData
       }
-    }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Student details updated` });
-        setSaved(true)
-        refetch()
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+    })
   };
 
   const openProfile = () => {
@@ -250,7 +246,7 @@ const EditStudent = (props) => {
             variant='contained'
             color='secondary'
             size='large'
-            loading={saving}
+            loading={updating}
             loadingPosition="start"
             startIcon={<Save />}>Save</LoadingButton>
 

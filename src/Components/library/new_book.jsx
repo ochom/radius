@@ -28,8 +28,7 @@ query{
     id
     name
   }
-}
-`
+}`
 
 
 const GET_BOOK_QUERY = gql`
@@ -50,14 +49,12 @@ query ($data: String!){
     }
     metaData
   }
-}
-`
+}`
 
 const CREATE_MUTATION = gql`
   mutation ($data: NewBook!){
     createBook(input: $data)
-  }
-`
+  }`
 
 export default function NewBook() {
   const history = useHistory()

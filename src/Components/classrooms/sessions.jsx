@@ -1,12 +1,11 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Add, Delete, Edit, Save } from "@mui/icons-material";
 import { LoadingButton, LocalizationProvider, MobileDatePicker } from "@mui/lab";
 import DateAdapter from '@mui/lab/AdapterMoment';
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
 import moment from "moment";
 import { useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { Service } from "../../API/service";
 import {
   AlertFailed,
   AlertSuccess,
@@ -19,9 +18,7 @@ import { CustomLoader } from "../customs/monitors";
 import { DataTable } from "../customs/table";
 
 
-
-
-const FETCH_QUERY = gql`
+const FETCH_ALL_QUERY = gql`
   query{
     sessions:getSessions{
       id
@@ -32,8 +29,35 @@ const FETCH_QUERY = gql`
       startDate
       endDate
     }
-  }
-`
+  }`
+
+const FETCH_ONE_QUERY = gql`
+  query ($id: ID!){
+    session: getSession(id: $id){
+      id
+      academicYear
+      curriculum
+      system
+      name
+      startDate
+      endDate
+    }
+  }`
+
+const CREATE_MUTATION = gql`
+  mutation ($data: NewSession!){
+    createSession(input: $data)
+  }`
+
+const UPDATE_MUTATION = gql`
+  mutation ($id: ID!, $data: NewSession!){
+    updateSession(id: $id, input: $data)
+  }`
+
+const DELETE_MUTATION = gql`
+  mutation ($id: ID!){
+    deleteSession(id: $id)
+  }`
 
 const initialFormData = {
   curriculum: "",
@@ -47,82 +71,19 @@ const initialFormData = {
 
 
 export default function Sessions() {
-  const { data, loading, error, refetch } = useQuery(FETCH_QUERY)
-
   const [modal, setModal] = useState(false);
-  const [loadingSelected, setLoadingSelected] = useState(false)
-
   const [saving, setSaving] = useState(false);
-  const [selectedSessionID, setSelectedSessionID] = useState(null);
-
+  const [selectedSession, setSelectedSession] = useState(null);
   const [formData, setFormData] = useState(initialFormData)
 
-  const toggleModal = () => setModal(!modal)
 
+  const { data, loading, error, refetch } = useQuery(FETCH_ALL_QUERY)
 
-  const onNewSession = () => {
-    toggleModal();
-    setSelectedSessionID(null);
-    setFormData(initialFormData)
-  };
-
-  const submitForm = (e) => {
-    e.preventDefault();
-    setSaving(true)
-    let query = selectedSessionID
-      ? {
-        query: `mutation($id: ID!, $data: NewSession!){
-          updateSession(id: $id, input: $data)
-        }`,
-        variables: {
-          id: selectedSessionID,
-          data: formData
-        }
-      } :
-      {
-        query: `mutation($data: NewSession!){
-          createSession(input: $data)
-        }`,
-        variables: {
-          data: formData
-        }
-      }
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Session saved successfully` });
-        refetch()
-        toggleModal();
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
-  };
-
-  const editSession = (row) => {
-    setSelectedSessionID(row.id);
-    setLoadingSelected(true)
-    let query = {
-      query: `query ($id: ID!){
-        session: getSession(id: $id){
-          id
-          academicYear
-          curriculum
-          system
-          name
-          startDate
-          endDate
-        }
-      }`,
-      variables: {
-        id: row.id
-      }
-    }
-
-    new Service().getData(query).then(res => {
-      if (res) {
+  const [fetchOne, { loading: loadingSelected, error: selectedError }] = useLazyQuery(FETCH_ONE_QUERY, {
+    onCompleted: (res) => {
+      if (res.session) {
         let session = res.session
+        setSelectedSession(session)
         setFormData({
           curriculum: session.curriculum,
           academicYear: session.academicYear,
@@ -132,32 +93,89 @@ export default function Sessions() {
           endDate: session.endDate,
         })
       }
-    }).finally(() => {
-      setLoadingSelected(false)
-    });
+    }
+  })
+
+  const [addNew, { loading: creating, reset: resetCreating }] = useMutation(CREATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Session saved successfully` });
+      toggleModal();
+      refetch()
+      resetCreating()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetCreating()
+    }
+  })
+
+  const [updateData, { loading: updating, reset: resetUpdate }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Session updated successfully` });
+      toggleModal();
+      refetch()
+      resetUpdate()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetUpdate()
+    }
+  })
+
+  const [deleteData] = useMutation(DELETE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Session deleted successfully` });
+      refetch()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
+
+  const toggleModal = () => setModal(!modal)
+
+  const onNewSession = () => {
+    setSelectedSession(null);
+    setFormData(initialFormData)
     toggleModal();
   };
 
-  const deleteSession = (row) => {
+  const submitForm = (e) => {
+    e.preventDefault();
+    if (selectedSession) {
+      updateData({
+        variables: {
+          id: selectedSession.id,
+          data: formData
+        }
+      })
+    } else {
+      addNew({
+        variables: {
+          data: formData
+        }
+      })
+    }
+  };
+
+  const editSession = ({ id }) => {
+    fetchOne({
+      variables: {
+        id: id
+      }
+    })
+    toggleModal();
+  };
+
+
+  const deleteSession = ({ id }) => {
     ConfirmAlert({ title: "Delete session!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation ($id: ID!){
-            deleteSession(id: $id)
-          }`,
+        deleteData({
           variables: {
-            id: row.id
+            id: id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Session deleted successfully` });
-              refetch()
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, session not deleted" })
       }
@@ -225,13 +243,11 @@ export default function Sessions() {
           :
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
-              <span>
-                <i className={`fa fa-${selectedSessionID ? "edit" : "plus-circle"}`}></i> {selectedSessionID ? "Edit session details" : "Create a new session"}
-              </span>
+              {selectedSession ? "Edit session details" : "Create a new session"}
             </ModalHeader>
             <ModalBody>
-              <div className="row px-3">
-                <div className="mt-4">
+              <Box className="row px-3">
+                <Box className="mt-4">
                   <TextField
                     type="number"
                     label="Academic Year"
@@ -240,8 +256,8 @@ export default function Sessions() {
                     value={formData.academicYear}
                     onChange={(e) => setFormData({ ...formData, academicYear: +e.target.value })}
                   />
-                </div>
-                <div className="mt-3">
+                </Box>
+                <Box className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="curriculum-label">Curriculum</InputLabel>
                     <Select
@@ -258,8 +274,8 @@ export default function Sessions() {
                       <MenuItem value="2-6-6-3">2-6-6-3</MenuItem>
                     </Select>
                   </FormControl>
-                </div>
-                <div className="mt-4">
+                </Box>
+                <Box className="mt-4">
                   <FormControl fullWidth>
                     <InputLabel id="system-label">System</InputLabel>
                     <Select
@@ -275,8 +291,8 @@ export default function Sessions() {
                       {["Term", "Semester"].map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
                     </Select>
                   </FormControl>
-                </div>
-                <div className="mt-4">
+                </Box>
+                <Box className="mt-4">
                   <FormControl fullWidth>
                     <InputLabel id="session-label">Session Name</InputLabel>
                     <Select
@@ -292,8 +308,8 @@ export default function Sessions() {
                       {(formData.system.length > 0 ? [1, 2, 3] : []).map(l => <MenuItem key={l} value={formData.system + " " + l}>{formData.system + " " + l}</MenuItem>)}
                     </Select>
                   </FormControl>
-                </div>
-                <div className="mt-4">
+                </Box>
+                <Box className="mt-4">
                   <LocalizationProvider dateAdapter={DateAdapter}>
                     <MobileDatePicker
                       label="Start Date"
@@ -303,8 +319,8 @@ export default function Sessions() {
                       renderInput={(params) => <TextField fullWidth {...params} />}
                     />
                   </LocalizationProvider>
-                </div>
-                <div className="mt-4">
+                </Box>
+                <Box className="mt-4">
                   <LocalizationProvider dateAdapter={DateAdapter}>
                     <MobileDatePicker
                       label="End Date"
@@ -314,20 +330,21 @@ export default function Sessions() {
                       renderInput={(params) => <TextField fullWidth {...params} />}
                     />
                   </LocalizationProvider>
-                </div>
-              </div>
+                </Box>
+              </Box>
             </ModalBody>
             <ModalFooter>
-              <div className="col-12 d-flex justify-content-start ps-4">
+              <Stack direction='row' spacing={3} justifyContent='left'>
                 <LoadingButton
                   type='submit'
                   variant='contained'
                   color='secondary'
                   size='large'
-                  loading={saving}
+                  loading={creating || updating}
                   loadingPosition="start"
                   startIcon={<Save />}>Save</LoadingButton>
-              </div>
+                <Button onClick={toggleModal} variant='outlined' color='secondary'>Cancel</Button>
+              </Stack>
             </ModalFooter>
           </form>
         }

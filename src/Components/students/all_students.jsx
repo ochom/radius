@@ -16,7 +16,7 @@ import { DropdownMenu } from "../customs/menus";
 import { CustomLoader } from "../customs/monitors";
 import { SearchableTable } from "../customs/table";
 
-const FETCH_QUERY = gql`
+const FETCH_ALL_QUERY = gql`
   query students{
     students: getStudents{
       id
@@ -29,22 +29,21 @@ const FETCH_QUERY = gql`
         stream
       }
     }
-  }
-`
+  }`
 
 
 const DELETE_MUTATION = gql`
  mutation deleteStudent($id: ID!){
     deleteStudent(id: $id)
-  }
-`
+  }`
 
 const AllStudent = () => {
   let history = useHistory();
   const [students, setStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
 
-  const { loading, error, refetch } = useQuery(FETCH_QUERY, {
+  const { loading, error, refetch } = useQuery(FETCH_ALL_QUERY, {
+    fetchPolicy: 'network-only',
     onCompleted: (res) => {
       if (res) {
         setStudents(res.students)

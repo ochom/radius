@@ -1,134 +1,150 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import { Add, Delete, Edit, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, Stack, TextField } from '@mui/material';
 import { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import { Service } from '../../API/service';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
 import { PageErrorAlert } from '../customs/empty-page';
 import { DropdownMenu } from '../customs/menus';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
 
-const initialFormData = {
-  name: "",
-  description: "",
-}
 
-const QUERY = gql`query{
+const FETCH_ALL_QUERY = gql`
+query{
   categories: getBookCategories{
     id
     name
     description
   }
+}`
+
+const FETCH_ONE_QUERY = gql`
+query ($id: ID!){
+  category: getBookCategory(id: $id){
+    id
+    name
+    description
+  }
+}`
+
+const CREATE_MUTATION = gql`
+mutation ($data: NewBookCategory!){
+  createBookCategory(input: $data)
+}`
+const UPDATE_MUTATION = gql`
+mutation ($id: ID!, $data: NewBookCategory!){
+  updateBookCategory(id: $id, input: $data)
+}`
+const DELETE_MUTATION = gql`
+mutation ($id: ID!){
+  deleteBookCategory(id: $id)
+}`
+const initialFormData = {
+  name: "",
+  description: "",
 }
-`
 
 export default function Categories() {
   const [modal, setModal] = useState(false);
-
-  const { loading, error, data, refetch } = useQuery(QUERY)
-  const [saving, setSaving] = useState(false);
-
-  const [loadingSelected, setLoadingSelected] = useState(false)
-  const [selectedCategoryID, setSelectedCategoryID] = useState(null);
-
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [formData, setFormData] = useState(initialFormData)
+
+  const { loading, error, data, refetch } = useQuery(FETCH_ALL_QUERY)
+
+  const [fetchOne, { loading: loadingSelected, error: selectedError }] = useLazyQuery(FETCH_ONE_QUERY, {
+    onCompleted: (res) => {
+      if (res.category) {
+        let category = res.category
+        setSelectedCategory(category)
+        setFormData({
+          name: category.name,
+          description: category.description
+        })
+      }
+    }
+  })
+
+  const [addNew, { loading: creating, reset: resetCreating }] = useMutation(CREATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Category saved successfully` });
+      toggleModal();
+      refetch()
+      resetCreating()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetCreating()
+    }
+  })
+
+  const [updateData, { loading: updating, reset: resetUpdate }] = useMutation(UPDATE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Category updated successfully` });
+      toggleModal();
+      refetch()
+      resetUpdate()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+      resetUpdate()
+    }
+  })
+
+  const [deleteData] = useMutation(DELETE_MUTATION, {
+    onCompleted: () => {
+      AlertSuccess({ text: `Category deleted successfully` });
+      refetch()
+    },
+    onError: (err) => {
+      AlertFailed({ text: err.message });
+    }
+  })
 
   const toggleModal = () => setModal(!modal)
 
   const onNewCategory = () => {
-    toggleModal();
-    setSelectedCategoryID(null);
+    setSelectedCategory(null);
     setFormData(initialFormData)
+    toggleModal();
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    setSaving(true)
-    let query = selectedCategoryID
-      ? {
-        query: `mutation ($id: ID!, $data: NewBookCategory!){
-        updateBookCategory(id: $id, input: $data)
-     }`,
+    if (selectedCategory) {
+      updateData({
         variables: {
-          id: selectedCategoryID,
+          id: selectedCategory.id,
           data: formData
         }
-      } :
-      {
-        query: `mutation ($data: NewBookCategory!){
-        createBookCategory(input: $data)
-      }`,
+      })
+    } else {
+      addNew({
         variables: {
           data: formData
         }
-      }
-
-    new Service().createOrUpdate(query).then((res) => {
-      if (res.status === 200) {
-        AlertSuccess({ text: `Category saved successfully` });
-        toggleModal();
-        refetch();
-      } else {
-        AlertFailed({ text: res.message });
-      }
-    }).finally(() => {
-      setSaving(false)
-    });
+      })
+    }
   };
 
-  const editCategory = row => {
-    setSelectedCategoryID(row.id);
-    setLoadingSelected(true)
-    let query = {
-      query: `query ($id: ID!){
-        category: getBookCategory(id: $id){
-          id
-          name
-          description
-        }
-      }`,
+  const editCategory = ({ id }) => {
+    fetchOne({
       variables: {
-        id: row.id
+        id: id
       }
-    }
-
-    new Service().getData(query).then(res => {
-      if (res) {
-        let data = res.category
-        setFormData({
-          name: data.name,
-          description: data.description
-        })
-      }
-    }).finally(() => {
-      setLoadingSelected(false)
-    });
+    })
     toggleModal();
   };
 
-  const deleteCategory = row => {
+  const deleteCategory = ({ id }) => {
     ConfirmAlert({ title: "Delete category!" }).then((res) => {
       if (res.isConfirmed) {
-        let query = {
-          query: `mutation ($id: ID!){
-            deleteBookCategory(id: $id)
-          }`,
+        deleteData({
           variables: {
-            id: row.id
+            id: id
           }
-        }
-        new Service().delete(query)
-          .then((res) => {
-            if (res.status === 200) {
-              AlertSuccess({ text: `Category deleted successfully` });
-              refetch();
-            } else {
-              AlertFailed({ text: res.message });
-            }
-          })
+        })
       } else if (res.isDismissed) {
         AlertWarning({ title: "Cancelled", text: "Request cancelled, category not deleted" })
       }
@@ -191,13 +207,11 @@ export default function Categories() {
           :
           <form onSubmit={submitForm} method="post">
             <ModalHeader toggle={toggleModal}>
-              <span>
-                <i className={`fa fa-${selectedCategoryID ? "edit" : "plus-circle"}`}></i> {selectedCategoryID ? "Edit category details" : "Create a new category"}
-              </span>
+              {selectedCategory ? "Edit category details" : "Create a new category"}
             </ModalHeader>
             <ModalBody>
-              <div className="row px-3">
-                <div className="mt-3">
+              <Box className="row px-3">
+                <Box className="mt-3">
                   <TextField
                     label="Category name"
                     color="secondary"
@@ -206,8 +220,8 @@ export default function Categories() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
-                </div>
-                <div className="mt-3">
+                </Box>
+                <Box className="mt-3">
                   <TextField
                     label="Description"
                     color="secondary"
@@ -218,20 +232,21 @@ export default function Categories() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
-                </div>
-              </div>
+                </Box>
+              </Box>
             </ModalBody>
             <ModalFooter>
-              <div className="col-12 d-flex justify-content-start ps-4">
+              <Stack direction='row' spacing={3} justifyContent='left'>
                 <LoadingButton
                   type='submit'
                   variant='contained'
                   color='secondary'
                   size='large'
-                  loading={saving}
+                  loading={creating || updating}
                   loadingPosition="start"
                   startIcon={<Save />}>Save</LoadingButton>
-              </div>
+                <Button onClick={toggleModal} variant='outlined' color='secondary'>Cancel</Button>
+              </Stack>
             </ModalFooter>
           </form>
         }

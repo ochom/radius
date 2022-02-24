@@ -42,8 +42,7 @@ const STUDENT_QUERY = gql`
         cover
       }
     }
-  }
-`
+  }`
 
 export default function StudentsLender() {
   let { uid } = useParams()

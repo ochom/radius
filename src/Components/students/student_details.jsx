@@ -1,66 +1,65 @@
+import { gql, useQuery } from '@apollo/client';
 import { AddPhotoAlternate, Adjust, Apartment, Assessment, Edit, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, People, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Avatar, Box, Button, Card, CircularProgress, Divider, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { Service } from '../../API/service';
 import { UploadService } from "../../API/uploads";
 import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
 import { photo } from "../customs/avatars";
+import { PageErrorAlert } from "../customs/empty-page";
 import { CustomLoader } from "../customs/monitors";
 import { panelProps, TabPanel } from "../customs/tabs";
 import StudentParents from "./student_parents";
 
-const StudentDetails = (props) => {
+
+const FETCH_ONE = gql`
+query($id:ID!){
+  student: getStudent(id:$id){
+    id
+    fullName
+    dateOfBirth
+    dateOfAdmission
+    gender
+    admissionNumber
+    nationalID
+    passport
+    age
+    active
+    homeAddress
+    classroom{
+      level
+      stream
+    }
+  }
+}`
+
+const StudentDetails = () => {
   const { uid } = useParams()
   const history = useHistory()
 
-  const [student, setStudent] = useState(false);
   const [passport, setPassport] = useState(photo)
-  const [uploadProgress, setUploadProgress] = useState(0)
   const [saving, setSaving] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [tabIndex, setTabIndex] = useState(0)
   const [snackBar, setSnackBar] = useState(defaultSnackStatus);
 
+  const { data, loading, error } = useQuery(FETCH_ONE, {
+    variables: {
+      id: uid
+    },
+    onCompleted: (res) => {
+      if (res) {
+        setPassport({ ...photo, url: res.student.passport })
+      }
+    },
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'network-only'
+  })
 
   const selectTab = (event, newValue) => {
     setTabIndex(newValue);
   };
-
-  useEffect(() => {
-    let query = {
-      query: `
-        query($id:ID!){
-          student: getStudent(id:$id){
-            id
-            fullName
-            dateOfBirth
-            dateOfAdmission
-            gender
-            admissionNumber
-            nationalID
-            passport
-            age
-            active
-            homeAddress
-            classroom{
-              level
-              stream
-            }
-          }
-        }
-      `,
-      variables: {
-        id: uid
-      }
-    }
-    new Service().getData(query).then((res) => {
-      setStudent(res?.student || null)
-      setPassport({ ...photo, url: res?.student.passport })
-      setLoading(false)
-    });
-  }, [uid]);
 
   const handleImage = (e) => {
     var el = window._protected_reference = document.createElement("INPUT");
@@ -79,7 +78,7 @@ const StudentDetails = (props) => {
     if (passport.image) {
       setSaving(true)
       let formData = new FormData()
-      formData.append("id", student.id)
+      formData.append("id", data.student.id)
       formData.append("file", passport.image)
 
       new UploadService().uploadStudentPassPort(formData, (progressEvent) => {
@@ -108,12 +107,8 @@ const StudentDetails = (props) => {
     return <CustomLoader />
   }
 
-  if (!student) {
-    return (
-      <Paper sx={{ px: 5, py: 2 }}>
-        <div className="py-5 d-flex justify-content-center"><Alert severity="warning">Student not found</Alert></div>
-      </Paper>
-    )
+  if (error) {
+    return <PageErrorAlert message={error.message} />
   }
 
   return (
@@ -123,7 +118,7 @@ const StudentDetails = (props) => {
         <Box sx={{ p: 3, display: 'flex' }} >
           <Stack>
             <div style={{ position: "relative" }}>
-              <Avatar variant="rounded" src={passport.url} alt={student.fullName} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
+              <Avatar variant="rounded" src={passport.url} alt={data.student.fullName} sx={{ width: "10rem", height: "10rem", mb: 1, cursor: 'pointer' }} onClick={handleImage}>
                 <AddPhotoAlternate sx={{ fontSize: "8rem" }} />
               </Avatar>
               {saving &&
@@ -143,18 +138,18 @@ const StudentDetails = (props) => {
           <Box >
             <Box sx={{ display: 'flex' }}>
               <Stack spacing={1.5} sx={{ ml: 5, alignItems: "start" }}>
-                <Typography fontWeight={700}>{student.fullName}</Typography>
+                <Typography fontWeight={700}>{data.student.fullName}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {student.classroom.level} {student.classroom.stream}
+                  <Apartment sx={{ fontSize: "1.2rem" }} color="secondary" /> {data.student.classroom.level} {data.student.classroom.stream}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.gender}
+                  <Wc sx={{ fontSize: "1.2rem" }} color="secondary" />  {data.student.gender}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {student.age} yrs old
+                  <Event sx={{ fontSize: "1.2rem" }} color="secondary" />  {data.student.age} yrs old
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <Adjust sx={{ fontSize: "1.2rem" }} color={student.active ? "success" : "disabled"} />  {student.active ? "Active" : "Not active"}
+                  <Adjust sx={{ fontSize: "1.2rem" }} color={data.student.active ? "success" : "disabled"} />  {data.student.active ? "Active" : "Not active"}
                 </Typography>
               </Stack>
 
@@ -172,7 +167,7 @@ const StudentDetails = (props) => {
             </Box>
 
             <Stack spacing={3} sx={{ ml: 5, mt: 3 }} direction='row'>
-              <Button variant="contained" color='secondary' onClick={() => { history.push(`/students/profile/${student.id}/edit`) }}>
+              <Button variant="contained" color='secondary' onClick={() => { history.push(`/students/profile/${data.student.id}/edit`) }}>
                 <Edit /> <Typography sx={{ ml: 1 }}>Edit</Typography>
               </Button>
               <Button variant="outlined" color='secondary' onClick={() => { history.push(`/students`) }}>
@@ -199,7 +194,7 @@ const StudentDetails = (props) => {
           </Tabs>
           <TabPanel value={tabIndex} index={0}>
             <div>
-              <pre>{student.homeAddress}</pre>
+              <pre>{data.student.homeAddress}</pre>
             </div>
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>

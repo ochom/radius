@@ -3,7 +3,7 @@ import { Add, Edit, OpenInBrowser } from "@mui/icons-material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
-import { Service } from "../../API/service";
+
 import {
   AlertFailed,
   AlertSuccess,
@@ -27,8 +27,7 @@ query{
     gender
     passport
   }
-}
-`
+}`
 
 const AllTeacher = () => {
   const history = useHistory()
