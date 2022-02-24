@@ -1,14 +1,35 @@
-import { Alert, Avatar, Box, Button, Card, CircularProgress, Divider, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
-import { useState, useEffect } from "react";
-
-import { CustomLoader } from "../customs/monitors"
+import { gql, useQuery } from '@apollo/client';
 import { AddPhotoAlternate, Assignment, Edit, Event, Phone, School, Wc } from "@mui/icons-material";
-import { panelProps, TabPanel } from "../customs/tabs";
-import { useHistory, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
+import { Avatar, Box, Button, Card, CircularProgress, Divider, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { UploadService } from "../../API/uploads";
 import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
 import { photo } from "../customs/avatars";
+import { PageErrorAlert } from "../customs/empty-page";
+import { CustomLoader } from "../customs/monitors";
+import { panelProps, TabPanel } from "../customs/tabs";
+
+
+const FETCH_ONE_QUERY = gql`
+query($id:ID!){
+  teacher: getTeacher(id:$id){
+    id
+    title
+    fullName
+    gender
+    dateOfBirth
+    idNumber
+    email
+    phoneNumber
+    serialNumber
+    employer
+    employmentNumber
+    passport
+    age
+  }
+}`
 
 const TeacherDetails = (props) => {
   const { uid } = useParams()
@@ -18,46 +39,23 @@ const TeacherDetails = (props) => {
   const [passport, setPassport] = useState(photo)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [saving, setSaving] = useState(false)
-  const [loading, setLoading] = useState(true)
   const [tabIndex, setTabIndex] = useState(0)
   const [snackBar, setSnackBar] = useState(defaultSnackStatus);
 
+  const { loading, error } = useQuery(FETCH_ONE_QUERY, {
+    fetchPolicy: 'network-only',
+    variables: {
+      id: uid
+    },
+    onCompleted: (res) => {
+      setTeacher(res?.teacher)
+      setPassport({ ...photo, url: res?.teacher.passport })
+    }
+  })
 
   const selectTab = (event, newValue) => {
     setTabIndex(newValue);
   };
-
-  useEffect(() => {
-    let query = {
-      query: `
-        query($id:ID!){
-          teacher: getTeacher(id:$id){
-            id
-            title
-            fullName
-            gender
-            dateOfBirth
-            idNumber
-            email
-            phoneNumber
-            serialNumber
-            employer
-            employmentNumber
-            passport
-            age
-          }
-        }
-      `,
-      variables: {
-        id: uid
-      }
-    }
-    new Service().getData(query).then((res) => {
-      setTeacher(res?.teacher)
-      setPassport({ ...photo, url: res?.teacher.passport })
-      setLoading(false)
-    });
-  }, [uid]);
 
   const handleImage = (e) => {
     var el = window._protected_reference = document.createElement("INPUT");
@@ -101,17 +99,9 @@ const TeacherDetails = (props) => {
     setSnackBar({ ...snackBar, open: false })
   }
 
-  if (loading) {
-    return <CustomLoader />
-  }
+  if (loading) return <CustomLoader />
 
-  if (!teacher) {
-    return (
-      <Paper sx={{ px: 5, py: 2 }}>
-        <div className="py-5 d-flex justify-content-center"><Alert severity="warning">Teacher not found</Alert></div>
-      </Paper>
-    )
-  }
+  if (error) return <PageErrorAlert message={error.message} />
 
   return (
     <>
