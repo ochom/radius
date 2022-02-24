@@ -1,4 +1,8 @@
 {
   "root": "./dist",
+  "routes": {
+    "/assets/*": "/assets/",
+    "/**": "index.html"
+  },
   "description": "This is a static file for serving with heroku"
 }
