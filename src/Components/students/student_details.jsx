@@ -1,10 +1,9 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { AddPhotoAlternate, Adjust, Apartment, Assessment, Edit, EmojiEvents, EmojiEventsOutlined, Event, Gavel, Group, Info, People, Receipt, School, SchoolOutlined, Wc } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Card, CircularProgress, Divider, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { UploadService } from "../../API/uploads";
 import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
 import { photo } from "../customs/avatars";
 import { PageErrorAlert } from "../customs/empty-page";
@@ -13,8 +12,7 @@ import { panelProps, TabPanel } from "../customs/tabs";
 import StudentParents from "./student_parents";
 
 
-const FETCH_ONE = gql`
-query($id:ID!){
+const FETCH_ONE = gql`query($id:ID!){
   student: getStudent(id:$id){
     id
     fullName
@@ -34,13 +32,14 @@ query($id:ID!){
   }
 }`
 
+const UPLOAD_IMAGE_MUTATION = gql`mutation ($id: ID!, $file: Upload!){
+  uploadStudentImage(id:$id, file: $file)
+}`
+
 const StudentDetails = () => {
   const { uid } = useParams()
   const history = useHistory()
-
   const [passport, setPassport] = useState(photo)
-  const [saving, setSaving] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
   const [tabIndex, setTabIndex] = useState(0)
   const [snackBar, setSnackBar] = useState(defaultSnackStatus);
 
@@ -57,11 +56,23 @@ const StudentDetails = () => {
     nextFetchPolicy: 'network-only'
   })
 
+  const [uploadImage, { loading: saving, reset }] = useMutation(UPLOAD_IMAGE_MUTATION, {
+    onCompleted: () => {
+      setPassport({ ...passport, isNew: false })
+      setSnackBar({ open: true, message: "Photo uploaded successfully", severity: "success" })
+      reset()
+    },
+    onError: err => {
+      setSnackBar({ open: true, message: err.message, severity: "error" })
+      reset()
+    }
+  })
+
   const selectTab = (event, newValue) => {
     setTabIndex(newValue);
   };
 
-  const handleImage = (e) => {
+  const handleImage = () => {
     var el = window._protected_reference = document.createElement("INPUT");
     el.type = "file";
     el.accept = "image/*";
@@ -74,28 +85,14 @@ const StudentDetails = () => {
     el.click()
   }
 
-  const submitPassport = (e) => {
+  const submitPassport = () => {
     if (passport.image) {
-      setSaving(true)
-      let formData = new FormData()
-      formData.append("id", data.student.id)
-      formData.append("file", passport.image)
-
-      new UploadService().uploadStudentPassPort(formData, (progressEvent) => {
-        const { loaded, total } = progressEvent;
-        let percent = Math.floor((loaded * 100) / total);
-        setUploadProgress(percent)
-      }).then((res) => {
-        if (res?.status === 200) {
-          setPassport({ ...passport, isNew: false })
-          setSnackBar({ open: true, message: "Photo uploaded successfully", severity: "success" })
-        } else {
-          setSnackBar({ open: true, message: "Photo uploaded failed", severity: "error" })
+      uploadImage({
+        variables: {
+          id: data.student.id,
+          file: passport.image
         }
-      }).finally(() => {
-        setSaving(false)
-        setUploadProgress(0)
-      });
+      })
     }
   }
 
@@ -123,7 +120,7 @@ const StudentDetails = () => {
               </Avatar>
               {saving &&
                 <Avatar variant="rounded" sx={{ position: "absolute", width: "10rem", height: "10rem", top: 0, left: 0, bgcolor: "#555555e2" }} >
-                  <CircularProgress variant="determinate" value={uploadProgress} color="secondary" style={{ width: "7rem", height: "7rem" }} />
+                  <CircularProgress variant="indeterminate" color="secondary" size="3rem" />
                 </Avatar>
               }
             </div>

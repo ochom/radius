@@ -1,24 +1,17 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { Add, Assignment, Delete, Edit } from '@mui/icons-material';
-import { Avatar, Box, Button } from '@mui/material';
+import { Add, Assignment, Delete, Edit, Photo } from '@mui/icons-material';
+import { Avatar, Box, Button, CircularProgress } from '@mui/material';
+import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
 import moment from 'moment';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
+import { photo } from '../customs/avatars';
 import { PageErrorAlert } from '../customs/empty-page';
 import { DropdownMenu } from '../customs/menus';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
 
-const initialFormData = {
-  isbn: "",
-  title: "",
-  author: "",
-  edition: "",
-  publisherID: "",
-  categoryID: "",
-  metaData: ""
-}
 
 const GET_ALL_QUERY = gql`query{
   books: getBooks{
@@ -38,18 +31,38 @@ const GET_ALL_QUERY = gql`query{
   }
 }`
 
-const DELETE_MUTATION = gql`
-  mutation deleteBook($id: ID!){
-    deleteBook(id: $id)
-  }`
+const UPLOAD_IMAGE_MUTATION = gql`mutation ($id: ID!, $file: Upload!){
+  uploadBookImage(id:$id, file: $file)
+}`
+
+const DELETE_MUTATION = gql`mutation deleteBook($id: ID!){
+  deleteBook(id: $id)
+}`
 
 export default function Books() {
 
   const history = useHistory()
+  const [selectedBookID, setSelectedBookID] = useState(null)
+  const [bookCover, setBookCover] = useState(null)
+  const [snackBar, setSnackBar] = useState(defaultSnackStatus);
+
 
   const { loading, error, data, refetch } = useQuery(GET_ALL_QUERY, {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'network-only'
+  })
+
+
+  const [uploadImage, { loading: saving, reset }] = useMutation(UPLOAD_IMAGE_MUTATION, {
+    onCompleted: () => {
+      setSnackBar({ open: true, message: "Photo uploaded successfully", severity: "success" })
+      refetch()
+      reset()
+    },
+    onError: err => {
+      setSnackBar({ open: true, message: err.message, severity: "error" })
+      reset()
+    }
   })
 
 
@@ -85,8 +98,36 @@ export default function Books() {
     history.push(`/library/books/edit/${id}`)
   }
 
+  const handleImage = ({ id }) => {
+    setSelectedBookID(id)
+    var el = window._protected_reference = document.createElement("INPUT");
+    el.type = "file";
+    el.accept = "image/*";
+    el.addEventListener("change", (e2) => {
+      window._protected_reference = null
+      if (el.files.length) {
+        setBookCover(URL.createObjectURL(el.files[0]))
+        uploadImage({
+          variables: {
+            id,
+            file: el.files[0]
+          }
+        })
+      }
+    })
+    el.click()
+  }
 
-  let dropMenuOptions = [{ "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> }, { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }]
+  const closeSnackBar = () => {
+    setSnackBar({ ...snackBar, open: false })
+  }
+
+
+  let dropMenuOptions = [
+    { "title": "Edit", action: editBook, icon: <Edit fontSize="small" /> },
+    { "title": "Cover", action: handleImage, icon: <Photo fontSize="small" /> },
+    { "title": "Delete", action: deleteBook, icon: <Delete fontSize="small" color="red" /> }
+  ]
 
   const cols = [
     {
@@ -118,6 +159,7 @@ export default function Books() {
 
   return (
     <>
+      <CustomSnackBar {...snackBar} onClose={closeSnackBar} />
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'end' }}>
         <Button color="secondary" variant="contained" onClick={onNewBook}>
           <Add /> Add New Book
@@ -133,7 +175,14 @@ export default function Books() {
         data={data.books.map((row) => {
           return {
             id: row.id,
-            cover: <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>,
+            cover: <Box>
+              {(saving && selectedBookID === row.id) ?
+                <Avatar variant="rounded" src={bookCover} sx={{ bgcolor: "#555555e2" }}>
+                  <CircularProgress variant="indeterminate" color="secondary" size="1rem" />
+                </Avatar> :
+                <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>
+              }
+            </Box>,
             isbn: row.isbn,
             title: row.title,
             category: row.category.name,
