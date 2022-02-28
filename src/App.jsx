@@ -3,6 +3,9 @@ import {
   ApolloProvider,
   InMemoryCache
 } from "@apollo/client";
+
+import { createUploadLink } from "apollo-upload-client"
+
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -25,7 +28,7 @@ import Welfare from "./Components/welfare";
 import { login } from "./reducers/auth-reducer";
 
 
-function App(props) {
+function App() {
   const user = useSelector(state => state.auth.user)
   const dispatch = useDispatch();
 
@@ -57,15 +60,17 @@ function App(props) {
   }, [dispatch]);
 
 
-  const client = new ApolloClient({
+  const link = createUploadLink({
     uri: `${API_ROOT}/query`,
     headers: {
       Authorization: user ? `Bearer ${user.token}` : ""
     },
+  })
+
+  const client = new ApolloClient({
+    link,
     cache: new InMemoryCache(),
   });
-
-
 
   if (loading) {
     return <CustomLoader />;
