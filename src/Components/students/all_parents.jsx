@@ -44,7 +44,7 @@ export default function AllParents() {
   const { loading, error, refetch } = useQuery(FETCH_ALL_QUERY, {
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
-      if (res) {
+      if (res.parents) {
         setFilteredParents(res.parents)
         setAllParents(res.parents)
       }
@@ -108,12 +108,12 @@ export default function AllParents() {
   }
 
   return (
-    <>
+    <Box>
       <SearchableTable
         handleSearch={searchParent}
         columns={cols}
         onRowClicked={openProfile}
-        data={filteredParents.map((d) => {
+        data={(filteredParents || []).map((d) => {
           return {
             id: d.id,
             photo: <UserAvatar alt={d.fullName} />,
@@ -125,6 +125,6 @@ export default function AllParents() {
           };
         })} />
 
-    </>
+    </Box>
   );
 };

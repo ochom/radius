@@ -29,8 +29,8 @@ query ($id: ID!){
 }`
 
 const CREATE_MUTATION = gql`
-mutation ($data: NewParent!){
-  createParent(input: $data)
+mutation ($data: NewPublisher!){
+  createPublisher(input: $data)
 }`
 
 const UPDATE_MUTATION = gql`
@@ -39,8 +39,8 @@ mutation ($id: ID!, $data: NewPublisher!){
 }`
 
 const DELETE_MUTATION = gql`
-mutation ($studentID: ID!, $parentID: ID!){
-  deleteParent(studentID: $studentID, parentID: $parentID)
+mutation ($id: ID!){
+  deletePublisher(id: $id)
 }`
 
 const initialFormData = {
