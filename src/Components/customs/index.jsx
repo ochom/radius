@@ -198,7 +198,7 @@ function Sidenav(props) {
       <div className="logo_content">
         <div className="logo">
           <i className="bx bxl-sketch"></i>
-          <div className="logo_name">Radius</div>
+          <div className="logo_name">Acme</div>
         </div>
       </div>
       <ul className="nav_list">

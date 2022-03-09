@@ -1,9 +1,7 @@
 import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import LoginForm from "./login_form";
-import PricingForm from "./pricing";
 import RegistrationForm from "./registration_form";
-import SchoolProfile from "./school_profile";
 
 const pages = [
   { title: 'About', href: '#about' },
@@ -26,7 +24,7 @@ const Auth = () => {
               <Typography sx={{ fontSize: '1.5rem', mr: 1, }}>
                 <i className="bx bxl-sketch" ></i>
               </Typography>
-              Radius 360&#176;
+              Acme 360&#176;
             </Typography>
             <Box sx={{ flexGrow: 1, display: 'flex' }}>
               {pages.map((page) =>
@@ -42,46 +40,38 @@ const Auth = () => {
             </Box>
             <Box>
               <Button color="secondary" className="no-transform" sx={{ mr: 3 }} href="#login">Sign in</Button>
-              <Button variant="outlined" color="secondary" className="no-transform" sx={{ mr: 3 }} href="#contacts">Talk to sales</Button>
+              <Button variant="outlined" color="secondary" className="no-transform" sx={{ mr: 3 }} href="mailto:sales@lysofts.co.ke?subject=Acme 360 Sales&body=I would like to know more about Acme Systems">Talk to sales</Button>
               <Button variant="contained" color="secondary" className="no-transform" href="#register">Try for free</Button>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
       <section id="about"></section>
-      <section className="landing-section py-5" id="login">
+      <section className="landing-section" id="login">
         <Container>
-          <div className="row col-12">
-            <div className="col-md-6 col-lg-7">
-              <div className="about">
-                <div>
+          <Box className="row col-12">
+            <Box className="col-md-6 col-lg-7">
+              <Box className="about">
+                <Box>
                   <Typography variant="h4" color="GrayText">Welcome to</Typography>
-                  <Typography color="secondary" variant="h1" sx={{ mb: 4, fontSize: "3rem", fontWeight: 700 }}>Radius 360&#176;</Typography>
-                </div>
+                  <Typography color="secondary" variant="h1" sx={{ mb: 4, fontSize: "3rem", fontWeight: 700 }}>Acme 360&#176;</Typography>
+                </Box>
                 <Typography variant="body2" color="grey"
                   sx={{ fontSize: "1.5rem", fontWeight: 500 }}>
                   Manage Examinations, Finances, Students and Library.
                 </Typography>
                 <Typography color="secondary" variant="h4" mt={1}>Anywhere, Anytime</Typography>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-5">
+              </Box>
+            </Box>
+            <Box className="col-md-6 col-lg-5">
               <LoginForm />
-            </div>
-          </div>
+            </Box>
+          </Box>
         </Container>
       </section>
-      <section id="register" className="registration-section">
+      <section id="register" className="registration-section py-5">
         <Container>
-          <PricingForm />
-          <SchoolProfile />
-          <RegistrationForm />
-        </Container>
-      </section>
-      <section id="contacts" className="registration-section">
-        <Container>
-          <PricingForm />
-          <SchoolProfile />
+          <Typography variant="h3" align="center">Get Started</Typography>
           <RegistrationForm />
         </Container>
       </section>

@@ -1,6 +1,6 @@
 import { Lock } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { login as Login } from "../../API/auth";
@@ -14,8 +14,7 @@ const initialFormData = {
   password: "",
 };
 
-const LoginForm = (props) => {
-  let { toggleForm } = props
+const LoginForm = () => {
 
   const dispatch = useDispatch()
 
@@ -42,14 +41,14 @@ const LoginForm = (props) => {
 
 
   return (
-    <div className="login-card mx-auto">
-      <div className="card card-body p-5 border-0">
-        <h3 className="text-center my-4">
+    <Box className="login-card mx-auto">
+      <Box className="card card-body p-5 border-0">
+        <Typography variant="h5" align="center" sx={{ my: 2 }}>
           <Lock color="secondary"
             sx={{ fontSize: '2rem' }} /> Login
-        </h3>
+        </Typography>
         <form onSubmit={submitData}>
-          <div className="col-12 mt-4">
+          <Box className="col-12 mt-4">
             <TextField
               type="text"
               label="Email"
@@ -64,9 +63,9 @@ const LoginForm = (props) => {
                 })
               }
             />
-          </div>
+          </Box>
 
-          <div className="col-12 mt-4">
+          <Box className="col-12 mt-4">
             <TextField
               type="password"
               label="Password"
@@ -81,16 +80,16 @@ const LoginForm = (props) => {
                 })
               }
             />
-          </div>
-          <div className="row mt-3">
-            <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+          </Box>
+          <Box className="row mt-3">
+            <Box className="d-grid gap-2 d-md-flex justify-content-md-end">
               <Button color="secondary" className="no-transform">
                 Forgot password?
               </Button>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div className="row mt-3 mb-4 px-2">
+          <Box className="row mt-3 mb-4 px-2">
             <LoadingButton
               type="submit"
               variant="contained"
@@ -98,24 +97,22 @@ const LoginForm = (props) => {
               size="large"
               loading={loading}
             >
-              <Typography>
-                Login
-              </Typography>
+              Login
             </LoadingButton>
-          </div>
+          </Box>
 
-          <div className="row mt-3">
+          <Box className="row mt-3">
             <Button
               type="button"
               color="secondary"
-              onClick={toggleForm}
+              href="#register"
             >
               Don't have account?
             </Button>
-          </div>
+          </Box>
         </form>
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }
 
