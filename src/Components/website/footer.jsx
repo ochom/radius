@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <Box id="footer">
       <Container>
-        <Grid container className="footer-content">
+        <Grid container className="footer-content" columnSpacing={12} rowSpacing={3}>
           <Grid item xs={12} sm={12} md={4}>
             <Typography variant='h3'>Acme 360&#176;</Typography>
             <Typography variant='h6'>A product of Lysofts&trade;</Typography>

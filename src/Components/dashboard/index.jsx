@@ -96,11 +96,11 @@ function Dashboard() {
           <Typography sx={{ my: 2, mx: 5 }}>
             Hi <b>{user.firstName}</b>, good {hour}!
           </Typography>
-          <Grid container spacing={3} className="card-widgets">
-            <Grid item sm={6} lg={3}>
+          <Grid container columnSpacing={3} rowSpacing={3} className="card-widgets">
+            <Grid item xs={12} sm={6} md={3}>
               <Card className="card" sx={{ p: 4 }}>
                 <Grid container>
-                  <Grid item sm={8}>
+                  <Grid item xs={8}>
                     <Typography variant="h4" color="secondary"
                       className="count">{data.content.totalStudents}</Typography>
                     <Typography className="label">Students</Typography>
@@ -111,10 +111,10 @@ function Dashboard() {
                 </Grid>
               </Card>
             </Grid>
-            <Grid item sm={6} lg={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <Card className="card" sx={{ p: 4 }}>
                 <Grid container>
-                  <Grid item sm={8}>
+                  <Grid item xs={8}>
                     <Typography variant="h4" color="secondary"
                       className="count">{data.content.totalTeachers}</Typography>
                     <Typography className="label">Teachers</Typography>
@@ -125,10 +125,10 @@ function Dashboard() {
                 </Grid>
               </Card>
             </Grid>
-            <Grid item sm={6} lg={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <Card className="card" sx={{ p: 4 }}>
                 <Grid container>
-                  <Grid item sm={8}>
+                  <Grid item xs={8}>
                     <Typography variant="h4" color="secondary"
                       className="count">{data.content.totalBooks}</Typography>
                     <Typography className="label">Books</Typography>
@@ -139,15 +139,15 @@ function Dashboard() {
                 </Grid>
               </Card>
             </Grid>
-            <Grid item sm={6} lg={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <Card className="card" sx={{ p: 4 }}>
                 <Grid container>
-                  <Grid item sm={8}>
+                  <Grid item xs={8}>
                     <Typography variant="h4" color="secondary"
                       className="count">{data.content.totalSessions}</Typography>
                     <Typography className="label">Sessions</Typography>
                   </Grid>
-                  <Grid item sm={4}>
+                  <Grid item>
                     <AccessTimeOutlined className="icon" />
                   </Grid>
                 </Grid>
@@ -155,7 +155,7 @@ function Dashboard() {
             </Grid>
           </Grid>
 
-          <Grid container sx={{ my: 3 }} spacing={3}>
+          <Grid container sx={{ mt: 5 }} spacing={3}>
             <Grid item sm={12} lg={8}>
               <Box className="recent-students">
                 <Stack direction="row" justifyContent="space-between" sx={{ px: 5 }}>

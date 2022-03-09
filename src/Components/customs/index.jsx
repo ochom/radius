@@ -72,11 +72,13 @@ function TopBar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: "#9c27b0" }}>
-            {user.school.name}
-          </Typography>
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" component="div" sx={{ display: { xs: 'none', md: 'block' }, color: "#9c27b0" }}>
+              {user.school.name}
+            </Typography>
+          </Box>
 
-          <Box>
+          <Box sx={{}}>
             <Badge badgeContent={0} color="secondary" sx={{ mr: 3 }}>
               <AdminPanelSettings color="action" />
             </Badge>
