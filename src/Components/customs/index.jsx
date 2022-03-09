@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from "react-router-dom";
 import { logout } from '../../reducers/auth-reducer';
-import profile from "../../static/profile.jpg";
+import profile from "../../static/profile.png";
 import Footer from './footers';
 
 
