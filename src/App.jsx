@@ -13,7 +13,7 @@ import { loadUser } from "./API/auth";
 import { API_ROOT } from "./app/config";
 import Examination from "./Components/academics";
 import Activity from "./Components/activity";
-import Auth from "./Components/auth";
+import Website from "./Components/website";
 import ClassesAndSessions from "./Components/classrooms";
 import DefaultPageLayout from "./Components/customs";
 import { CustomLoader } from "./Components/customs/monitors";
@@ -77,7 +77,7 @@ function App() {
   }
 
   if (!loading && !user) {
-    return <Auth />
+    return <Website />
   }
 
   return (

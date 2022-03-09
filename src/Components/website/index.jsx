@@ -1,7 +1,7 @@
 import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import LoginForm from "./login_form";
-import RegistrationForm from "./registration_form";
+import LoginForm from "./login";
+import RegistrationForm from "./registration";
 
 const pages = [
   { title: 'About', href: '#about' },
@@ -9,7 +9,7 @@ const pages = [
   { title: 'Contact Us', href: '#contacts' }
 ];
 
-const Auth = () => {
+const Website = () => {
   return (
     <Box>
       <AppBar position="fixed" sx={{ backgroundColor: 'white' }}>
@@ -85,4 +85,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default Website;

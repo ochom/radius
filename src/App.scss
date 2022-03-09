@@ -321,23 +321,3 @@ body {
     background-image: url(./static/programming.svg);
   }
 }
-
-.signup-box {
-  min-height: 600px;
-  border-radius: 16px;
-  display: flex;
-  overflow: hidden;
-  margin: 3rem 0;
-  background-image: linear-gradient(to top left, $primary-dark, $primary-color);
-  .input-box {
-    height: 100%;
-    background-color: rgba($color: #ffffff, $alpha: 1);
-  }
-  .signup-image {
-    background-size: auto;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-position: bottom;
-    background-image: url(./static/undraw_agree_re_hor9.svg);
-  }
-}

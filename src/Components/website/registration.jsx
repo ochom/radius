@@ -50,9 +50,21 @@ const RegistrationForm = () => {
   };
 
   return (
-    <Box className="signup-box">
+    <Box className="signup-box row col-12">
+      <Box className="signup-info col-md-6">
+        <Box className="about">
+          <Box>
+            <Typography variant="h4" color="GrayText">Create your profile</Typography>
+            <Typography color="secondary" variant="h1" sx={{ mb: 4, fontSize: "3rem", fontWeight: 700 }}>With Us</Typography>
+          </Box>
+          <Typography variant="body2" color="grey"
+            sx={{ fontSize: "1.5rem", fontWeight: 500 }}>
+            It is and will always be FREE :)
+          </Typography>
+        </Box>
+      </Box>
       <Box className="col-md-6" >
-        <Box className="input-box p-5">
+        <Box className="input-box">
           {index == 0 ?
             <form onSubmit={addAccountInf}>
               <Stack display="flex" direction='row' spacing={1}>
@@ -224,7 +236,6 @@ const RegistrationForm = () => {
           </Box>
         </Box>
       </Box>
-      <Box className="signup-image col-md-6"></Box>
     </Box>
   )
 }
