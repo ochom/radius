@@ -100,10 +100,8 @@ const Website = () => {
           </Stack>
         </Container>
       </section>
-      <section id="footer">
-        <Container>
-          <Footer />
-        </Container>
+      <section>
+        <Footer />
       </section>
     </Box >
 

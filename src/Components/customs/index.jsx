@@ -123,7 +123,9 @@ function TopBar(props) {
 function PageBody({ children }) {
   return (
     <Box className="page_body" sx={{ position: 'absolute', mt: '3px', height: 'calc(100vh - 65px)', overflowY: 'auto' }}>
-      <Container sx={{ my: 5, top: 0 }}>{children}</Container>
+      <Container sx={{ my: 5, top: 0 }}>{children}
+      </Container>
+      <Footer />
     </Box>
   );
 }
@@ -197,7 +199,7 @@ function Sidenav(props) {
       <div className="logo_content">
         <div className="logo">
           <i className="bx bxl-sketch"></i>
-          <div className="logo_name">Acme</div>
+          <div className="logo_name">Acme 360&#176;</div>
         </div>
       </div>
       <ul className="nav_list">
@@ -237,7 +239,6 @@ const DefaultPageLayout = (props) => {
       <div className="home_content">
         <TopBar user={user} toggleSideNav={toggleSideNav} />
         {children}
-        <Footer />
       </div>
     </React.Fragment>
   );

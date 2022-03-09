@@ -33,11 +33,12 @@ body {
     .logo_content {
       .logo {
         i {
+          display: none;
           transition: all 0.5s ease;
           transform: translateX(0);
         }
         .logo_name {
-          opacity: 1;
+          display: block;
           transition: all 0.5s ease;
         }
       }
@@ -61,7 +62,7 @@ body {
 
   .logo_content {
     .logo {
-      color: lime;
+      color: #fff;
       display: flex;
       height: 3rem;
       width: 100%;
@@ -69,13 +70,14 @@ body {
       margin-left: 22px;
       pointer-events: none;
       i {
+        display: block;
         transition: all 0.5s ease;
         transform: translateX(-50%);
         font-size: 2rem;
         margin-right: 5px;
       }
       .logo_name {
-        opacity: 0;
+        display: none;
         font-size: 1.5rem;
         margin-right: 400;
         transition: all 0.5s ease;
