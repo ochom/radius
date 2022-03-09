@@ -6,12 +6,12 @@ export default function Footer() {
   return (
     <Box id="footer">
       <Container>
-        <Grid container className="content">
-          <Grid item md={4}>
+        <Grid container className="footer-content">
+          <Grid item xs={12} sm={12} md={4}>
             <Typography variant='h3'>Acme 360&#176;</Typography>
             <Typography variant='h6'>A product of Lysofts&trade;</Typography>
           </Grid>
-          <Grid item md={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <Typography variant='h6'>Products</Typography>
             <Stack spacing={1}>
               <Typography>Learning Management System</Typography>
@@ -21,7 +21,7 @@ export default function Footer() {
               <Typography>Luku&trade;</Typography>
             </Stack>
           </Grid>
-          <Grid item md={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <Typography variant='h6'>Contacts</Typography>
             <Stack spacing={3} sx={{ mt: 2 }}>
               <Typography><EmailOutlined /> info@lysofts.co.ke</Typography>

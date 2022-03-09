@@ -123,76 +123,74 @@ function TopBar(props) {
 function PageBody({ children }) {
   return (
     <Box className="page_body" sx={{ position: 'absolute', mt: '3px', height: 'calc(100vh - 65px)', overflowY: 'auto' }}>
-      <Container sx={{ my: 5, top: 0 }}>{children}
+      <Container sx={{ my: 5, top: 0 }} className='content'>{children}
       </Container>
       <Footer />
     </Box>
   );
 }
 
-const menuItems = [
-  {
-    href: "/",
-    icon: "bx bx-grid-alt",
-    title: "Dashboard",
-    tooltip: "Dashboard",
-    exact: true,
-  },
-  { href: "/sms", icon: "bx bx-chat", title: "SMS", tooltip: "Messages" },
-  { href: "/teachers", icon: "bx bx-user", title: "Teachers", tooltip: "Teachers" },
-  {
-    href: "/classes",
-    icon: "bx bxs-school",
-    title: "Classrooms",
-    tooltip: "Classrooms",
-  },
-  {
-    href: "/students",
-    icon: "bx bx-group",
-    title: "Students",
-    tooltip: "Students",
-  },
-  {
-    href: "/examination",
-    icon: "bx bxs-graduation",
-    title: "Examination",
-    tooltip: "Examination",
-  },
-  {
-    href: "/finance",
-    icon: "bx bx-money",
-    title: "Finance",
-    tooltip: "Finance",
-  },
-  {
-    href: "/library",
-    icon: "bx bx-book-open",
-    title: "Library",
-    tooltip: "Library",
-  },
-  {
-    href: "/activity",
-    icon: "bx bx-trophy",
-    title: "Activity",
-    tooltip: "Activity",
-  },
-  {
-    href: "/welfare",
-    icon: "bx bxs-hotel",
-    title: "Welfare",
-    tooltip: "Welfare",
-  },
-  {
-    href: "/settings",
-    icon: "bx bx-cog",
-    title: "Settings",
-    tooltip: "Settings",
-  },
-];
-
 function Sidenav(props) {
   const { active } = props;
-
+  const menuItems = [
+    {
+      href: "/",
+      icon: "bx bx-grid-alt",
+      title: "Dashboard",
+      tooltip: "Dashboard",
+      exact: true,
+    },
+    { href: "/sms", icon: "bx bx-chat", title: "SMS", tooltip: "Messages" },
+    { href: "/teachers", icon: "bx bx-user", title: "Teachers", tooltip: "Teachers" },
+    {
+      href: "/classes",
+      icon: "bx bxs-school",
+      title: "Classrooms",
+      tooltip: "Classrooms",
+    },
+    {
+      href: "/students",
+      icon: "bx bx-group",
+      title: "Students",
+      tooltip: "Students",
+    },
+    {
+      href: "/examination",
+      icon: "bx bxs-graduation",
+      title: "Examination",
+      tooltip: "Examination",
+    },
+    {
+      href: "/finance",
+      icon: "bx bx-money",
+      title: "Finance",
+      tooltip: "Finance",
+    },
+    {
+      href: "/library",
+      icon: "bx bx-book-open",
+      title: "Library",
+      tooltip: "Library",
+    },
+    {
+      href: "/activity",
+      icon: "bx bx-trophy",
+      title: "Activity",
+      tooltip: "Activity",
+    },
+    {
+      href: "/welfare",
+      icon: "bx bxs-hotel",
+      title: "Welfare",
+      tooltip: "Welfare",
+    },
+    {
+      href: "/settings",
+      icon: "bx bx-cog",
+      title: "Settings",
+      tooltip: "Settings",
+    },
+  ];
 
   return (
     <div className={`sidebar${active ? " activated" : ""}`}>
@@ -236,10 +234,10 @@ const DefaultPageLayout = (props) => {
   return (
     <React.Fragment>
       <Sidenav active={active} />
-      <div className="home_content">
+      <Box className="home_content">
         <TopBar user={user} toggleSideNav={toggleSideNav} />
         {children}
-      </div>
+      </Box>
     </React.Fragment>
   );
 }
