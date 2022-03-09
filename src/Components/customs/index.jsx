@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from "react-router-dom";
 import { logout } from '../../reducers/auth-reducer';
-import Footer from './footers';
+import Footer from '../website/footer';
 
 
 function SubMenu({ titleIcon, titleName, items }) {

@@ -50,7 +50,7 @@ const RegistrationForm = () => {
   };
 
   return (
-    <Box className="signup-box row col-12">
+    <Box className="signup-box row col-12 mt-5">
       <Box className="signup-info col-md-6">
         <Box className="about">
           <Box>

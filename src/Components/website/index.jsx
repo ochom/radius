@@ -1,5 +1,7 @@
-import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
+import { EmailOutlined, Phone } from "@mui/icons-material";
+import { AppBar, Button, Card, Container, Grid, Stack, Toolbar, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import Footer from "./footer";
 import LoginForm from "./login";
 import RegistrationForm from "./registration";
 
@@ -69,18 +71,41 @@ const Website = () => {
           </Box>
         </Container>
       </section>
-      <section id="register" className="registration-section py-5">
+      <section id="register" className="py-5">
         <Container>
           <Typography variant="h3" align="center">Get Started</Typography>
           <RegistrationForm />
         </Container>
       </section>
-      <section id="footer" className="footer-section">
+      <section id="contacts" className="py-5">
         <Container>
-
+          <Typography variant="h3" align="center">Contact Us</Typography>
+          <Typography variant="h5" align="center">You can reach the support team 24/7</Typography>
+          <Stack direction='row' spacing={3} justifyContent='center'
+            sx={{ mt: 8 }}>
+            <Card sx={{ py: 5, px: 10 }}>
+              <Typography><Phone /> +254708113456</Typography>
+            </Card>
+            <Card sx={{ py: 5, px: 10 }}>
+              <Typography><EmailOutlined /> support@lysofts.co.ke</Typography>
+            </Card>
+          </Stack>
         </Container>
       </section>
-    </Box>
+      <section id="pricing" className="py-5">
+        <Container>
+          <Stack spacing={5}>
+            <Typography variant="h3" align="center">Pricing</Typography>
+            <Typography variant="h5" align="center">Acme 360&#176; is a Free software solution</Typography>
+          </Stack>
+        </Container>
+      </section>
+      <section id="footer">
+        <Container>
+          <Footer />
+        </Container>
+      </section>
+    </Box >
 
   );
 };
