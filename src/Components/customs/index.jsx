@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from "react-router-dom";
 import { logout } from '../../reducers/auth-reducer';
-import profile from "../../static/profile.png";
 import Footer from './footers';
 
 
@@ -89,7 +88,7 @@ function TopBar(props) {
             </Badge>
             <Tooltip title="Open settings" arrow>
               <IconButton onClick={handleOpen}>
-                <Avatar alt={user.firstName} src={profile} />
+                <Avatar src={user.logo} />
               </IconButton>
             </Tooltip>
             <Menu
