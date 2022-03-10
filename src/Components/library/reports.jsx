@@ -39,7 +39,6 @@ export default function Reports() {
     { name: "Status", selector: (row) => row.returned },
   ]
 
-
   if (loading) {
     return <CustomLoader />
   }
