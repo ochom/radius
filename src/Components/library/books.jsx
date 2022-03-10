@@ -167,7 +167,6 @@ export default function Books() {
       </Box>
 
       <DataTable
-        title="Books"
         progressPending={loading}
         defaultSortFieldId={1}
         columns={cols}
