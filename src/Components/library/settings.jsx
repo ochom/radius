@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { Book, Edit, Image, Person, Timelapse } from '@mui/icons-material';
+import { Book, Edit, Person, Timelapse } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Avatar, Button, Card, List, ListItem, ListItemAvatar, ListItemText, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
