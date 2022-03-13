@@ -97,7 +97,7 @@ export default function Settings() {
             <Stack spacing={5}>
               <TextField label="Librarian" color="secondary" value={formData.librarian} onChange={e => setFormData({ ...formData, librarian: e.target.value })} />
               <TextField label="Students' Maximum Books" color="secondary" value={formData.maxStudentsBooks} onChange={e => setFormData({ ...formData, maxStudentsBooks: e.target.value })} />
-              <TextField label="Students' Maximum Books" color="secondary" value={formData.maxStudentsPeriod} onChange={e => setFormData({ ...formData, maxStudentsPeriod: e.target.value })} />
+              <TextField label="Students' Max Lending Duration" color="secondary" value={formData.maxStudentsPeriod} onChange={e => setFormData({ ...formData, maxStudentsPeriod: e.target.value })} />
               <TextField label="Staffs' Maximum Books" color="secondary" value={formData.maxTeachersBooks} onChange={e => setFormData({ ...formData, maxTeachersBooks: e.target.value })} />
               <TextField label="Staffs' Max Lending Duration" color="secondary" value={formData.maxTeachersPeriod} onChange={e => setFormData({ ...formData, maxTeachersPeriod: e.target.value })} />
               <Stack direction="row" spacing={3}>
