@@ -3,15 +3,16 @@ import { PageBody, SubMenu } from "../customs"
 import Books from "./books"
 import Borrowing from "./borrowing"
 import Categories from "./categories"
-import Dashboard from "./dashboard"
-import Reports from "./reports"
+import EditBook from "./edit_book"
+import NewBook from "./new_book"
 import Publishers from "./publishers"
+import Reports from "./reports"
+import Settings from "./settings"
 import StudentsLender from "./student_lender"
 import TeachersLender from "./teachers_lender"
-import NewBook from "./new_book"
-import EditBook from "./edit_book"
 
 const menuItems = [
+  { title: "Settings", href: "/library/settings", icon: "bx bxs-cog" },
   { title: "Issue/Return", href: "/library/issue", icon: "bx bxs-right-arrow" },
   { title: "Book Categories", href: "/library/categories", icon: "bx bxs-right-arrow" },
   { title: "Publishers", href: "/library/publishers", icon: "bx bxs-right-arrow" },
@@ -39,6 +40,7 @@ function Library() {
               <Route path={`${url}/issue/students/:uid`} component={StudentsLender} />
               <Route path={`${url}/issue/teachers/:uid`} component={TeachersLender} />
               <Route path={`${url}/publishers`} component={Publishers} />
+              <Route path={`${url}/settings`} component={Settings} />
               <Route path={`${url}/reports`} component={Reports} />
             </>
           )}

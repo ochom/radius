@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { PageErrorAlert } from '../customs/empty-page';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
+import ChargeSheetModal from './modals/charge_sheets_modal';
 
 const FETCH_ALL_QUERY = gql`query{
   books: geLibraryHistory{
@@ -49,6 +50,7 @@ export default function Reports() {
 
   return (
     <>
+      <ChargeSheetModal modal={modal} toggleModal={toggleModal} />
       <Grid container rowSpacing={3} columnSpacing={3} sx={{ my: 4 }}>
         <Grid item>
           <Button variant='contained' color='secondary'
