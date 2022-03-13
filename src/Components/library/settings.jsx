@@ -32,7 +32,7 @@ const initFormData = {
 
 
 export default function Settings() {
-  const [edit, setEdit] = useState(true)
+  const [edit, setEdit] = useState(false)
   const [formData, setFormData] = useState(initFormData)
 
   const { data, loading, error, refetch } = useQuery(FETCH_QUERY, {
@@ -53,6 +53,8 @@ export default function Settings() {
           maxTeachersBooks,
           maxTeachersPeriod
         })
+      } else {
+        setEdit(true)
       }
     }
   })
