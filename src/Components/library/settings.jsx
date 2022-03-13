@@ -127,7 +127,7 @@ export default function Settings() {
                   <Book />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText primary="Student Books" secondary={`${data.settings.maxStudentsBooks}`} />
+              <ListItemText primary="Student Max Books" secondary={`${data.settings.maxStudentsBooks}`} />
             </ListItem>
 
             <ListItem>
@@ -145,7 +145,7 @@ export default function Settings() {
                   <Book />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText primary="Staffs' Max Lending Duration" secondary={`${data.settings.maxTeachersBooks}`} />
+              <ListItemText primary="Staffs Max Books" secondary={`${data.settings.maxTeachersBooks}`} />
             </ListItem>
 
             <ListItem>
