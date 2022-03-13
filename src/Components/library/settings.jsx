@@ -92,7 +92,7 @@ export default function Settings() {
     <>
       <Typography sx={{ my: 3 }}>Library Settings</Typography>
       <Card sx={{ p: 5 }}>
-        {edit ?
+        {edit || !data.settings ?
           <form onSubmit={saveSettings}>
             <Stack spacing={5}>
               <TextField label="Librarian" color="secondary" value={formData.librarian} onChange={e => setFormData({ ...formData, librarian: e.target.value })} />
