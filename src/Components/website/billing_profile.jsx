@@ -175,7 +175,7 @@ const RegistrationForm = (props) => {
               }
             />
             <a
-              href="https://lysofts.co.ke/radius/terms-and-conditions"
+              href="https://lysofts.co.ke/acme/terms-and-conditions"
               target="_blank"
               rel="noreferrer"
             >

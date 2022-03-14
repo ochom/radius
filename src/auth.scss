@@ -4,8 +4,8 @@
 }
 
 .landing-section {
-  min-height: 95vh;
-  display: flex;
+  margin-top: 70px;
+  padding: 100px 0;
   align-items: center;
   align-content: center;
   background-size: cover;
@@ -29,17 +29,6 @@
   height: auto;
 }
 
-.footer-section {
-  min-height: 50vh;
-  display: flex;
-  align-items: center;
-  align-content: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: bottom;
-  background-image: url(./static/wave1.svg);
-}
-
 .MuiButton-root {
   &.no-transform {
     text-transform: none !important;
@@ -51,4 +40,52 @@
   top: 0 !important;
   color: red !important;
   vertical-align: 5px !important;
+}
+
+#register {
+  .signup-box {
+    min-height: 600px;
+    overflow: hidden;
+    margin: 1rem;
+    padding: 5px;
+    .input-box {
+      margin: 5px;
+      border-radius: 16px;
+      margin-right: 10px;
+      padding: 30px 72px;
+      height: 100%;
+      background-color: #ffffff;
+    }
+    .signup-info {
+      align-items: center;
+      align-content: center;
+      background-repeat: no-repeat;
+      background-position: bottom;
+      background-size: 80% 50%;
+      background-image: url(./static/undraw_agree_re_hor9.svg);
+    }
+  }
+}
+
+#contacts {
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#pricing {
+  height: 400px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url(./static/wave2.svg);
+}
+
+#footer {
+  background-color: #ffffff;
+  margin-top: 50px;
+  .footer-content {
+    padding: 50px;
+    color: #777777;
+  }
 }

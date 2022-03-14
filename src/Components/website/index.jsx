@@ -1,9 +1,9 @@
-import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
+import { EmailOutlined, Phone } from "@mui/icons-material";
+import { AppBar, Button, Card, Container, Grid, Stack, Toolbar, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import LoginForm from "./login_form";
-import PricingForm from "./pricing";
-import RegistrationForm from "./registration_form";
-import SchoolProfile from "./school_profile";
+import Footer from "./footer";
+import LoginForm from "./login";
+import RegistrationForm from "./registration";
 
 const pages = [
   { title: 'About', href: '#about' },
@@ -11,7 +11,7 @@ const pages = [
   { title: 'Contact Us', href: '#contacts' }
 ];
 
-const Auth = () => {
+const Website = () => {
   return (
     <Box>
       <AppBar position="fixed" sx={{ backgroundColor: 'white' }}>
@@ -26,7 +26,7 @@ const Auth = () => {
               <Typography sx={{ fontSize: '1.5rem', mr: 1, }}>
                 <i className="bx bxl-sketch" ></i>
               </Typography>
-              Radius 360&#176;
+              Acme 360&#176;
             </Typography>
             <Box sx={{ flexGrow: 1, display: 'flex' }}>
               {pages.map((page) =>
@@ -42,57 +42,70 @@ const Auth = () => {
             </Box>
             <Box>
               <Button color="secondary" className="no-transform" sx={{ mr: 3 }} href="#login">Sign in</Button>
-              <Button variant="outlined" color="secondary" className="no-transform" sx={{ mr: 3 }} href="#contacts">Talk to sales</Button>
+              <Button variant="outlined" color="secondary" className="no-transform" sx={{ mr: 3 }} href="mailto:sales@lysofts.co.ke?subject=Acme 360 Sales&body=I would like to know more about Acme Systems">Talk to sales</Button>
               <Button variant="contained" color="secondary" className="no-transform" href="#register">Try for free</Button>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
       <section id="about"></section>
-      <section className="landing-section py-5" id="login">
+      <section className="landing-section" id="login">
         <Container>
-          <div className="row col-12">
-            <div className="col-md-6 col-lg-7">
-              <div className="about">
-                <div>
+          <Box className="row col-12">
+            <Box className="col-md-6 col-lg-7">
+              <Box className="about">
+                <Box>
                   <Typography variant="h4" color="GrayText">Welcome to</Typography>
-                  <Typography color="secondary" variant="h1" sx={{ mb: 4, fontSize: "3rem", fontWeight: 700 }}>Radius 360&#176;</Typography>
-                </div>
+                  <Typography color="secondary" variant="h1" sx={{ mb: 4, fontSize: "3rem", fontWeight: 700 }}>Acme 360&#176;</Typography>
+                </Box>
                 <Typography variant="body2" color="grey"
                   sx={{ fontSize: "1.5rem", fontWeight: 500 }}>
                   Manage Examinations, Finances, Students and Library.
                 </Typography>
                 <Typography color="secondary" variant="h4" mt={1}>Anywhere, Anytime</Typography>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-5">
+              </Box>
+            </Box>
+            <Box className="col-md-6 col-lg-5">
               <LoginForm />
-            </div>
-          </div>
+            </Box>
+          </Box>
         </Container>
       </section>
-      <section id="register" className="registration-section">
+      <section id="register" className="py-5">
         <Container>
-          <PricingForm />
-          <SchoolProfile />
+          <Typography variant="h3" align="center">Get Started</Typography>
           <RegistrationForm />
         </Container>
       </section>
-      <section id="contacts" className="registration-section">
+      <section id="contacts" className="py-5">
         <Container>
-          <PricingForm />
-          <SchoolProfile />
-          <RegistrationForm />
+          <Typography variant="h3" align="center">Contact Us</Typography>
+          <Typography variant="h5" align="center">You can reach the support team 24/7</Typography>
+          <Stack direction='row' spacing={3} justifyContent='center'
+            sx={{ mt: 8 }}>
+            <Card sx={{ py: 5, px: 10 }}>
+              <Typography><Phone /> +254708113456</Typography>
+            </Card>
+            <Card sx={{ py: 5, px: 10 }}>
+              <Typography><EmailOutlined /> support@lysofts.co.ke</Typography>
+            </Card>
+          </Stack>
         </Container>
       </section>
-      <section id="footer" className="footer-section">
+      <section id="pricing" className="py-5">
         <Container>
-
+          <Stack spacing={5}>
+            <Typography variant="h3" align="center">Pricing</Typography>
+            <Typography variant="h5" align="center">Acme 360&#176; is a Free software solution</Typography>
+          </Stack>
         </Container>
       </section>
-    </Box>
+      <section>
+        <Footer />
+      </section>
+    </Box >
 
   );
 };
 
-export default Auth;
+export default Website;

@@ -1,11 +1,11 @@
-$primary-color: #9c27b0;
-$primary-dark: #44164d;
+$primary-color: #fa00f6;
+$primary-dark: #5b0e76;
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body {
@@ -33,11 +33,12 @@ body {
     .logo_content {
       .logo {
         i {
+          display: none;
           transition: all 0.5s ease;
           transform: translateX(0);
         }
         .logo_name {
-          opacity: 1;
+          display: block;
           transition: all 0.5s ease;
         }
       }
@@ -61,7 +62,7 @@ body {
 
   .logo_content {
     .logo {
-      color: lime;
+      color: #fff;
       display: flex;
       height: 3rem;
       width: 100%;
@@ -69,13 +70,14 @@ body {
       margin-left: 22px;
       pointer-events: none;
       i {
+        display: block;
         transition: all 0.5s ease;
         transform: translateX(-50%);
         font-size: 2rem;
         margin-right: 5px;
       }
       .logo_name {
-        opacity: 0;
+        display: none;
         font-size: 1.5rem;
         margin-right: 400;
         transition: all 0.5s ease;
@@ -185,7 +187,7 @@ body {
     display: flex;
     align-items: center;
     color: #fff;
-    background: $primary-color;
+    background: $primary-dark;
     font-weight: 500;
     i {
       font-size: 1.5rem;
@@ -210,7 +212,7 @@ body {
         transition: all 0.4s ease;
         border-radius: 0.8rem;
         white-space: nowrap;
-        color: $primary-color;
+        color: $primary-dark;
         i {
           margin-right: 10px;
         }
@@ -232,6 +234,9 @@ body {
     margin-left: 0;
     width: 100%;
     transition: all 0.5s ease;
+    .content {
+      min-height: calc(100vh - 230px);
+    }
   }
 }
 

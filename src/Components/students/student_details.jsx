@@ -4,6 +4,7 @@ import { LoadingButton } from "@mui/lab";
 import { Avatar, Box, Button, Card, CircularProgress, Divider, Rating, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import { dataURIToBlob, resizeFile } from '../../app/file-resizer';
 import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
 import { photo } from "../customs/avatars";
 import { PageErrorAlert } from "../customs/empty-page";
@@ -76,10 +77,13 @@ const StudentDetails = () => {
     var el = window._protected_reference = document.createElement("INPUT");
     el.type = "file";
     el.accept = "image/*";
-    el.addEventListener("change", (e2) => {
+    el.addEventListener("change", async () => {
       window._protected_reference = null
       if (el.files.length) {
-        setPassport({ url: URL.createObjectURL(el.files[0]), isNew: true, image: el.files[0] })
+        const file = el.files[0];
+        const image = await resizeFile(file);
+        const newFile = dataURIToBlob(image);
+        setPassport({ url: URL.createObjectURL(newFile), isNew: true, image: newFile })
       }
     })
     el.click()

@@ -3,7 +3,7 @@ import { Add, Assignment, Delete, Edit, Photo } from '@mui/icons-material';
 import { Avatar, Box, Button, CircularProgress } from '@mui/material';
 import { CustomSnackBar, defaultSnackStatus } from "../customs/alerts";
 import moment from 'moment';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AlertFailed, AlertSuccess, AlertWarning, ConfirmAlert } from '../customs/alerts';
 import { photo } from '../customs/avatars';
@@ -11,6 +11,7 @@ import { PageErrorAlert } from '../customs/empty-page';
 import { DropdownMenu } from '../customs/menus';
 import { CustomLoader } from '../customs/monitors';
 import { DataTable } from '../customs/table';
+import { dataURIToBlob, resizeFile } from '../../app/file-resizer';
 
 
 const GET_ALL_QUERY = gql`query{
@@ -32,7 +33,7 @@ const GET_ALL_QUERY = gql`query{
 }`
 
 const UPLOAD_IMAGE_MUTATION = gql`mutation ($id: ID!, $file: Upload!){
-  uploadBookImage(id:$id, file: $file)
+  id: uploadBookImage(id:$id, file: $file)
 }`
 
 const DELETE_MUTATION = gql`mutation deleteBook($id: ID!){
@@ -42,8 +43,8 @@ const DELETE_MUTATION = gql`mutation deleteBook($id: ID!){
 export default function Books() {
 
   const history = useHistory()
-  const [selectedBookID, setSelectedBookID] = useState(null)
-  const [bookCover, setBookCover] = useState(null)
+  const [selectedBookIDs, setSelectedBookIDs] = useState([])
+  const [uploadingCover, setUploadingCover] = useState(true)
   const [snackBar, setSnackBar] = useState(defaultSnackStatus);
 
 
@@ -53,15 +54,17 @@ export default function Books() {
   })
 
 
-  const [uploadImage, { loading: saving, reset }] = useMutation(UPLOAD_IMAGE_MUTATION, {
-    onCompleted: () => {
+  const [uploadImage,] = useMutation(UPLOAD_IMAGE_MUTATION, {
+    onCompleted: (res) => {
       setSnackBar({ open: true, message: "Photo uploaded successfully", severity: "success" })
-      refetch()
-      reset()
+      refetch().then(() => {
+        setUploadingCover(false)
+        removeSelectedIDs(res.id)
+      })
     },
     onError: err => {
       setSnackBar({ open: true, message: err.message, severity: "error" })
-      reset()
+      setUploadingCover(false)
     }
   })
 
@@ -98,19 +101,37 @@ export default function Books() {
     history.push(`/library/books/edit/${id}`)
   }
 
+  const addSelectedBookIDs = (id) => {
+    setSelectedBookIDs([...selectedBookIDs.splice(selectedBookIDs.indexOf(id), 1), id])
+  }
+
+  const removeSelectedIDs = (id) => {
+    let index = selectedBookIDs.indexOf(id)
+    if (index !== -1) {
+      setSelectedBookIDs([...selectedBookIDs.splice(index, 1)])
+    }
+  }
+
+  const inSelectedIDs = (id) => {
+    return selectedBookIDs.indexOf(id) !== -1;
+  }
+
   const handleImage = ({ id }) => {
-    setSelectedBookID(id)
     var el = window._protected_reference = document.createElement("INPUT");
     el.type = "file";
     el.accept = "image/*";
-    el.addEventListener("change", (e2) => {
+    el.addEventListener("change", async () => {
       window._protected_reference = null
       if (el.files.length) {
-        setBookCover(URL.createObjectURL(el.files[0]))
+        addSelectedBookIDs(id)
+        setUploadingCover(true)
+        const file = el.files[0];
+        const image = await resizeFile(file);
+        const newFile = dataURIToBlob(image);
         uploadImage({
           variables: {
-            id,
-            file: el.files[0]
+            id: id,
+            file: newFile
           }
         })
       }
@@ -134,8 +155,8 @@ export default function Books() {
       name: "", selector: (row) => row.cover,
       width: '80px',
     },
-    { name: "ISBN", selector: (row) => row.isbn, sortable: true },
     { name: "Title", selector: (row) => row.title, sortable: true },
+    { name: "ISBN", selector: (row) => row.isbn, sortable: true },
     { name: "Category", selector: (row) => row.category, sortable: true },
     { name: "Publisher", selector: (row) => row.publisher, sortable: true },
     {
@@ -165,19 +186,16 @@ export default function Books() {
           <Add /> Add New Book
         </Button>
       </Box>
-
       <DataTable
-        title="Books"
-        progressPending={loading}
-        defaultSortFieldId={1}
         columns={cols}
         onRowClicked={editBook}
         data={data.books.map((row) => {
+          let inIDS = inSelectedIDs(row.id)
           return {
             id: row.id,
             cover: <Box>
-              {(saving && selectedBookID === row.id) ?
-                <Avatar variant="rounded" src={bookCover} sx={{ bgcolor: "#555555e2" }}>
+              {(uploadingCover && inIDS) ?
+                <Avatar variant="rounded" sx={{ bgcolor: "#cccccce2" }}>
                   <CircularProgress variant="indeterminate" color="secondary" size="1rem" />
                 </Avatar> :
                 <Avatar src={row.cover} alt={row.title} variant="rounded" ><Assignment /></Avatar>
