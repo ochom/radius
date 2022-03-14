@@ -106,7 +106,7 @@ export default function Books() {
   }
 
   const removeSelectedIDs = (id) => {
-    let index = selectedBookIDs.findIndex(i => id === id)
+    let index = selectedBookIDs.indexOf(id)
     if (index !== -1) {
       setSelectedBookIDs([...selectedBookIDs.splice(index, 1)])
     }
@@ -137,7 +137,6 @@ export default function Books() {
       }
     })
     el.click()
-
   }
 
   const closeSnackBar = () => {
@@ -187,7 +186,6 @@ export default function Books() {
           <Add /> Add New Book
         </Button>
       </Box>
-      <span>{selectedBookIDs.length}</span>
       <DataTable
         columns={cols}
         onRowClicked={editBook}
